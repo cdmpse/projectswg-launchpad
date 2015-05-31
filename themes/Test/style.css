@@ -1,0 +1,37 @@
+/*
+ * Test theme
+ */
+
+.root {
+	-fx-background-color: grey;
+}
+
+#modalRoot {
+	-fx-background-color: white;
+	-fx-border-color: rgb(49, 89, 23);
+}
+
+#progressIndicator {
+    -fx-progress-color: red;
+}
+
+.progress-indicator .spinner {
+    -fx-background-color: transparent;
+}
+
+#gameSettingsButton {
+	-fx-graphic: url("gear.png");
+    -fx-content-display: graphic-only;
+    -fx-background-color: transparent;
+}
+
+/*
+ * 
+ * -fx-graphic: url("gear.png");
+ *
+ * 
+ * 
+ * 
+ * 
+ * 
+ */

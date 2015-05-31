@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.web.*?>
+<?import javafx.scene.effect.*?>
+<?import java.lang.*?>
+<?import javafx.scene.Scene?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.layout.ColumnConstraints?>
+
+<VBox fx:id="gameRoot" prefHeight="440.0" prefWidth="800.0" spacing="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.projectswg.launchpad.controller.GameController">
+   <padding>
+      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+   </padding>
+   <children>
+      <HBox alignment="CENTER" maxWidth="Infinity" spacing="10.0">
+         <children>
+            <Button fx:id="clearButton" mnemonicParsing="false" text="Clear" />
+            <Button fx:id="saveAsButton" mnemonicParsing="false" text="Save as..." />
+            <Region HBox.hgrow="ALWAYS" />
+            <TextField fx:id="findTextField" />
+            <Button fx:id="findButton" mnemonicParsing="false" text="Find" />
+            <Region maxWidth="Infinity" HBox.hgrow="ALWAYS" />
+            <Pane fx:id="gameStatusPane" />
+            <Button fx:id="stopButton" mnemonicParsing="false" text="Stop" HBox.hgrow="ALWAYS" />
+         </children>
+      </HBox>
+      <TextArea fx:id="outputTextArea" editable="false" maxHeight="Infinity" maxWidth="Infinity" VBox.vgrow="ALWAYS" />
+   </children>
+</VBox>

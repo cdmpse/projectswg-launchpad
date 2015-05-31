@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.web.*?>
+<?import javafx.scene.effect.*?>
+<?import java.lang.*?>
+<?import javafx.scene.Scene?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.layout.ColumnConstraints?>
+
+<VBox fx:id="setupRoot" spacing="20.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.projectswg.launchpad.controller.SetupController">
+   <children>
+      <Button fx:id="swgFolderButton" maxHeight="Infinity" maxWidth="Infinity" mnemonicParsing="false" text="Select SWG Folder" VBox.vgrow="ALWAYS">
+         <tooltip>
+            <Tooltip text="Select the original Star Wars Galaxies installation folder." />
+         </tooltip>
+      </Button>
+      <TextField fx:id="swgFolderTextField" disable="true" editable="false" />
+      <HBox alignment="CENTER">
+         <children>
+            <Pane fx:id="setupDisplayPane" prefHeight="50.0" HBox.hgrow="ALWAYS" />
+         </children>
+      </HBox>
+      <Button fx:id="pswgFolderButton" maxHeight="Infinity" maxWidth="Infinity" mnemonicParsing="false" text="Select ProjectSWG Folder" VBox.vgrow="ALWAYS">
+         <tooltip>
+            <Tooltip text="Select an existing ProjectSWG folder or create a new one." />
+         </tooltip></Button>
+      <TextField fx:id="pswgFolderTextField" disable="true" editable="false" />
+   </children>
+   <padding>
+      <Insets bottom="60.0" left="30.0" right="30.0" top="60.0" />
+   </padding>
+</VBox>

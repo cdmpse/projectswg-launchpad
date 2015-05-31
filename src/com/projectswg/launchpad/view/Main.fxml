@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane fx:id="root" prefHeight="600.0" prefWidth="380.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.projectswg.launchpad.controller.MainController">
+   <children>
+      <VBox fx:id="mainRoot" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" spacing="10.0">
+         <children>
+            <Region prefHeight="8.0" />
+            <ImageView fx:id="mainGraphic" fitHeight="261.0" fitWidth="295.0" pickOnBounds="true" preserveRatio="true" />
+            <Region prefHeight="8.0" />
+            <GridPane vgap="10.0">
+               <children>
+                  <Button fx:id="scanButton" disable="true" mnemonicParsing="false" prefWidth="80.0" text="Scan" visible="false" GridPane.rowIndex="1" />
+                  <Button fx:id="playButton" disable="true" mnemonicParsing="false" prefWidth="80.0" text="Play" visible="false" GridPane.rowIndex="0" />
+                  <ProgressBar fx:id="progressBar" prefWidth="200.0" progress="0.0" visible="false" GridPane.rowIndex="3" />
+                  <ProgressIndicator fx:id="progressIndicator" focusTraversable="false" mouseTransparent="true" visible="false" GridPane.rowIndex="1" />
+                  <Button fx:id="updateButton" disable="true" mnemonicParsing="false" prefWidth="80.0" text="Update" visible="false" GridPane.rowIndex="1" />
+                  <Button fx:id="cancelButton" mnemonicParsing="false" prefWidth="80.0" text="Cancel" visible="false" />
+                  <Button fx:id="setupButton" mnemonicParsing="false" prefWidth="80.0" text="Setup" />
+                  <HBox alignment="CENTER" prefHeight="100.0" GridPane.rowIndex="2">
+                     <children>
+                        <Pane fx:id="mainDisplayPane" maxWidth="Infinity" HBox.hgrow="ALWAYS">
+                           <HBox.margin>
+                              <Insets top="10.0" />
+                           </HBox.margin></Pane>
+                     </children>
+                  </HBox>
+               </children>
+               <columnConstraints>
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints maxHeight="50.0" vgrow="ALWAYS" />
+                  <RowConstraints maxHeight="50.0" vgrow="ALWAYS" />
+                  <RowConstraints maxHeight="40.0" vgrow="ALWAYS" />
+                  <RowConstraints maxHeight="Infinity" vgrow="ALWAYS" />
+               </rowConstraints>
+            </GridPane>
+            <VBox alignment="TOP_CENTER" maxHeight="Infinity" VBox.vgrow="ALWAYS">
+               <children>
+                  <TilePane alignment="CENTER" hgap="10.0" prefTileHeight="40.0" vgap="10.0" VBox.vgrow="ALWAYS">
+                     <children>
+                        <Button fx:id="launcherSettingsButton" maxHeight="Infinity" maxWidth="Infinity" mnemonicParsing="false" text="Settings" />
+                        <Button fx:id="gameSettingsButton" maxHeight="Infinity" maxWidth="Infinity" mnemonicParsing="false" text="Game Settings" />
+                        <Button fx:id="extrasButton" maxHeight="Infinity" maxWidth="Infinity" mnemonicParsing="false" text="Extras" />
+                     </children>
+                     <padding>
+                        <Insets left="10.0" right="10.0" />
+                     </padding>
+                  </TilePane>
+                  <Pane fx:id="gameProcessPane" prefHeight="80.0" VBox.vgrow="ALWAYS" />
+               </children>
+            </VBox>
+         </children>
+         <opaqueInsets>
+            <Insets top="20.0" />
+         </opaqueInsets>
+      </VBox>
+   </children>
+</StackPane>
