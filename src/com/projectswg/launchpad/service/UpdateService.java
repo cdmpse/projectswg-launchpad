@@ -27,33 +27,39 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
+
 import javax.xml.bind.DatatypeConverter;
+
 import com.projectswg.launchpad.PSWG;
 import com.projectswg.launchpad.model.Resource;
 
 public class UpdateService extends Service<Void>
 {
-	private float subTaskProgress;
-	
 	private SimpleStringProperty mainOut;
+	private SimpleDoubleProperty fileDownloadProgress;
 	
 	private final Manager manager;
 	private ArrayList<Resource> resources;
 	
+	
 	public UpdateService(Manager manager)
 	{
     	this.manager = manager;
-    	this.subTaskProgress = 0f;
     	
     	mainOut = new SimpleStringProperty("");
+    	fileDownloadProgress = new SimpleDoubleProperty(-1);
 	}
 	
-	public void start(ArrayList<Resource> resources)
+	public void startUpdate(ArrayList<Resource> resources)
 	{
 		this.resources = resources;
+		
+		reset();
 		start();
 	}
 
@@ -80,10 +86,10 @@ public class UpdateService extends Service<Void>
 				downloadList.add(resource);
 		
 		for (int i = 0; i < downloadList.size(); i++) {
-			subTaskProgress = (float)i / downloadList.size() * 100f;
+			mainOut.set(String.format("Downloading resources: %s / %s", i + 1, downloadList.size()));
 			downloadResource(downloadList.get(i));
 		}
-		subTaskProgress = -1f;
+		mainOut.set("File downloads complete");
 
 		for (Resource resource : downloadList) {
 			if (!resource.getDlFlag())
@@ -94,10 +100,12 @@ public class UpdateService extends Service<Void>
 	private void downloadResource(Resource resource)
 	{
 		// set resource in prefs for resume
-		
 		String name = resource.getName();
-		String path = manager.getPswgFolder().getValue() + name;
+		String path = manager.getPswgFolder().getValue() + "/" + name;
 		File file = Manager.getLocalResource(path);
+		if (file == null)
+			return;
+		
 		InputStream is = null;
 		FileOutputStream fos = null;
 		URL url;
@@ -117,18 +125,21 @@ public class UpdateService extends Service<Void>
 			int bytesRead = 0, bytesBuffered = 0;
 			int runningTotal = 0;
 			
-			while ((bytesRead = is.read(buffer)) > -1) {				
+			while ((bytesRead = is.read(buffer)) > -1) {
+				
 				fos.write(buffer, 0, bytesRead);
 				bytesBuffered += bytesRead;
 				runningTotal += bytesRead;
+				
+				fileDownloadProgress.set((double)runningTotal / total);
+				
 				if (bytesBuffered > 1024 * 1024) {
 					bytesBuffered = 0;
 					fos.flush();
 				}
-				
-				subTaskProgress = (float)runningTotal / total;
 			}
 			fos.close();
+			fileDownloadProgress.set(-1);
 			
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
@@ -137,7 +148,13 @@ public class UpdateService extends Service<Void>
 		}
 	}
 
-	public SimpleStringProperty getMainOut() {
+	public SimpleStringProperty getMainOut()
+	{
 		return mainOut;
+	}
+	
+	public SimpleDoubleProperty getFileDownloadProgress()
+	{
+		return fileDownloadProgress;
 	}
 }

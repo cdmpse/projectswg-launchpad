@@ -327,7 +327,7 @@ public class SettingsController implements ModalComponent
 			mainController.getManager().pingLoginServer();
 		});
 		
-		mainController.getManager().getPinger().setOnSucceeded((e) -> {
+		mainController.getManager().getPingService().setOnSucceeded((e) -> {
 			String result = (String)e.getSource().getValue();
 			PSWG.log("pingerOut: " + result);
 			//Platform.runLater(() -> {
@@ -335,7 +335,7 @@ public class SettingsController implements ModalComponent
 			//});
 		});
 
-		mainController.getManager().getPinger().setOnRunning((e) -> {
+		mainController.getManager().getPingService().setOnRunning((e) -> {
 			ProgressIndicator progressIndicator = new ProgressIndicator();
 			progressIndicator.setManaged(false);
 			progressIndicator.resize(15, 15);

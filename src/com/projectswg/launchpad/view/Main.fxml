@@ -20,7 +20,7 @@
                <children>
                   <Button fx:id="scanButton" disable="true" mnemonicParsing="false" prefWidth="80.0" text="Scan" visible="false" GridPane.rowIndex="1" />
                   <Button fx:id="playButton" disable="true" mnemonicParsing="false" prefWidth="80.0" text="Play" visible="false" GridPane.rowIndex="0" />
-                  <ProgressBar fx:id="progressBar" prefWidth="200.0" progress="0.0" visible="false" GridPane.rowIndex="3" />
+                  <ProgressBar fx:id="progressBar" minWidth="200.0" progress="0.0" visible="false" GridPane.rowIndex="3" />
                   <ProgressIndicator fx:id="progressIndicator" focusTraversable="false" mouseTransparent="true" visible="false" GridPane.rowIndex="1" />
                   <Button fx:id="updateButton" disable="true" mnemonicParsing="false" prefWidth="80.0" text="Update" visible="false" GridPane.rowIndex="1" />
                   <Button fx:id="cancelButton" mnemonicParsing="false" prefWidth="80.0" text="Cancel" visible="false" />
@@ -42,6 +42,7 @@
                   <RowConstraints maxHeight="50.0" vgrow="ALWAYS" />
                   <RowConstraints maxHeight="40.0" vgrow="ALWAYS" />
                   <RowConstraints maxHeight="Infinity" vgrow="ALWAYS" />
+                  <RowConstraints maxHeight="Infinity" minHeight="10.0" vgrow="ALWAYS" />
                </rowConstraints>
             </GridPane>
             <VBox alignment="TOP_CENTER" maxHeight="Infinity" VBox.vgrow="ALWAYS">

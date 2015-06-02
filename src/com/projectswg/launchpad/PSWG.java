@@ -89,13 +89,7 @@ public class PSWG extends Application
 		gameControllers = new ArrayList<>();
 		
 		loadFxmls();
-		
-		primaryStage.setTitle("ProjectSWG");
-		Image icon = new Image("file:assets/pswg_icon.png");
-		if (icon.isError())
-			PSWG.log("Error loading application icon");
-		else
-			primaryStage.getIcons().add(icon);
+		manager.loadPrefs();
 		
 		primaryStage.setResizable(false);
 		primaryStage.show();
@@ -129,6 +123,13 @@ public class PSWG extends Application
 		
 		Scene scene = new Scene(controllers.get("main").getRoot());
 		primaryStage.setScene(scene);
+		primaryStage.setTitle("ProjectSWG");
+		Image icon = new Image("/resources/pswg_icon.png");
+		if (icon.isError())
+			PSWG.log("Error loading application icon");
+		else
+			primaryStage.getIcons().add(icon);
+		
 		((MainController)controllers.get("main")).init(this);
 		
 		// games

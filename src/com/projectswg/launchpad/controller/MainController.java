@@ -173,6 +173,22 @@ public class MainController implements FxmlController
 		setupComponent.init(modal);
 		extrasComponent.init(modal);
 		
+		manager.getUpdateService().runningProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue) {
+				updateButton.setVisible(false);
+				progressIndicator.setVisible(true);
+			}
+		});
+		
+		manager.getUpdateService().getFileDownloadProgress().addListener((observable, oldValue, newValue) -> {
+			if (oldValue.intValue() == -1)
+				showProgressBar();
+			PSWG.log("File download progress: " + newValue);
+			progressBar.setProgress(newValue.doubleValue());
+			if (newValue.doubleValue() == -1)
+				hideProgressBar();
+		});
+
 		// theme
 		pswg.loadTheme(PSWG.PREFS.get("theme", "Default"));
 		
@@ -181,9 +197,6 @@ public class MainController implements FxmlController
 		 */
 		TREFix trefix = new TREFix(this);
 		extrasComponent.addExtra(trefix);
-
-		// trigger
-		manager.loadPrefs();
 	}
 	
 	public void onShow()
@@ -249,6 +262,10 @@ public class MainController implements FxmlController
 			
 			mainDisplay.queueString("Update required");
 			break;
+		
+		case Manager.STATE_UPDATING:
+			
+			break;
 			
 		case Manager.STATE_PLAY:
 			playButton.setDisable(false);
@@ -304,7 +321,7 @@ public class MainController implements FxmlController
 		});
 		
 		updateButton.setOnAction((e) -> {
-			manager.startDownload();
+			manager.updatePswg();
 		});
 	}
 	
@@ -328,7 +345,7 @@ public class MainController implements FxmlController
 		return modal;
 	}
 	
-	public void showProgress(float p)
+	public void showProgressBar()
 	{
 		switch (PSWG.PREFS.getInt("animation", 2)) {
 		case ANIMATION_NONE:
@@ -368,7 +385,7 @@ public class MainController implements FxmlController
 		}
 	}
 	
-	public void hideProgress()
+	public void hideProgressBar()
 	{
 		switch (PSWG.PREFS.getInt("animation", 2)) {
 		case ANIMATION_NONE:

@@ -289,7 +289,7 @@ public class ScanService extends Service<Void>
 			
 			String fullText = decrypt(avail, Manager.AES_SESSION_KEY);
 			
-			for (String l : fullText.split("\r\n")) {
+			for (String l : fullText.split("\n")) {
 				list.add(l);
 				PSWG.log(String.format("Read encrypted text: %s", l));
 			}
@@ -344,7 +344,7 @@ public class ScanService extends Service<Void>
 		}
 		
 		if (!Pattern.matches("^[0-9]+$", resourceList.get(RESOURCE_COUNT_LINE))) {
-			PSWG.log("Error reading resource list: line count");
+			PSWG.log("Error reading resource list line: linecount -> " + resourceList.get(RESOURCE_COUNT_LINE));
 			return null;
 		}
 		
@@ -358,8 +358,8 @@ public class ScanService extends Service<Void>
 			return null;
 		}
 		
-		if (!resourceList.get(size - 2).equals("END")) {
-			PSWG.log("Error reading resource list: end line");
+		if (!resourceList.get(size - 1).equals("END")) {
+			PSWG.log("Error reading resource list line: end -> " + resourceList.get(size - 2).equals("END"));
 			return null;
 		}
 	
@@ -367,7 +367,7 @@ public class ScanService extends Service<Void>
 		// check if already have this and check that isnt newer
 		
 		String line;
-		for (int i = BEGIN_LINE + 1; i < resourceList.size() - 2; i++) {
+		for (int i = BEGIN_LINE + 1; i < resourceList.size() - 1; i++) {
 			line = resourceList.get(i);
 			matcher = pattern.matcher(line);
 			if (!matcher.find()) {

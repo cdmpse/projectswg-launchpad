@@ -127,9 +127,9 @@ public class Manager
 	
 	private ScanService scanService;
 	private UpdateService updateService;
-	private Service<String> pingService;
+	private PingService pingService;
 	
-	private ChangeListener<String> workerListener;
+	private ChangeListener<String> serviceListener;
 
 	
 	public Manager()
@@ -158,7 +158,7 @@ public class Manager
 		pingService = new PingService(this);
 		
 		// track output
-		workerListener = new ChangeListener<String>() {
+		serviceListener = new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 				mainOut.set(newValue);
@@ -244,7 +244,7 @@ public class Manager
 	public void scanSwg(String swgPath)
 	{
 		if (!busy) {
-			scanService.getMainOut().addListener(workerListener);
+			scanService.getMainOut().addListener(serviceListener);
 			PSWG.log("Scanning Star Wars Galaxies installation");
 			scanService.startSwgScan(CHECK_SWG, swgPath);
 			busySince = System.currentTimeMillis();
@@ -258,7 +258,7 @@ public class Manager
 	
 	public void scanSwgFinished(String swgPath, boolean result)
 	{
-		scanService.getMainOut().removeListener(workerListener);
+		scanService.getMainOut().removeListener(serviceListener);
 		if (result) {
 			PSWG.log("Star Wars Galaxies installation verified");
 			Platform.runLater(() -> {
@@ -282,7 +282,7 @@ public class Manager
 		}
 		
 		if (!busy) {
-			scanService.getMainOut().addListener(workerListener);
+			scanService.getMainOut().addListener(serviceListener);
 			state.set(STATE_SCANNING);
 			if (quick)
 				scanService.startPswgScan(CHECK_SIZE_PSWG, NORMAL_SCAN);
@@ -300,7 +300,7 @@ public class Manager
 	
 	public void scanPswgFinished(ArrayList<Resource> resources, long scanResult)
 	{
-		scanService.getMainOut().removeListener(workerListener);
+		scanService.getMainOut().removeListener(serviceListener);
 		
 		this.resources = resources;
 		this.dlSizeRequired = scanResult;
@@ -337,26 +337,24 @@ public class Manager
 		
 	}
 	
-	public void startDownload()
+	public void updatePswg()
 	{
 		if (!busy) {
-			updateService.getMainOut().addListener(workerListener);
-			
-			updateService.start(resources);
-			
+			updateService.getMainOut().addListener(serviceListener);
+			updateService.startUpdate(resources);
 			busySince = System.currentTimeMillis();
 			busy = true;
-			
+	
 		} else {
 			long now = System.currentTimeMillis();
 			long diff = now - busySince;
-			System.out.println("manager is busy for :" + diff);
+			System.out.println("manager is busy for: " + diff);
 		}
 	}
 	
 	public void updatePswgFinished()
 	{
-		updateService.getMainOut().removeListener(workerListener);
+		updateService.getMainOut().removeListener(serviceListener);
 	}
 	
 	public void requestStop()
@@ -422,7 +420,7 @@ public class Manager
 		}
 		
 		try {
-			ProcessBuilder pb = new ProcessBuilder(pswgFolder + "\\SwgClientSetup_r.exe");
+			ProcessBuilder pb = new ProcessBuilder(pswgFolder + "/SwgClientSetup_r.exe");
 			pb.directory(dir);
 			Process p = pb.start();
 		} catch(IOException e) {
@@ -438,7 +436,8 @@ public class Manager
 				file.getParentFile().mkdirs();
 				file.createNewFile();
 			} catch (IOException e1) {
-				e1.printStackTrace();
+				PSWG.log("Error getting local resource: " + path);
+				return null;
 			}
 		
 		return file;
@@ -694,9 +693,14 @@ public class Manager
 		return swgFolder;
 	}
 	
-	public Service<String> getPinger()
+	public PingService getPingService()
 	{
 		return pingService;
+	}
+	
+	public UpdateService getUpdateService()
+	{
+		return updateService;
 	}
 	
 	public SimpleStringProperty getMainOut()
