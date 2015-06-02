@@ -153,8 +153,6 @@ public class SettingsController implements ModalComponent
 	@Override
 	public void onShow()
 	{
-		PSWG.log("SettingsComponent::onShow");
-		
 		animationSlider.setValue(PSWG.PREFS.getInt("animation", 2));
 		if (mainController.getManager().getSwgFolder().getValue().equals(""))
 			swgFolderDisplay.queueString(MainController.XMARK);

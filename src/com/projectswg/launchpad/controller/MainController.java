@@ -147,12 +147,11 @@ public class MainController implements FxmlController
 
 		addButtonListeners();
 		
+		PSWG.log("Main::init .. Manager.state = " + manager.getState().getValue());
 		manager.getState().addListener((observable, oldValue, newValue) -> {
 			PSWG.log("Main::init .. Manager state changed: " + oldValue + " -> " + newValue);
 			setControlsState(newValue.intValue());
 		});
-
-		PSWG.log("Main::init .. Manager.state = " + manager.getState().getValue());
 		
 		modal = (ModalController)pswg.getControllers().get("modal");
 		settingsComponent = (SettingsController)pswg.getControllers().get("settings");

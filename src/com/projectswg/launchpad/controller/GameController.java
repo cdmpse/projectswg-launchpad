@@ -164,7 +164,7 @@ public class GameController implements FxmlController
 	public void setGameService(GameService gameService)
 	{
 		this.gameService = gameService;
-		if (Preferences.userNodeForPackage(PSWG.class).getBoolean("debug", false)) {
+		if (PSWG.PREFS.getBoolean("debug", false)) {
 			gameService.getMainOut().addListener((observable, oldValue, newValue) -> {
 				outputTextArea.appendText(newValue + "\n");
 			});

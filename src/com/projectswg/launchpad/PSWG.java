@@ -101,25 +101,23 @@ public class PSWG extends Application
 		primaryStage.show();
 	}
 	
-	public void addGameStage(String title)
+	public GameController addGameStage(String title)
 	{
 		Stage stage = new Stage();
-		
-		stage.setTitle(title);
-		
-		Image icon = new Image("file:assets/pswg_icon.png");
+		Image icon = new Image("/resources/pswg_icon.png");
 		if (icon.isError())
 			PSWG.log("Error loading application icon");
 		else
 			stage.getIcons().add(icon);
-	
+		
+		stage.setTitle(title);
 		String theme = PREFS.get("theme", "");
 		GameController gameController = (GameController)PSWG.loadFxml(theme, PSWG.FXML_SCREENS.get("game"));
 		Scene scene = new Scene(gameController.getRoot());
 		stage.setScene(scene);
-		
 		stage.setResizable(true);
 		gameStages.add(stage);
+		return gameController;
 	}
 	
 	public void loadFxmls()

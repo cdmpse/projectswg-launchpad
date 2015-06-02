@@ -93,24 +93,10 @@ public class GameDisplay
 	
 	public void addGame(SWG swg)
 	{
-		Stage stage = new Stage();
-		
-		stage.setTitle("PSWG: " + (display.size() + 1));
-		
-		Image icon = new Image("file:assets/pswg_icon.png");
-		if (icon.isError())
-			PSWG.log("Error loading application icon");
-		else
-			stage.getIcons().add(icon);
+		String title = "ProjectSWG: " + (display.size() + 1);
+		GameController gameController = mainController.getMain().addGameStage(title);
 
-		String theme = Preferences.userNodeForPackage(PSWG.class).get("theme", "");
-		GameController gameController = (GameController)PSWG.loadFxml(theme, PSWG.FXML_SCREENS.get("game"));
-		Scene scene = new Scene(gameController.getRoot());
 		gameController.init();
-		
-		stage.setScene(scene);
-		stage.setResizable(true);
-		gameController.setStage(stage);
 		
 		Button gameButton = new Button(MainController.WHITE_CIRCLE);
 		swg.setGameButton(gameButton);

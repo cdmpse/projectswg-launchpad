@@ -26,7 +26,6 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -39,13 +38,10 @@ import java.security.Security;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javafx.application.Platform;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -53,9 +49,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
-
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-
 import com.projectswg.launchpad.PSWG;
 import com.projectswg.launchpad.model.SWG;
 import com.projectswg.launchpad.model.Resource;
@@ -77,11 +71,6 @@ public class ScanService extends Service<Void>
 	private int scanStrictness;
 	
 	private SimpleStringProperty mainOut;
-	
-	private volatile boolean running;
-	private volatile boolean stop;
-	
-    private Thread thread;
 	private Manager manager;
 	private String swgPath;
 	private File file;
@@ -111,9 +100,6 @@ public class ScanService extends Service<Void>
 	
 	public void startPswgScan(int scanType, int scanStrictness)
 	{
-		assert scanType == 0 || scanType == 1;
-		assert scanStrictness == -1 || scanStrictness == 0;
-		
 		if (manager.getPswgFolder().getValue().equals(""))
 			return;
 		
@@ -150,7 +136,9 @@ public class ScanService extends Service<Void>
 					String fileName = SWG.FILES[i];
 					
 					updateProgress(i, SWG.FILES.length * 100);
-					//displayMessage.set(String.format("Scanning %s [ %s / %s ]", fileName, i + 1, Game.FILES.length));
+					
+					//String.format("Scanning %s [ %s / %s ]", fileName, i + 1, Game.FILES.length);
+					
 					file = new File(swgPath + "\\" + fileName);
 					if (!file.isFile()) {
 						Platform.runLater(() -> {
@@ -178,14 +166,13 @@ public class ScanService extends Service<Void>
 				
 				if (resourceList == null) {
 					PSWG.log("Failed to read resource list from local");
-					PSWG.log("Fetching resource list from remote");
+					mainOut.set("Fetching resource list");
 					
 					resourceList = getResourceListFromRemote();
 					if (!writeEncryptedResourceList(resourceList)) {
-						PSWG.log("Error writing resource list from remote");
+						PSWG.log("Error writing resource");
 						mainOut.set("An error occurred while updating");
 						manager.scanPswgFinished(null, 0);
-						running = false;
 						return;
 					}
 				}
@@ -195,7 +182,6 @@ public class ScanService extends Service<Void>
 					PSWG.log("Error parsing resource list");
 					mainOut.set("An error occurred while updating");
 					manager.scanPswgFinished(null, 0);
-					running = false;
 					return;
 				}
 				downloadSizeRequired = scanResources(resources);
@@ -219,7 +205,7 @@ public class ScanService extends Service<Void>
 				String resourceName;
 				
 				for (int i = 0; i < resources.size(); i++) {
-					if (stop)
+					if (isCancelled())
 						return -1;
 					
 					updateProgress(i, resources.size() * 100);
@@ -316,20 +302,17 @@ public class ScanService extends Service<Void>
 	
 	private ArrayList<String> getResourceListFromRemote()
 	{
-		PSWG.log("Attempting to retrieve resource list from remote");
-		mainOut.set("Fetching resource list");
+		PSWG.log("Fetching resource list from remote");
 		ArrayList<String> copy = new ArrayList<String>();
 		try {
 			URL url = new URL(Manager.PATCH_SERVER_FILES + RESOURCE_LIST);
 			URLConnection urlConnection = url.openConnection();
 			String basicAuth = "Basic " + DatatypeConverter.printBase64Binary(Manager.HTTP_AUTH.getBytes());
 			urlConnection.setRequestProperty("Authorization", basicAuth);
-			//urlConnection.setRequestProperty("Accept-Charset",  "UTF-8");
-			//urlConnection.setRequestProperty("Content-Type", "text/plain; charset=utf-8");
 			BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
 			String line;
-			while ((line = in.readLine()) != null) {
-				PSWG.log(String.format("RESOURCE LIST LINE: %s", line));
+			for (int i = 0; (line = in.readLine()) != null; i++) {
+				PSWG.log(String.format("(Resource List) %s: %s", i, line));
 				copy.add(line);
 			}
 			in.close();
@@ -413,7 +396,7 @@ public class ScanService extends Service<Void>
 	private byte[] encrypt(String text, String key)
 	{
 		try {
-			Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding", "BC");
+			Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding", "BC");
 			SecretKeySpec sks = new SecretKeySpec(Manager.AES_SESSION_KEY.getBytes(), "AES");
 			cipher.init(Cipher.ENCRYPT_MODE, sks, new IvParameterSpec(Manager.AES_SESSION_KEY.getBytes()));
 			return cipher.doFinal(text.getBytes());
@@ -433,7 +416,7 @@ public class ScanService extends Service<Void>
 	{
 		Cipher cipher;
 		try {
-			cipher = Cipher.getInstance("AES/CBC/NoPadding", "BC");
+			cipher = Cipher.getInstance("AES/CBC/PKCS5Padding", "BC");
 			SecretKeySpec sks = new SecretKeySpec(key.getBytes(), "AES");
 			cipher.init(Cipher.DECRYPT_MODE, sks, new IvParameterSpec(key.getBytes()));
 			return new String(cipher.doFinal(data));

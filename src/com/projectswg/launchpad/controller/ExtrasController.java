@@ -75,7 +75,6 @@ public class ExtrasController implements ModalComponent
 	@Override
 	public void onShow()
 	{
-		PSWG.log("ExtrasComponent::onShow");
 		extrasRoot.getChildren().clear();
 		for (ExtraModule module : modules) {
 			PSWG.log("Loadding extra module: " + module.toString());

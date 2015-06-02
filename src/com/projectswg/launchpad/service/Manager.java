@@ -125,9 +125,9 @@ public class Manager
 	private SimpleStringProperty wineArguments;
 	private SimpleStringProperty wineEnvironmentVariables;
 	
-	private ScanService scanner;
-	private UpdateService updater;
-	private Service<String> pinger;
+	private ScanService scanService;
+	private UpdateService updateService;
+	private Service<String> pingService;
 	
 	private ChangeListener<String> workerListener;
 
@@ -153,9 +153,9 @@ public class Manager
 		wineArguments = new SimpleStringProperty("");
 		wineEnvironmentVariables = new SimpleStringProperty("");
 		
-		scanner = new ScanService(this);
-		updater = new UpdateService(this);
-		pinger = new PingService(this);
+		scanService = new ScanService(this);
+		updateService = new UpdateService(this);
+		pingService = new PingService(this);
 		
 		// track output
 		workerListener = new ChangeListener<String>() {
@@ -184,8 +184,8 @@ public class Manager
 				if (pswgFolder.getValue().equals(""))
 					state.set(STATE_SETUP);
 				else
-					PSWG.log("manager 1 : scanPswg");
 					scanPswg(true);
+
 		});
 		
 		pswgFolder.addListener((observable, oldValue, newValue) -> {
@@ -244,9 +244,9 @@ public class Manager
 	public void scanSwg(String swgPath)
 	{
 		if (!busy) {
-			scanner.getMainOut().addListener(workerListener);
+			scanService.getMainOut().addListener(workerListener);
 			PSWG.log("Scanning Star Wars Galaxies installation");
-			scanner.startSwgScan(CHECK_SWG, swgPath);
+			scanService.startSwgScan(CHECK_SWG, swgPath);
 			busySince = System.currentTimeMillis();
 			busy = true;
 		} else {
@@ -258,7 +258,7 @@ public class Manager
 	
 	public void scanSwgFinished(String swgPath, boolean result)
 	{
-		scanner.getMainOut().removeListener(workerListener);
+		scanService.getMainOut().removeListener(workerListener);
 		if (result) {
 			PSWG.log("Star Wars Galaxies installation verified");
 			Platform.runLater(() -> {
@@ -282,12 +282,12 @@ public class Manager
 		}
 		
 		if (!busy) {
-			scanner.getMainOut().addListener(workerListener);
+			scanService.getMainOut().addListener(workerListener);
 			state.set(STATE_SCANNING);
 			if (quick)
-				scanner.startPswgScan(CHECK_SIZE_PSWG, NORMAL_SCAN);
+				scanService.startPswgScan(CHECK_SIZE_PSWG, NORMAL_SCAN);
 			else
-				scanner.startPswgScan(CHECK_HASH_PSWG, NORMAL_SCAN);
+				scanService.startPswgScan(CHECK_HASH_PSWG, NORMAL_SCAN);
 			busySince = System.currentTimeMillis();
 			busy = true;
 		} else {
@@ -300,7 +300,7 @@ public class Manager
 	
 	public void scanPswgFinished(ArrayList<Resource> resources, long scanResult)
 	{
-		scanner.getMainOut().removeListener(workerListener);
+		scanService.getMainOut().removeListener(workerListener);
 		
 		this.resources = resources;
 		this.dlSizeRequired = scanResult;
@@ -340,9 +340,9 @@ public class Manager
 	public void startDownload()
 	{
 		if (!busy) {
-			updater.getMainOut().addListener(workerListener);
+			updateService.getMainOut().addListener(workerListener);
 			
-			updater.start(resources);
+			updateService.start(resources);
 			
 			busySince = System.currentTimeMillis();
 			busy = true;
@@ -356,16 +356,16 @@ public class Manager
 	
 	public void updatePswgFinished()
 	{
-		updater.getMainOut().removeListener(workerListener);
+		updateService.getMainOut().removeListener(workerListener);
 	}
 	
 	public void requestStop()
 	{
-		if (scanner.isRunning())
-			scanner.cancel();
+		if (scanService.isRunning())
+			scanService.cancel();
 		
-		if (updater.isRunning())
-			updater.cancel();
+		if (updateService.isRunning())
+			updateService.cancel();
 	}
 	
 	public ArrayList<Resource> getResources()
@@ -375,9 +375,9 @@ public class Manager
 	
 	public void pingLoginServer()
 	{
-		if (!pinger.isRunning()) {
-			pinger.reset();
-			pinger.start();
+		if (!pingService.isRunning()) {
+			pingService.reset();
+			pingService.start();
 		}
 	}
 	
@@ -696,7 +696,7 @@ public class Manager
 	
 	public Service<String> getPinger()
 	{
-		return pinger;
+		return pingService;
 	}
 	
 	public SimpleStringProperty getMainOut()
