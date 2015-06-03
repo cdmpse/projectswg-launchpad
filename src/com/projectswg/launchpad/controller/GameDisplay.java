@@ -94,7 +94,7 @@ public class GameDisplay
 	public void addGame(SWG swg)
 	{
 		String title = "ProjectSWG: " + (display.size() + 1);
-		GameController gameController = mainController.getMain().addGameStage(title);
+		GameController gameController = mainController.getPswg().addGameStage(title);
 
 		gameController.init();
 		

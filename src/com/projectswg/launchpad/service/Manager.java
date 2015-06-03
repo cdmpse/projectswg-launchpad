@@ -50,6 +50,7 @@ import com.projectswg.launchpad.model.Resource;
 import com.projectswg.launchpad.model.SWG;
 
 import javafx.application.Platform;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
@@ -115,6 +116,9 @@ public class Manager
 	private SimpleStringProperty swgFolder;
 	private SimpleStringProperty pswgFolder;
 	
+	// pswg ready
+	private SimpleBooleanProperty pswgReady;
+	
 	// current login server
 	private SimpleStringProperty loginServerHost;
 	private SimpleStringProperty loginServerPlayPort;
@@ -148,6 +152,8 @@ public class Manager
 		
 		swgFolder = new SimpleStringProperty("");
 		pswgFolder = new SimpleStringProperty("");
+		
+		pswgReady = new SimpleBooleanProperty(false);
 		
 		wineBinary = new SimpleStringProperty("");
 		wineArguments = new SimpleStringProperty("");
@@ -321,6 +327,7 @@ public class Manager
 		else
 			Platform.runLater(() -> {
 				state.set(STATE_PLAY);
+				pswgReady.set(true);
 			});
 
 		PSWG.log("PSWG scan finished: " + dlSizeRequired);
@@ -724,5 +731,10 @@ public class Manager
 
 	public void setWineBinary(SimpleStringProperty wineBinary) {
 		this.wineBinary = wineBinary;
+	}
+	
+	public SimpleBooleanProperty getPswgReady()
+	{
+		return pswgReady;
 	}
 }

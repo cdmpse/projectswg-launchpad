@@ -129,29 +129,19 @@ public class MainController implements FxmlController
 		
 		progressIndicator.setMaxSize(36, 36);
 		
-		animationLevel.set(PSWG.PREFS.getInt("animation", 2));
-		animationLevel.addListener((observable, oldValue, newValue) -> {
-			PSWG.PREFS.putInt("animation", newValue.intValue());
-		});
-		
 		// Game process display
 		gameDisplay = new GameDisplay(this);
 		
 		// main text display
 		mainDisplay = new NodeDisplay(mainDisplayPane);
-		manager.getMainOut().addListener((observable, oldValue, newValue) -> {
-			Platform.runLater(() -> {
-				mainDisplay.queueString(newValue);
-			});
-		});
 
-		addButtonListeners();
-		
+		/*
 		PSWG.log("Main::init .. Manager.state = " + manager.getState().getValue());
 		manager.getState().addListener((observable, oldValue, newValue) -> {
 			PSWG.log("Main::init .. Manager state changed: " + oldValue + " -> " + newValue);
 			setControlsState(newValue.intValue());
 		});
+		*/
 		
 		modal = (ModalController)pswg.getControllers().get("modal");
 		settingsComponent = (SettingsController)pswg.getControllers().get("settings");
@@ -173,9 +163,34 @@ public class MainController implements FxmlController
 		setupComponent.init(modal);
 		extrasComponent.init(modal);
 		
+		animationLevel.set(PSWG.PREFS.getInt("animation", 2));
+		
+		// add listeners
+		
+		animationLevel.addListener((observable, oldValue, newValue) -> {
+			PSWG.PREFS.putInt("animation", newValue.intValue());
+		});
+		
+		addButtonListeners();
+		
+		manager.getMainOut().addListener((observable, oldValue, newValue) -> {
+			Platform.runLater(() -> {
+				mainDisplay.queueString(newValue);
+			});
+		});
+		
+		manager.getPswgReady().addListener((observable, oldValue, newValue) -> {
+			if (newValue) {
+				playButton.setVisible(true);
+			} else {
+				playButton.setVisible(false);
+			}
+		});
+		
 		manager.getUpdateService().runningProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue) {
 				updateButton.setVisible(false);
+				cancelButton.setVisible(true);
 				progressIndicator.setVisible(true);
 			}
 		});
@@ -189,6 +204,15 @@ public class MainController implements FxmlController
 				hideProgressBar();
 		});
 
+		// set state
+		if (manager.getPswgReady().getValue()) {
+			playButton.setVisible(true);
+			setupButton.setVisible(false);
+		} else {
+			gameSettingsButton.setDisable(true);
+			extrasButton.setDisable(true);
+		}
+		
 		// theme
 		pswg.loadTheme(PSWG.PREFS.get("theme", "Default"));
 		
@@ -199,10 +223,7 @@ public class MainController implements FxmlController
 		extrasComponent.addExtra(trefix);
 	}
 	
-	public void onShow()
-	{
-	}
-	
+	/*
 	public void setControlsState(int state)
 	{
 		switch (state) {
@@ -288,6 +309,7 @@ public class MainController implements FxmlController
 			break;
 		}
 	}
+	*/
 	
 	public void addButtonListeners()
 	{
@@ -435,7 +457,7 @@ public class MainController implements FxmlController
 		return root;
 	}
 	
-	public PSWG getMain()
+	public PSWG getPswg()
 	{
 		return pswg;
 	}

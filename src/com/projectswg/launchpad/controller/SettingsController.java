@@ -201,11 +201,11 @@ public class SettingsController implements ModalComponent
 				return;
 			
 			PSWG.PREFS.put("theme", newValue);
-			mainController.getMain().loadFxmls();
-			mainController.getMain().loadTheme(newValue);
+			mainController.getPswg().loadFxmls();
+			mainController.getPswg().loadTheme(newValue);
 			Platform.runLater(() -> {
-				ModalController modal = (ModalController)mainController.getMain().getControllers().get("modal");
-				modal.loadComponent((SettingsController)mainController.getMain().getControllers().get("settings"));
+				ModalController modal = (ModalController)mainController.getPswg().getControllers().get("modal");
+				modal.loadComponent((SettingsController)mainController.getPswg().getControllers().get("settings"));
 				// fix
 				//themeDisplay.queueString("Theme set");
 			});

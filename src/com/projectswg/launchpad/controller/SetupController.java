@@ -29,6 +29,7 @@ import com.projectswg.launchpad.service.Manager;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.Blend;
 import javafx.scene.effect.BlendMode;
@@ -57,8 +58,10 @@ public class SetupController implements ModalComponent
 	
 	public static final String LABEL = "Setup";
 	
-	private TextFlow textFlow;
-	private Text upArrow, downArrow;
+	//private TextFlow textFlow;
+	//private Text upArrow, downArrow;
+	private Label swgLabel, pswgLabel;
+	
 	private Button setupCompleteButton;
 	private ModalController modalController;
 	private MainController mainController;
@@ -73,6 +76,10 @@ public class SetupController implements ModalComponent
 		blend.setBottomInput(new DropShadow(5, Color.RED));
 		blend.setTopInput(new InnerShadow(8, Color.RED));
 
+		swgLabel = new Label(MainController.UP_ARROW);
+		pswgLabel = new Label(MainController.DOWN_ARROW);
+		
+		/*
 		textFlow = new TextFlow();
 		
 		upArrow = new Text(MainController.UP_ARROW);
@@ -80,6 +87,7 @@ public class SetupController implements ModalComponent
 		
 		downArrow = new Text(MainController.DOWN_ARROW);
 		downArrow.setStyle("-fx-font-size: 36;");
+		*/
 		
 		setupCompleteButton = new Button("Setup Complete!");
 	}
@@ -169,9 +177,10 @@ public class SetupController implements ModalComponent
 		pswgFolderButton.setDisable(true);
 		pswgFolderTextField.setEffect(null);
 		
-		textFlow.getChildren().clear();
-		textFlow.getChildren().add(upArrow);
-		setupDisplay.queueNode(textFlow);
+		//textFlow.getChildren().clear();
+		//textFlow.getChildren().add(upArrow);
+		
+		//setupDisplay.queueNode(textFlow);
 	}
 	
 	public void pswgFolderNotSet()
@@ -184,9 +193,10 @@ public class SetupController implements ModalComponent
 		pswgFolderButton.setDisable(false);
 		pswgFolderTextField.setEffect(redGlow);
 		
-		textFlow.getChildren().clear();
-		textFlow.getChildren().add(downArrow);
-		setupDisplay.queueNode(textFlow);
+		//textFlow.getChildren().clear();
+		//textFlow.getChildren().add(downArrow);
+		
+		//setupDisplay.queueNode(textFlow);
 	}
 	
 	public void updateRequired()
