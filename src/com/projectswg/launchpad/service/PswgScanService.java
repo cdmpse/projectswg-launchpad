@@ -54,7 +54,7 @@ import com.projectswg.launchpad.PSWG;
 import com.projectswg.launchpad.model.SWG;
 import com.projectswg.launchpad.model.Resource;
 
-public class ScanService extends Service<Void>
+public class PswgScanService extends Service<ArrayList<Resource>>
 {
 	private static final String SWG_CLIENT = "SwgClient_r.exe";
 	private static final String SWG_CLIENT_SETUP = "SwgClientSetup_r.exe";
@@ -72,33 +72,19 @@ public class ScanService extends Service<Void>
 	
 	private SimpleStringProperty mainOut;
 	private Manager manager;
-	private String swgPath;
 	private File file;
 	
 	
-	public ScanService(Manager manager)
+	public PswgScanService(Manager manager)
 	{
     	this.manager = manager;
     	mainOut = new SimpleStringProperty("Initializing");
-    	swgPath = null;
 		file = null;
 
 		Security.addProvider(new BouncyCastleProvider());
 	}
 	
-	public void startSwgScan(int scanType, String swgPath)
-	{
-		this.swgPath = swgPath;
-		this.scanType = scanType;
-		this.scanStrictness = Manager.NORMAL_SCAN;
-
-		mainOut.set("");
-		
-		reset();
-		start();
-	}
-	
-	public void startPswgScan(int scanType, int scanStrictness)
+	public void startScan(int scanType, int scanStrictness)
 	{
 		if (manager.getPswgFolder().getValue().equals(""))
 			return;
@@ -108,53 +94,26 @@ public class ScanService extends Service<Void>
 		
 		mainOut.set("");
 		
+		if (isRunning()) {
+			PSWG.log("PSWG scan already running");
+			return;
+		}
+		
 		reset();
 		start();
 	}
 	
 	@Override
-	protected Task<Void> createTask()
+	protected Task<ArrayList<Resource>> createTask()
 	{
-		return new Task<Void>() {
+		return new Task<ArrayList<Resource>>() {
 
 			@Override
-			protected Void call() throws Exception
+			protected ArrayList<Resource> call() throws Exception
 			{
 				updateProgress(0, 1);
-				if (scanType == Manager.CHECK_SWG)
-					swgScan();
-				else
-					pswgScan();
-				return null;
-			}
-			
-			private void swgScan()
-			{
-				for (int i = 0; i < SWG.FILES.length; i++) {
-					if (isCancelled())
-						return;
-					String fileName = SWG.FILES[i];
-					
-					updateProgress(i, SWG.FILES.length * 100);
-					
-					//String.format("Scanning %s [ %s / %s ]", fileName, i + 1, Game.FILES.length);
-					
-					file = new File(swgPath + "\\" + fileName);
-					if (!file.isFile()) {
-						Platform.runLater(() -> {
-							manager.scanSwgFinished(swgPath, false);
-						});
-						return;
-					}
-				}
-				Platform.runLater(() -> {
-					manager.scanSwgFinished(swgPath, true);
-				});
-			}
-			
-			private void pswgScan()
-			{
-				int downloadSizeRequired = 0;
+
+				//int downloadSizeRequired = 0;
 				ArrayList<String> resourceList = null;
 				ArrayList<Resource> resources = null;
 				
@@ -173,7 +132,7 @@ public class ScanService extends Service<Void>
 						PSWG.log("Error writing resource");
 						mainOut.set("An error occurred while updating");
 						manager.scanPswgFinished(null, 0);
-						return;
+						return null;
 					}
 				}
 				
@@ -182,31 +141,26 @@ public class ScanService extends Service<Void>
 					PSWG.log("Error parsing resource list");
 					mainOut.set("An error occurred while updating");
 					manager.scanPswgFinished(null, 0);
-					return;
+					return null;
 				}
-				downloadSizeRequired = scanResources(resources);
+				
+				scanResources(resources);
 
-				if (downloadSizeRequired > 0)
-					mainOut.set(String.format("Download required: %s B", downloadSizeRequired));
-				else if (downloadSizeRequired == -1)
-					mainOut.set("Scan interrupted");
-				else
-					mainOut.set("All scans passed");
-
-				manager.scanPswgFinished(resources, downloadSizeRequired);
+				//manager.scanPswgFinished(resources, downloadSizeRequired);
+				
+				return resources;
 			}
 			
-			private int scanResources(ArrayList<Resource> resources)
+			private void scanResources(ArrayList<Resource> resources)
 			{
 				PSWG.log("Scanning resources");
 				
-				int total = 0;
 				Resource resource;
 				String resourceName;
 				
 				for (int i = 0; i < resources.size(); i++) {
 					if (isCancelled())
-						return -1;
+						return;
 					
 					updateProgress(i, resources.size() * 100);
 
@@ -228,7 +182,6 @@ public class ScanService extends Service<Void>
 						PSWG.log("File not found: " + file.getAbsolutePath());
 					} else {
 						switch (scanType) {
-						case Manager.CHECK_SWG:
 						case Manager.CHECK_EXIST_PSWG:
 							break;
 			
@@ -245,12 +198,9 @@ public class ScanService extends Service<Void>
 					}
 					
 					PSWG.log("Scan result: " + scanResult);
-					if (scanResult)
-						resource.setDlFlag(false);
-					else
-						total += resource.getSize();
+
+					resource.setDlFlag(!scanResult);
 				}
-				return total;
 			}
 		};
 	}

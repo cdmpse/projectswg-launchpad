@@ -133,10 +133,9 @@ public class SettingsController implements ModalComponent
 	}
 	
 	@Override
-	public void init(ModalController modalController)
+	public void init(MainController mainController)
 	{
-		this.modalController = modalController;
-		this.mainController = modalController.getMain();
+		this.mainController = mainController;
 		
 		themeDisplay = new NodeDisplay(themeDisplayPane);
 		pingDisplay = new NodeDisplay(pingDisplayPane);
@@ -330,18 +329,14 @@ public class SettingsController implements ModalComponent
 		mainController.getManager().getPingService().setOnSucceeded((e) -> {
 			String result = (String)e.getSource().getValue();
 			PSWG.log("pingerOut: " + result);
-			//Platform.runLater(() -> {
-				pingDisplay.queueString("" + result);
-			//});
+			pingDisplay.queueString("" + result);
 		});
 
 		mainController.getManager().getPingService().setOnRunning((e) -> {
 			ProgressIndicator progressIndicator = new ProgressIndicator();
 			progressIndicator.setManaged(false);
 			progressIndicator.resize(15, 15);
-			//Platform.runLater(() -> {
-				pingDisplay.queueNode(progressIndicator);
-			//});
+			pingDisplay.queueNode(progressIndicator);
 		});
 		
 		addLoginServerButton.setOnAction((e) -> {
@@ -379,18 +374,18 @@ public class SettingsController implements ModalComponent
 		settingsPswgFolderButton.textProperty().bind(mainController.getManager().getPswgFolder());
 		settingsPswgFolderTooltip.textProperty().bind(mainController.getManager().getPswgFolder());
 		
-		mainController.getManager().getSwgFolder().addListener((observable, oldValue, newValue) -> {
-			if (newValue.equals(""))
-				swgFolderDisplay.queueString(MainController.XMARK);
-			else
+		mainController.getManager().getSwgReady().addListener((observable, oldValue, newValue) -> {
+			if (newValue)
 				swgFolderDisplay.queueString(MainController.CHECKMARK);
+			else
+				swgFolderDisplay.queueString(MainController.XMARK);
 		});
 		
-		mainController.getManager().getPswgFolder().addListener((observable, oldValue, newValue) -> {
-			if (newValue.equals(""))
-				pswgFolderDisplay.queueString(MainController.XMARK);
-			else
+		mainController.getManager().getPswgReady().addListener((observable, oldValue, newValue) -> {
+			if (newValue)
 				pswgFolderDisplay.queueString(MainController.CHECKMARK);
+			else
+				pswgFolderDisplay.queueString(MainController.XMARK);
 				
 		});
 		

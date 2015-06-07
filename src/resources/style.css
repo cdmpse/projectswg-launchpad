@@ -14,13 +14,6 @@
 	*/
 }
 
-/*
-#fxGame {
-	-fx-fill: black;
-	-fx-image: url("BlueOrb.png");
-}
-*/
-
 #modalRoot {
 	-fx-background-color: white;
 	-fx-border-color: grey;
@@ -38,6 +31,7 @@
 
 .text-field {
 	-fx-background-color: white;
+	-fx-border-color: black;
 }
 
 .menu-button {

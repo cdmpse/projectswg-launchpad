@@ -52,8 +52,6 @@ public class NodeDisplay
 	
 	public NodeDisplay(Pane root)
 	{
-		assert SLIDE_DURATION >= FADE_DURATION;
-		
 		this.root = root;
 		busy = false;
 		queue = new ArrayList<>();
@@ -75,7 +73,7 @@ public class NodeDisplay
 	{
 		if (s == null)
 			return;
-		// reuse
+
 		TextFlow textFlow = new TextFlow();
 		Text text = new Text(s);
 		
@@ -96,14 +94,14 @@ public class NodeDisplay
 		} else if (queue.size() > 2)
 			queue.subList(0, queue.size() - 2).clear();
 
-
 		final Parent prevNode = (root.getChildren().size() > 0) ? (Parent)root.getChildren().get(0) : null;
+		final Parent queuedNode = queue.remove(0);
 		
-		Parent queuedNode = queue.remove(0);
 		if (queuedNode == null) {
 			PSWG.log("NodeDisplay::displayNextFromQueue : queuedNode = null");
 			return;
 		}
+		
 		if (queuedNode == prevNode) {
 			PSWG.log("NodeDisplay::displayNextFromQueue : queuedNode = prevNode");
 			return;
@@ -112,8 +110,14 @@ public class NodeDisplay
 		busy = true;
 		queuedNode.setOpacity(0);
 		root.getChildren().add(queuedNode);
-		queuedNode.setLayoutX(root.getBoundsInParent().getWidth() / 2 - queuedNode.boundsInParentProperty().get().getWidth() / 2);
-		queuedNode.setLayoutY(root.boundsInParentProperty().get().getHeight() / 2 - queuedNode.boundsInParentProperty().get().getHeight() / 2);
+		
+		Platform.runLater(() -> {
+			queuedNode.setLayoutX(root.getBoundsInParent().getWidth() / 2 - queuedNode.boundsInParentProperty().get().getWidth() / 2);
+			queuedNode.setLayoutY(root.getBoundsInParent().getHeight() / 2 - queuedNode.boundsInParentProperty().get().getHeight() / 2);
+		});
+		
+		PSWG.log("x mid: " + (root.getBoundsInParent().getWidth() / 2 - queuedNode.boundsInParentProperty().get().getWidth() / 2));
+		PSWG.log("y mid: " + (root.getBoundsInParent().getHeight() / 2 - queuedNode.boundsInParentProperty().get().getHeight() / 2));
 		
 		Platform.runLater(() -> {
 			displayNode(prevNode, queuedNode);
@@ -135,7 +139,7 @@ public class NodeDisplay
 			queuedNode.setOpacity(1);
 			processNextFromQueue();
 			break;
-			
+		
 		case MainController.ANIMATION_LOW:
 			final Timeline fade = new Timeline();
 			if (prevNode != null) {

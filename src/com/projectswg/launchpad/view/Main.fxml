@@ -22,9 +22,9 @@
                   <Button fx:id="playButton" disable="true" mnemonicParsing="false" prefWidth="80.0" text="Play" visible="false" GridPane.rowIndex="0" />
                   <ProgressBar fx:id="progressBar" minWidth="200.0" progress="0.0" visible="false" GridPane.rowIndex="3" />
                   <ProgressIndicator fx:id="progressIndicator" focusTraversable="false" mouseTransparent="true" visible="false" GridPane.rowIndex="1" />
-                  <Button fx:id="updateButton" disable="true" mnemonicParsing="false" prefWidth="80.0" text="Update" visible="false" GridPane.rowIndex="1" />
+                  <Button fx:id="updateButton" mnemonicParsing="false" prefWidth="80.0" text="Update" visible="false" GridPane.rowIndex="1" />
                   <Button fx:id="cancelButton" mnemonicParsing="false" prefWidth="80.0" text="Cancel" visible="false" />
-                  <Button fx:id="setupButton" mnemonicParsing="false" prefWidth="80.0" text="Setup" />
+                  <Button fx:id="setupButton" mnemonicParsing="false" prefWidth="80.0" text="Setup" GridPane.rowIndex="1" />
                   <HBox alignment="CENTER" prefHeight="100.0" GridPane.rowIndex="2">
                      <children>
                         <Pane fx:id="mainDisplayPane" maxWidth="Infinity" HBox.hgrow="ALWAYS">

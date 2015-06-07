@@ -83,18 +83,15 @@ public class GameController implements FxmlController
 	
 	private int lastFind;
 	private NodeDisplay gameStatusDisplay;
-	private ContextMenu contextMenu;
 	private GameService gameService;
 	private Stage stage;
 	private Button gameButton;
-	private boolean debug;
 	private Blend redGlow;
 	
 	
 	public GameController()
 	{
 		lastFind = 0;
-		debug = false;
 		
 		redGlow = new Blend(BlendMode.MULTIPLY);
 		redGlow.setBottomInput(new DropShadow(5, Color.RED));

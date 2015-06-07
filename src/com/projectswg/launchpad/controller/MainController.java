@@ -102,7 +102,7 @@ public class MainController implements FxmlController
 	private PSWG pswg;
 	private Stage stage;
 	private Manager manager;
-	private ModalController modal;
+	private ModalController modalController;
 	private SettingsController settingsComponent;
 	private ExtrasController extrasComponent;
 	private SetupController setupComponent;
@@ -127,6 +127,7 @@ public class MainController implements FxmlController
 		
 		manager = pswg.getManager();
 		
+		// move to css
 		progressIndicator.setMaxSize(36, 36);
 		
 		// Game process display
@@ -143,25 +144,25 @@ public class MainController implements FxmlController
 		});
 		*/
 		
-		modal = (ModalController)pswg.getControllers().get("modal");
+		modalController = (ModalController)pswg.getControllers().get("modal");
 		settingsComponent = (SettingsController)pswg.getControllers().get("settings");
 		setupComponent = (SetupController)pswg.getControllers().get("setup");
 		extrasComponent = (ExtrasController)pswg.getControllers().get("extras");
 		
-		modal.getRoot().opacityProperty().addListener((observable, oldValue, newValue) -> {
+		modalController.getRoot().opacityProperty().addListener((observable, oldValue, newValue) -> {
 			blur.setRadius(newValue.doubleValue() * 10);
 		});
 		
-		modal.init(this);
-		modal.addComponent(settingsComponent);
-		modal.addComponent(setupComponent);
-		modal.addComponent(extrasComponent);
+		modalController.init(this);
+		modalController.addComponent(settingsComponent);
+		modalController.addComponent(setupComponent);
+		modalController.addComponent(extrasComponent);
 		
-		root.getChildren().add(modal.getRoot());
+		root.getChildren().add(modalController.getRoot());
 
-		settingsComponent.init(modal);
-		setupComponent.init(modal);
-		extrasComponent.init(modal);
+		settingsComponent.init(this);
+		setupComponent.init(this);
+		extrasComponent.init(this);
 		
 		animationLevel.set(PSWG.PREFS.getInt("animation", 2));
 		
@@ -200,10 +201,24 @@ public class MainController implements FxmlController
 				showProgressBar();
 			PSWG.log("File download progress: " + newValue);
 			progressBar.setProgress(newValue.doubleValue());
-			if (newValue.doubleValue() == -1)
+			if (newValue.intValue() == -1)
 				hideProgressBar();
 		});
+		
+		manager.getDlSizeRequired().addListener((observable, oldValue, newValue) -> {
+			if (newValue.doubleValue() > 0) {
+				setupButton.setVisible(false);
+				updateButton.setVisible(true);
+			}
+		});
 
+		manager.getSwgFolder().addListener((observable, oldValue, newValue) -> {
+			if (newValue.equals("")) {
+				setupButton.setVisible(true);
+				updateButton.setVisible(false);
+			}
+		});
+		
 		// set state
 		if (manager.getPswgReady().getValue()) {
 			playButton.setVisible(true);
@@ -318,12 +333,12 @@ public class MainController implements FxmlController
 		});
 	
 		setupButton.setOnAction((e) -> {
-			modal.showWithComponent(setupComponent);
+			modalController.showWithComponent(setupComponent);
 		});
 		
 		cancelButton.setOnAction((e) -> {
-			if (manager.isBusy())
-				manager.requestStop();
+			//if (manager.isBusy())
+			manager.requestStop();
 		});
 		
 		scanButton.setOnAction((e) -> {
@@ -331,7 +346,7 @@ public class MainController implements FxmlController
 		});
 		
 		launcherSettingsButton.setOnAction((e) -> {
-			modal.showWithComponent(settingsComponent);
+			modalController.showWithComponent(settingsComponent);
 		});
 		
 		gameSettingsButton.setOnAction((e) -> {
@@ -339,7 +354,7 @@ public class MainController implements FxmlController
 		});
 		
 		extrasButton.setOnAction((e) -> {
-			modal.showWithComponent(extrasComponent);
+			modalController.showWithComponent(extrasComponent);
 		});
 		
 		updateButton.setOnAction((e) -> {
@@ -362,9 +377,9 @@ public class MainController implements FxmlController
 		manager.pingLoginServer();
 	}
 	
-	public ModalController getModal()
+	public ModalController getModalController()
 	{
-		return modal;
+		return modalController;
 	}
 	
 	public void showProgressBar()

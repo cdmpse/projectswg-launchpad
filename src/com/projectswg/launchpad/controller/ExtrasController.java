@@ -38,9 +38,7 @@ public class ExtrasController implements ModalComponent
 	
 	public static final String LABEL = "Extras";
 	
-	private ModalController modalScreen;
-	private MainController mainScreen;
-	
+	private MainController mainController;
 	private ArrayList<ExtraModule> modules;
 	
 	
@@ -66,10 +64,9 @@ public class ExtrasController implements ModalComponent
 	}
 
 	@Override
-	public void init(ModalController modalScreen)
+	public void init(MainController mainController)
 	{
-		this.modalScreen = modalScreen;
-		this.mainScreen = modalScreen.getMain();
+		this.mainController = mainController;
 	}
 	
 	@Override
@@ -80,6 +77,7 @@ public class ExtrasController implements ModalComponent
 			PSWG.log("Loadding extra module: " + module.toString());
 			
 			Button button = module.createButton();
+			// css?
 			button.setPrefHeight(90);
 			button.setPrefWidth(90);
 			extrasRoot.getChildren().add(button);

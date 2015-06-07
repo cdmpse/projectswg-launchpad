@@ -23,7 +23,7 @@ import javafx.scene.Parent;
 
 public interface ModalComponent extends FxmlController
 {
-	public void init(ModalController modalScreen);
+	public void init(MainController mainController);
 	public Parent getRoot();
 	public String getLabel();
 	public void onShow();

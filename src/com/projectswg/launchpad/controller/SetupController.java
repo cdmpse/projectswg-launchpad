@@ -26,6 +26,7 @@ import java.util.ResourceBundle;
 import com.projectswg.launchpad.PSWG;
 import com.projectswg.launchpad.service.Manager;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -61,21 +62,22 @@ public class SetupController implements ModalComponent
 	//private TextFlow textFlow;
 	//private Text upArrow, downArrow;
 	private Label swgLabel, pswgLabel;
-	
 	private Button setupCompleteButton;
-	private ModalController modalController;
 	private MainController mainController;
-	private DropShadow redGlow, greenGlow;
-	private Blend blend;
+	private Blend redGlow, greenGlow;
 	private NodeDisplay setupDisplay;
 	
 	
 	public SetupController()
 	{
-		blend = new Blend(BlendMode.MULTIPLY);
-		blend.setBottomInput(new DropShadow(5, Color.RED));
-		blend.setTopInput(new InnerShadow(8, Color.RED));
+		redGlow = new Blend(BlendMode.MULTIPLY);
+		redGlow.setBottomInput(new DropShadow(5, Color.RED));
+		redGlow.setTopInput(new InnerShadow(8, Color.RED));
 
+		greenGlow = new Blend(BlendMode.MULTIPLY);
+		greenGlow.setBottomInput(new DropShadow(5, Color.GREEN));
+		greenGlow.setTopInput(new InnerShadow(8, Color.GREEN));
+		
 		swgLabel = new Label(MainController.UP_ARROW);
 		pswgLabel = new Label(MainController.DOWN_ARROW);
 		
@@ -89,6 +91,9 @@ public class SetupController implements ModalComponent
 		downArrow.setStyle("-fx-font-size: 36;");
 		*/
 		
+		swgLabel = new Label(MainController.UP_ARROW);
+		pswgLabel = new Label(MainController.DOWN_ARROW);
+		
 		setupCompleteButton = new Button("Setup Complete!");
 	}
 	
@@ -98,10 +103,9 @@ public class SetupController implements ModalComponent
 	}
 	
 	@Override
-	public void init(ModalController modalController)
+	public void init(MainController mainController)
 	{
-		this.modalController = modalController;
-		mainController = modalController.getMain();
+		this.mainController = mainController;
 		Manager manager = mainController.getManager();
 		
 		setupDisplay = new NodeDisplay(setupDisplayPane);
@@ -130,29 +134,49 @@ public class SetupController implements ModalComponent
 			manager.getPswgFolder().set(pswgPath);
 		});
 		
-
 		manager.getSwgFolder().addListener((observable, oldValue, newValue) -> {
-			if (newValue.equals(""))
-				swgFolderNotSet();
-			else
-				if (mainController.getManager().getPswgFolder().getValue().equals(""))
-					pswgFolderNotSet();
-				else
-					updateRequired();
+			if (newValue.equals("")) {
+				swgFolderTextField.setEffect(redGlow);
+				pswgFolderTextField.setEffect(null);
+				setupDisplay.queueNode(swgLabel);
+				pswgFolderButton.setDisable(true);
+			} else {
+				pswgFolderButton.setDisable(false);
+				swgFolderTextField.setText(newValue);
+				swgFolderTextField.setEffect(greenGlow);
+				if (manager.getPswgFolder().getValue().equals("")) {
+					setupDisplay.queueNode(pswgLabel);
+					pswgFolderTextField.setEffect(redGlow);
+				} else {
+					setupDisplay.queueNode(setupCompleteButton);
+				}
+			}
 		});
 		
 		manager.getPswgFolder().addListener((observable, oldValue, newValue) -> {
-			if (manager.getSwgFolder().getValue().equals(""))
-				return;
-			if (newValue.equals(""))
-				pswgFolderNotSet();
-			else
-				updateRequired();
+			if (newValue.equals("")) {
+				pswgFolderTextField.setEffect(redGlow);
+			} else {
+				pswgFolderTextField.setText(newValue);
+				pswgFolderTextField.setEffect(greenGlow);
+				if (!manager.getSwgFolder().getValue().equals("")) {
+					setupDisplay.queueNode(setupCompleteButton);
+				}
+			}
 		});
 
 		setupCompleteButton.setOnAction((e) -> {
-			modalController.hide();
+			mainController.getModalController().hide();
 		});
+		
+		//
+		
+		if (manager.getSwgFolder().getValue().equals("")) {
+			PSWG.log("a");
+			swgFolderTextField.setEffect(redGlow);
+			setupDisplay.queueNode(swgLabel);
+			pswgFolderButton.setDisable(true);
+		}
 	}
 	
 	@Override
@@ -171,7 +195,7 @@ public class SetupController implements ModalComponent
 	{
 		PSWG.log("SetupComponent::swgFolderNotSet");
 		
-		swgFolderTextField.setEffect(blend);
+		swgFolderTextField.setEffect(redGlow);
 		swgFolderButton.setDisable(false);
 	
 		pswgFolderButton.setDisable(true);
@@ -199,29 +223,32 @@ public class SetupController implements ModalComponent
 		//setupDisplay.queueNode(textFlow);
 	}
 	
-	public void updateRequired()
+	public void setupDone()
 	{
 		PSWG.log("SetupComponent::updateRequired");
-
+		
 		swgFolderTextField.setEffect(greenGlow);
 		swgFolderButton.setDisable(false);
 		
 		pswgFolderButton.setDisable(false);
 		pswgFolderTextField.setEffect(greenGlow);
+
 		setupDisplay.queueNode(setupCompleteButton);
 	}
 	
 	@Override
 	public void onShow()
 	{
-		Manager manager = mainController.getManager();
+		//Manager manager = mainController.getManager();
 		
-		if (manager.getSwgFolder().getValue().equals(""))
-			swgFolderNotSet();
-		else if (manager.getSwgFolder().getValue().equals(""))
-			pswgFolderNotSet();
-	
-		swgFolderTextField.setText(manager.getSwgFolder().getValue());
-		pswgFolderTextField.setText(manager.getPswgFolder().getValue());
+		//if (manager.getSwgFolder().getValue().equals(""))
+		//	swgFolderNotSet();
+		//else if (manager.getSwgFolder().getValue().equals(""))
+		//	pswgFolderNotSet();
+		//else
+		//	setupDone();
+		
+		//swgFolderTextField.setText(mainController.getManager().getSwgFolder().getValue());
+		//pswgFolderTextField.setText(mainController.getManager().getPswgFolder().getValue());
 	}
 }

@@ -89,10 +89,11 @@ public class PSWG extends Application
 		gameControllers = new ArrayList<>();
 		
 		loadFxmls();
-		manager.loadPrefs();
-		
+
 		primaryStage.setResizable(false);
 		primaryStage.show();
+		
+		manager.loadPrefs();
 	}
 	
 	public GameController addGameStage(String title)
