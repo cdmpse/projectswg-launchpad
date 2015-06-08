@@ -39,7 +39,7 @@ public class Resource
 		this.size = size;
 		this.checksum = checksum;
 		this.strictness = strictness;
-		this.dlFlag = true;
+		this.dlFlag = false;
 	}
 
 	@Override

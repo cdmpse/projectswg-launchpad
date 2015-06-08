@@ -20,8 +20,6 @@
 package com.projectswg.launchpad.controller;
 
 import java.util.ArrayList;
-import java.util.prefs.Preferences;
-
 import com.projectswg.launchpad.PSWG;
 
 import javafx.animation.Interpolator;
@@ -77,6 +75,8 @@ public class NodeDisplay
 		TextFlow textFlow = new TextFlow();
 		Text text = new Text(s);
 		
+		PSWG.log("string queued: " + s);
+		
 		textFlow.getChildren().add(text);
 		queueNode(textFlow);
 	}
@@ -109,15 +109,18 @@ public class NodeDisplay
 		
 		busy = true;
 		queuedNode.setOpacity(0);
-		root.getChildren().add(queuedNode);
 		
+		Platform.runLater(() -> {
+			root.getChildren().add(queuedNode);
+		});
+
 		Platform.runLater(() -> {
 			queuedNode.setLayoutX(root.getBoundsInParent().getWidth() / 2 - queuedNode.boundsInParentProperty().get().getWidth() / 2);
 			queuedNode.setLayoutY(root.getBoundsInParent().getHeight() / 2 - queuedNode.boundsInParentProperty().get().getHeight() / 2);
 		});
 		
-		PSWG.log("x mid: " + (root.getBoundsInParent().getWidth() / 2 - queuedNode.boundsInParentProperty().get().getWidth() / 2));
-		PSWG.log("y mid: " + (root.getBoundsInParent().getHeight() / 2 - queuedNode.boundsInParentProperty().get().getHeight() / 2));
+		//PSWG.log("x mid: " + (root.getBoundsInParent().getWidth() / 2 - queuedNode.boundsInParentProperty().get().getWidth() / 2));
+		//PSWG.log("y mid: " + (root.getBoundsInParent().getHeight() / 2 - queuedNode.boundsInParentProperty().get().getHeight() / 2));
 		
 		Platform.runLater(() -> {
 			displayNode(prevNode, queuedNode);
@@ -126,12 +129,7 @@ public class NodeDisplay
 	
 	public void displayNode(Parent prevNode, Parent queuedNode)
 	{
-		double rootHeight = root.getBoundsInParent().getHeight();
-		double itemHeight = queuedNode.getBoundsInLocal().getHeight();
-		double slideHeight = rootHeight;
-		
-		Preferences prefs = Preferences.userNodeForPackage(PSWG.class);
-		switch (prefs.getInt("animation", 2)) {
+		switch (PSWG.PREFS.getInt("animation", 2)) {
 		
 		case MainController.ANIMATION_NONE:
 			if (prevNode != null)

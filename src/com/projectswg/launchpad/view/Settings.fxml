@@ -62,7 +62,7 @@
          <content>
             <GridPane hgap="5.0" vgap="5.0">
               <columnConstraints>
-                <ColumnConstraints halignment="RIGHT" prefWidth="80.0" />
+                <ColumnConstraints halignment="RIGHT" maxWidth="80.0" minWidth="80.0" prefWidth="80.0" />
                 <ColumnConstraints hgrow="ALWAYS" />
                   <ColumnConstraints maxWidth="30.0" minWidth="30.0" prefWidth="30.0" />
               </columnConstraints>

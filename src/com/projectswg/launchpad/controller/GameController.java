@@ -23,13 +23,6 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.prefs.Preferences;
-
-
-
-
-
-
 import com.projectswg.launchpad.PSWG;
 
 
@@ -40,28 +33,20 @@ import com.projectswg.launchpad.service.GameService;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.geometry.Side;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.Blend;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.InnerShadow;
-import javafx.scene.image.Image;
-import javafx.scene.layout.Background;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
-import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 
 public class GameController implements FxmlController
@@ -162,7 +147,7 @@ public class GameController implements FxmlController
 	{
 		this.gameService = gameService;
 		if (PSWG.PREFS.getBoolean("debug", false)) {
-			gameService.getMainOut().addListener((observable, oldValue, newValue) -> {
+			gameService.messageProperty().addListener((observable, oldValue, newValue) -> {
 				outputTextArea.appendText(newValue + "\n");
 			});
 		} else {

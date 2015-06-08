@@ -21,7 +21,9 @@ package com.projectswg.launchpad.controller;
 
 import java.util.ArrayList;
 import java.util.prefs.Preferences;
+
 import com.projectswg.launchpad.PSWG;
+
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -43,7 +45,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import com.projectswg.launchpad.model.SWG;
+import com.projectswg.launchpad.model.Instance;
 import com.projectswg.launchpad.service.GameService;
 
 public class GameDisplay
@@ -51,7 +53,7 @@ public class GameDisplay
 	private static final int SLIDE_DURATION = 500;
 	
 	private Pane root;
-	private ArrayList<SWG> display;
+	private ArrayList<Instance> display;
 	private MainController mainController;
 
 	
@@ -61,16 +63,16 @@ public class GameDisplay
 		this.root = mainController.getGameProcessPane();
 		display = new ArrayList<>();
 		
-		mainController.getManager().getInstances().addListener((ListChangeListener.Change<? extends SWG> e) -> {
+		mainController.getManager().getInstances().addListener((ListChangeListener.Change<? extends Instance> e) -> {
 			while (e.next()) {
 				if (e.wasAdded()) {
 					if (PSWG.PREFS.getBoolean("close_after_launch", false))
 						Platform.exit();
-					for (SWG swg : e.getAddedSubList()) {
+					for (Instance swg : e.getAddedSubList()) {
 						addGame(swg);
 					}
 				} else if (e.wasRemoved()) {
-					for (SWG swg : e.getRemoved()) {
+					for (Instance swg : e.getRemoved()) {
 						removeGame(swg);
 					}
 				}
@@ -83,7 +85,7 @@ public class GameDisplay
 		return root;
 	}
 	
-	public void removeGame(SWG swg)
+	public void removeGame(Instance swg)
 	{
 		if (display.contains(swg)) {
 			root.getChildren().remove(display.indexOf(swg));
@@ -91,13 +93,25 @@ public class GameDisplay
 		}
 	}
 	
-	public void addGame(SWG swg)
+	public void addGame(Instance swg)
 	{
 		String title = "ProjectSWG: " + (display.size() + 1);
-		GameController gameController = mainController.getPswg().addGameStage(title);
 
-		gameController.init();
+		Stage stage = new Stage();
+		Image icon = new Image("/resources/pswg_icon.png");
+		if (icon.isError())
+			PSWG.log("Error loading application icon");
+		else
+			stage.getIcons().add(icon);
 		
+		stage.setTitle(title);
+		GameController gameController = (GameController)PSWG.loadFxml(PSWG.FXML_GAME);
+		Scene scene = new Scene(gameController.getRoot());
+		stage.setScene(scene);
+		stage.setResizable(true);
+		gameController.init();
+		gameController.setStage(stage);
+		swg.setStage(stage);
 		Button gameButton = new Button(MainController.WHITE_CIRCLE);
 		swg.setGameButton(gameButton);
 		swg.setGameController(gameController);
@@ -158,11 +172,11 @@ public class GameDisplay
 		double rootHeight = root.boundsInParentProperty().get().getHeight();
 		double rootWidth = root.boundsInParentProperty().get().getWidth();
 		PSWG.log("display.size: " + display.size());
-		double notch = (double)rootWidth / (1 + display.size());
+		double notch = rootWidth / (1 + display.size());
 
 		for (int i = 0; i < display.size(); i++) {
 			
-			SWG swg = display.get(i);
+			Instance swg = display.get(i);
 			Button gameButton = swg.getGameButton();
 			double buttonHeight = gameButton.boundsInParentProperty().get().getHeight();
 			double buttonWidth = gameButton.boundsInParentProperty().get().getWidth();

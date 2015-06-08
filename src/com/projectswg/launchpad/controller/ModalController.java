@@ -127,11 +127,6 @@ public class ModalController implements FxmlController
 		this.modalComponent = modalComponent;
 		modalComponent.getRoot().setVisible(true);
 		modalLabel.setText(modalComponent.getLabel());
-		modalComponent.onShow();
-		
-		//blur.setRadius(0);
-		//mainRoot.setEffect(blur);
-		//mainRoot.setDisable(true);
 
 		modalRoot.setOpacity(0);
 		modalRoot.setOpacity(MODAL_OPACITY);
@@ -146,11 +141,6 @@ public class ModalController implements FxmlController
 		this.modalComponent = modalComponent;
 		modalComponent.getRoot().setVisible(true);
 		modalLabel.setText(modalComponent.getLabel());
-		modalComponent.onShow();
-		
-		//blur.setRadius(0);
-		//mainRoot.setEffect(blur);
-		//mainRoot.setDisable(true);
 
 		modalRoot.setOpacity(0);
 		switch (mainController.getAnimationLevel().getValue()) {
@@ -206,7 +196,6 @@ public class ModalController implements FxmlController
 		case MainController.ANIMATION_NONE:
 			modalRoot.setVisible(false);
 			modalComponent.getRoot().setVisible(false);
-			//mainRoot.setEffect(null);
 			break;
 		
 		case MainController.ANIMATION_LOW:
@@ -218,7 +207,6 @@ public class ModalController implements FxmlController
 				modalRoot.setVisible(false);
 				modalRoot.setOpacity(initialOpacity);
 				modalComponent.getRoot().setVisible(false);
-				//mainRoot.setEffect(null);
 			});
 			longFadeOut.play();
 			break;
@@ -244,7 +232,6 @@ public class ModalController implements FxmlController
 				modalRoot.setVisible(false);
 				modalRoot.setOpacity(initialOpacity);
 				modalComponent.getRoot().setVisible(false);
-				//mainRoot.setEffect(null);
 			});
 			parallelTransition.play();
 			break;

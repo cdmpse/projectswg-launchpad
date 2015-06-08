@@ -142,6 +142,9 @@
 	
 			<fx:application refId="fxApplication"/>
 			<fx:resources refid="appRes"/>
+			
+			<fx:permissions elevated="true" cacheCertificates="true"/>
+			
 		</fx:deploy>
 	
 	

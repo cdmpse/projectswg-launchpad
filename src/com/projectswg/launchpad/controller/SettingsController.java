@@ -147,18 +147,19 @@ public class SettingsController implements ModalComponent
 		initDeveloperPane();
 		initWinePane();
 		initInfoPane();
-	}
-	
-	@Override
-	public void onShow()
-	{
-		animationSlider.setValue(PSWG.PREFS.getInt("animation", 2));
-		if (mainController.getManager().getSwgFolder().getValue().equals(""))
-			swgFolderDisplay.queueString(MainController.XMARK);
-		else
-			swgFolderDisplay.queueString(MainController.CHECKMARK);
 		
-		if (mainController.getManager().getSwgFolder().getValue().equals(""))
+		animationSlider.setValue(PSWG.PREFS.getInt("animation", 2));
+		
+		// initial setup
+		
+		if (mainController.getManager().getSwgReady().getValue())
+			swgFolderDisplay.queueString(MainController.CHECKMARK);
+		else {
+			settingsPswgFolderButton.setDisable(true);
+			swgFolderDisplay.queueString(MainController.XMARK);
+		}
+		
+		if (mainController.getManager().getPswgFolder().getValue().equals(""))
 			pswgFolderDisplay.queueString(MainController.XMARK);
 		else
 			pswgFolderDisplay.queueString(MainController.CHECKMARK);
@@ -190,7 +191,7 @@ public class SettingsController implements ModalComponent
 		});
 		refreshThemeList();
 
-		themeComboBox.setValue(PSWG.PREFS.get("theme", ""));
+		themeComboBox.setValue(PSWG.PREFS.get("theme", "Default"));
 		themeComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue == null) {
 				PSWG.log("themeComboBox: newValue -> null");
@@ -201,7 +202,6 @@ public class SettingsController implements ModalComponent
 			
 			PSWG.PREFS.put("theme", newValue);
 			mainController.getPswg().loadFxmls();
-			mainController.getPswg().loadTheme(newValue);
 			Platform.runLater(() -> {
 				ModalController modal = (ModalController)mainController.getPswg().getControllers().get("modal");
 				modal.loadComponent((SettingsController)mainController.getPswg().getControllers().get("settings"));
@@ -375,18 +375,20 @@ public class SettingsController implements ModalComponent
 		settingsPswgFolderTooltip.textProperty().bind(mainController.getManager().getPswgFolder());
 		
 		mainController.getManager().getSwgReady().addListener((observable, oldValue, newValue) -> {
-			if (newValue)
+			if (newValue) {
 				swgFolderDisplay.queueString(MainController.CHECKMARK);
-			else
+				settingsPswgFolderButton.setDisable(false);
+			} else {
 				swgFolderDisplay.queueString(MainController.XMARK);
+				settingsPswgFolderButton.setDisable(true);
+			}
 		});
 		
-		mainController.getManager().getPswgReady().addListener((observable, oldValue, newValue) -> {
-			if (newValue)
+		mainController.getManager().getPswgFolder().addListener((observable, oldValue, newValue) -> {
+			if (!newValue.equals(""))
 				pswgFolderDisplay.queueString(MainController.CHECKMARK);
 			else
 				pswgFolderDisplay.queueString(MainController.XMARK);
-				
 		});
 		
 		settingsSwgFolderButton.setOnAction((e) -> {
@@ -397,7 +399,7 @@ public class SettingsController implements ModalComponent
 				return;
 			
 			String swgPath =  file.getAbsolutePath();
-			mainController.getManager().scanSwg(swgPath);
+			mainController.getManager().getSwgFolder().set(swgPath);
 		});
 		
 		settingsPswgFolderButton.setOnAction((e) -> {

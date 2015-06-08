@@ -28,8 +28,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 
@@ -38,123 +36,103 @@ import javax.xml.bind.DatatypeConverter;
 import com.projectswg.launchpad.PSWG;
 import com.projectswg.launchpad.model.Resource;
 
-public class UpdateService extends Service<Void>
+public class UpdateService extends Service<Boolean>
 {
-	private SimpleStringProperty mainOut;
-	private SimpleDoubleProperty fileDownloadProgress;
-	
 	private final Manager manager;
-	private ArrayList<Resource> resources;
-	
 	
 	public UpdateService(Manager manager)
 	{
     	this.manager = manager;
-    	
-    	mainOut = new SimpleStringProperty("");
-    	fileDownloadProgress = new SimpleDoubleProperty(-1);
-	}
-	
-	public void startUpdate(ArrayList<Resource> resources)
-	{
-		this.resources = resources;
-		
-		reset();
-		start();
 	}
 
 	@Override
-	protected Task<Void> createTask()
+	protected Task<Boolean> createTask()
 	{
-		return new Task<Void>() {
+		return new Task<Boolean>() {
 
 			@Override
-			protected Void call() throws Exception
+			protected Boolean call() throws Exception
 			{
-				downloadResources(resources);
-				return null;
+				PSWG.log("UpdateService: start");
+				
+		    	ArrayList<Resource> resources = manager.getResources();
+				ArrayList<Resource> downloadList = new ArrayList<Resource>();
+				
+				for (Resource resource : resources)
+					if (resource.getDlFlag())
+						downloadList.add(resource);
+				
+				for (int i = 0; i < downloadList.size(); i++) {
+					updateProgress(-1, 0);
+					updateMessage(String.format("Downloading resources: %s / %s", i + 1, downloadList.size()));
+					if (!downloadResource(downloadList.get(i))) {
+						PSWG.log(downloadList.get(i).getName() + " did not download successfully");
+						return false;
+					}
+				}
+
+				PSWG.log("UpdateService: end");
+				return true;
 			}
-		};
-	}
-	
-	private void downloadResources(ArrayList<Resource> resources)
-	{
-		ArrayList<Resource> downloadList = new ArrayList<Resource>();
-		
-		for (Resource resource : resources)
-			if (resource.getDlFlag())
-				downloadList.add(resource);
-		
-		for (int i = 0; i < downloadList.size(); i++) {
-			mainOut.set(String.format("Downloading resources: %s / %s", i + 1, downloadList.size()));
-			downloadResource(downloadList.get(i));
-		}
-		mainOut.set("File downloads complete");
-
-		for (Resource resource : downloadList) {
-			if (!resource.getDlFlag())
-				PSWG.log(resource.getName() + " did not download successfully");
-		}
-	}
-	
-	private void downloadResource(Resource resource)
-	{
-		// set resource in prefs for resume
-		String name = resource.getName();
-		String path = manager.getPswgFolder().getValue() + "/" + name;
-		File file = Manager.getLocalResource(path);
-		if (file == null)
-			return;
-		
-		InputStream is = null;
-		FileOutputStream fos = null;
-		URL url;
-
-		try {
-			int total = resource.getSize();
-
-			url = new URL(Manager.PATCH_SERVER_FILES + name);
-			URLConnection urlConnection = url.openConnection();
-			String basicAuth = "Basic " + DatatypeConverter.printBase64Binary(Manager.HTTP_AUTH.getBytes());
-			urlConnection.setRequestProperty("Authorization", basicAuth);
 			
-			is = urlConnection.getInputStream();
-			fos = new FileOutputStream(file);
+			private boolean downloadResource(Resource resource)
+			{
+				// set resource in prefs for resume
+				String name = resource.getName();
+				String path = manager.getPswgFolder().getValue() + "/" + name;
+				File file = Manager.getLocalResource(path);
+				if (file == null)
+					return false;
+				
+				InputStream is = null;
+				FileOutputStream fos = null;
+				URL url;
 
-			byte[] buffer = new byte[Manager.MAX_BUFFER_SIZE];
-			int bytesRead = 0, bytesBuffered = 0;
-			int runningTotal = 0;
-			
-			while ((bytesRead = is.read(buffer)) > -1) {
-				
-				fos.write(buffer, 0, bytesRead);
-				bytesBuffered += bytesRead;
-				runningTotal += bytesRead;
-				
-				fileDownloadProgress.set((double)runningTotal / total);
-				
-				if (bytesBuffered > 1024 * 1024) {
-					bytesBuffered = 0;
-					fos.flush();
+				try {
+					int total = resource.getSize();
+
+					url = new URL(Manager.PATCH_SERVER_FILES + name);
+					URLConnection urlConnection = url.openConnection();
+					String basicAuth = "Basic " + DatatypeConverter.printBase64Binary(Manager.HTTP_AUTH.getBytes());
+					urlConnection.setRequestProperty("Authorization", basicAuth);
+					
+					is = urlConnection.getInputStream();
+					fos = new FileOutputStream(file);
+
+					byte[] buffer = new byte[Manager.MAX_BUFFER_SIZE];
+					int bytesRead = 0, bytesBuffered = 0;
+					int runningTotal = 0;
+					
+					while ((bytesRead = is.read(buffer)) > -1) {
+						
+						if (isCancelled()) {
+							updateProgress(-1, 0);
+							fos.close();
+							return false;
+						}
+						
+						fos.write(buffer, 0, bytesRead);
+						bytesBuffered += bytesRead;
+						runningTotal += bytesRead;
+						updateProgress(runningTotal, total);
+						
+						if (bytesBuffered > 1024 * 1024) {
+							bytesBuffered = 0;
+							fos.flush();
+						}
+					}
+					
+					fos.close();
+					resource.setDlFlag(false);
+					return true;
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
+					return false;
+				} catch (IOException e) {
+					e.printStackTrace();
+					return false;
 				}
 			}
-			fos.close();
-			fileDownloadProgress.set(-1);
-			
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public SimpleStringProperty getMainOut()
-	{
-		return mainOut;
-	}
-	
-	public SimpleDoubleProperty getFileDownloadProgress()
-	{
-		return fileDownloadProgress;
+		};
 	}
 }

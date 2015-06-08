@@ -47,29 +47,19 @@ import javax.crypto.spec.SecretKeySpec;
 
 import com.projectswg.launchpad.PSWG;
 import com.projectswg.launchpad.model.Resource;
-import com.projectswg.launchpad.model.SWG;
+import com.projectswg.launchpad.model.Instance;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Service;
+import javafx.util.Pair;
 
 public class Manager
 {
-	//public static final int STATE_INIT = 0;
-	//public static final int STATE_SETUP = 1;
-	//public static final int STATE_SCAN_REQUIRED = 2;
-	//public static final int STATE_SCANNING = 3;
-	//public static final int STATE_UPDATE_REQUIRED = 4;
-	//public static final int STATE_UPDATING = 5;
-	//public static final int STATE_PLAY = 6;
-
 	public static final String PATCH_SERVER = "patch1.projectswg.com";
 	public static final String PATCH_SERVER_FILES = "http://" + PATCH_SERVER + "/files/";
 	public static final String PATCH_SERVER_LAUNCHER = "http://" + PATCH_SERVER + "/launcher/";
@@ -100,18 +90,11 @@ public class Manager
 	
 	public static final int MAX_INSTANCES = 5;
 	
-	//private long busySince;
-	
-	private SimpleDoubleProperty dlSizeRequired;
-	
-	//private boolean busy;
 	private boolean showWine;
 	
 	private volatile ArrayList<Resource> resources;
-	private volatile ObservableList<SWG> instances;
+	private volatile ObservableList<Instance> instances;
 	
-	// launcher state
-	//private volatile SimpleIntegerProperty state;
 	private volatile SimpleStringProperty mainOut;
 	
 	// install locations
@@ -136,18 +119,11 @@ public class Manager
 	private PswgScanService pswgScanService;
 	private UpdateService updateService;
 	private PingService pingService;
-	
-	private ChangeListener<String> serviceListener;
 
 	
 	public Manager()
 	{
 		resources = null;
-		//busy = false;
-		dlSizeRequired = new SimpleDoubleProperty();
-		//busySince = 0;
-		
-		//state = new SimpleIntegerProperty(STATE_INIT);
 		mainOut = new SimpleStringProperty();
 		
 		loginServerHost = new SimpleStringProperty();
@@ -160,23 +136,15 @@ public class Manager
 		swgReady = new SimpleBooleanProperty(false);
 		pswgReady = new SimpleBooleanProperty(false);
 		
-		wineBinary = new SimpleStringProperty("");
-		wineArguments = new SimpleStringProperty("");
-		wineEnvironmentVariables = new SimpleStringProperty("");
+		wineBinary = new SimpleStringProperty();
+		wineArguments = new SimpleStringProperty();
+		wineEnvironmentVariables = new SimpleStringProperty();
 		
 		swgScanService = new SwgScanService(this);
 		pswgScanService = new PswgScanService(this);
 		updateService = new UpdateService(this);
 		pingService = new PingService(this);
 		
-		// track output
-		serviceListener = new ChangeListener<String>() {
-			@Override
-			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				mainOut.set(newValue);
-			}
-		};
-
 		// game instances
 		instances = FXCollections.observableArrayList();
 		
@@ -186,94 +154,147 @@ public class Manager
 		else
 			showWine = true;
 		
-		// installation folders
-		swgFolder.addListener((observable, oldValue, newValue) -> {
-			PSWG.log(String.format("swgFolder changed: %s -> %s", oldValue, newValue));
-			PSWG.PREFS.put("swg_folder", newValue);
-			if (newValue.equals("")) {
-				//state.set(STATE_SETUP);
-				swgReady.set(false);
-			} else {
-				swgScanService.getMainOut().addListener(serviceListener);
-				//state.set(STATE_SCANNING);
-				swgScanService.startScan(newValue);
-
-				if (pswgFolder.getValue().equals("")) {
-					//state.set(STATE_SETUP);
-				} else {
-					scanPswg(true);
+		swgReady.addListener((observable, oldValue, newValue) -> {
+			if (newValue) {
+				if (!pswgReady.getValue()) {
+					if (!pswgFolder.getValue().equals(""))
+						if (!pswgScanService.isRunning()) {
+							pswgScanService.startScan(CHECK_SIZE_PSWG, NORMAL_SCAN);
+						}
 				}
 			}
 		});
 		
-		pswgFolder.addListener((observable, oldValue, newValue) -> {
-			PSWG.log(String.format("pswgFolder changed: %s -> %s", oldValue, newValue));
-			if (swgFolder.getValue().equals(""))
-				return;
-			PSWG.PREFS.put("pswg_folder", newValue);
-			if (newValue.equals("")) {
-				//state.set(STATE_SETUP);
-				Platform.runLater(() -> {
-					pswgReady.set(false);
-				});
-				
-			} else {
-				scanPswg(true);
-			}
-		});
-		
 		swgScanService.setOnRunning((e) -> {
+			PSWG.log("swgScanService onRunning start");
+			mainOut.bind(swgScanService.messageProperty());
 			swgReady.set(false);
 		});
 		
-		swgScanService.runningProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue)
-				return;
-			swgScanService.getMainOut().removeListener(serviceListener);
+		swgScanService.setOnCancelled((e) -> {
+			mainOut.unbind();
+			PSWG.log("swgScanService: failed");
 			Platform.runLater(() -> {
-				swgFolder.set(swgScanService.getValue());
+				swgReady.set(false);
 			});
-			//busy = false;
 		});
+		
+		swgScanService.setOnFailed((e) -> {
+			mainOut.unbind();
+			PSWG.log("swgScanService: failed");
+			Platform.runLater(() -> {
+				swgReady.set(false);
+			});
+		});
+		
+		swgScanService.setOnSucceeded((e) -> {
+			mainOut.unbind();
+
+			PSWG.log("swgScanService ended: " + swgScanService.getValue());
+			
+			Platform.runLater(() -> {
+				swgReady.set(swgScanService.getValue());
+			});
+		});
+		
+		swgFolder.addListener((observable, oldValue, newValue) -> {
+			
+			PSWG.log(String.format("swgFolder changed: %s -> %s", oldValue, newValue));
+			PSWG.PREFS.put("swg_folder", newValue);
+			
+			if (newValue.equals("")) {
+				PSWG.log("swgFolder is blank");
+				
+				Platform.runLater(() -> {
+					PSWG.log(String.format("setting swgReady: %s -> %s", swgReady.getValue(), false));
+					swgReady.set(false);
+				});
+				
+			} else {
+				PSWG.log("swgFolder not blank, starting swg scan");
+				
+				if (!swgScanService.isRunning()) {
+					swgScanService.reset();
+					swgScanService.start();
+				}
+			}
+		});
+		
+		// pswg
 		
 		pswgScanService.setOnRunning((e) -> {
 			pswgReady.set(false);
+			mainOut.bind(pswgScanService.messageProperty());
 		});
 		
-		pswgScanService.runningProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue)
-				return;
-	
-			pswgScanService.getMainOut().removeListener(serviceListener);
-			resources = pswgScanService.getValue();
+		pswgScanService.setOnCancelled((e) -> {
+			mainOut.unbind();
+		});
+		
+		pswgScanService.setOnFailed((e) -> {
+			mainOut.unbind();
+			PSWG.log("pswgScanService failed");
+		});
+		
+		pswgScanService.setOnSucceeded((e) -> {
+			mainOut.unbind();
+			PSWG.log("pswgScanService onSucceeded");
 			
-			if (resources == null) {
+			Pair<Double, ArrayList<Resource>> result = pswgScanService.getValue();
+			
+			if (result == null) {
 				PSWG.log("Scan failed");
 				Platform.runLater(() -> {
-					dlSizeRequired.set(-1);
 					mainOut.set("Scan failed");
 				});
-				//busy = false;
 				return;
 			}
 			
-			int total = 0;
-			for (Resource resource : resources) {
-				if (!resource.getDlFlag())
-					total += resource.getSize();
-			}
+			final double dlTotal = result.getKey();
+			resources = result.getValue();
 			
-			final int dlTotal = total;
 			if (dlTotal > 0) {
 				Platform.runLater(() -> {
-					dlSizeRequired.set(dlTotal);
 					mainOut.set(String.format("Required download size: %s B", dlTotal));
 				});
 			} else
 				pswgReady.set(true);
 
 			PSWG.log("PSWG scan finished: " + dlTotal);
-			//busy = false;
+		});
+		
+		pswgFolder.addListener((observable, oldValue, newValue) -> {
+			PSWG.log(String.format("pswgFolder changed: %s -> %s", oldValue, newValue));
+			PSWG.PREFS.put("pswg_folder", newValue);
+			
+			if (newValue.equals("") || swgFolder.getValue().equals("")) {
+				
+				Platform.runLater(() -> {
+					pswgReady.set(false);
+				});
+				
+			} else {
+				
+				if (!pswgScanService.isRunning()) {
+					pswgScanService.startScan(CHECK_SIZE_PSWG, NORMAL_SCAN);
+				}
+			}
+		});
+		
+		updateService.setOnRunning((e) -> {
+			mainOut.bind(updateService.messageProperty());
+		});
+		
+		updateService.setOnCancelled((e) -> {
+			mainOut.unbind();
+		});
+		
+		updateService.setOnFailed((e) -> {
+			mainOut.unbind();
+		});
+		
+		updateService.setOnSucceeded((e) -> {
+			mainOut.unbind();
 		});
 		
 		// wine
@@ -298,10 +319,6 @@ public class Manager
 		if (loginServer.equals(""))
 			PSWG.PREFS.put("login_server", PSWG_LOGIN_SERVER_NAME);
 	}
-	
-	public SimpleDoubleProperty getDlSizeRequired() {
-		return dlSizeRequired;
-	}
 
 	public void loadPrefs()
 	{
@@ -313,138 +330,20 @@ public class Manager
 		wineBinary.set(PSWG.PREFS.get("wine_binary",  ""));
 		wineArguments.set(PSWG.PREFS.get("wine_arguments", ""));
 		wineEnvironmentVariables.set(PSWG.PREFS.get("wine_environment_variables", ""));
-		
-		// animation
 	}
-	
-	//public SimpleIntegerProperty getState()
-	//{
-	//	return state;
-	//}
-	
-	public void scanSwg(String swgPath)
-	{
-		//if (!busy) {
-			pswgScanService.getMainOut().addListener(serviceListener);
-			PSWG.log("Scanning Star Wars Galaxies installation");
-			swgScanService.startScan(swgPath);
-			//busySince = System.currentTimeMillis();
-		//	busy = true;
-			
-		//} else {
-		//	long now = System.currentTimeMillis();
-		//	long diff = now - busySince;
-		//	PSWG.log("manager is busy for :" + diff);
-		//}
-	}
-	
-	public void scanSwgFinished(String swgPath, boolean result)
-	{
-		pswgScanService.getMainOut().removeListener(serviceListener);
-		if (result) {
-			PSWG.log("Star Wars Galaxies installation verified");
-			Platform.runLater(() -> {
-				swgFolder.set(swgPath);
-			});
-		} else {
-			PSWG.log("Star Wars Galaxies scan failed");
-			Platform.runLater(() -> {
-				swgFolder.set("");
-			});
-		}
-		//busy = false;
-	}
-	
-	public void scanPswg(boolean quick)
-	{
-		// should be checked before this
-		if (pswgFolder.getValue().equals("")) {
-			//state.set(STATE_SETUP);
-			return;
-		}
-		
-		//if (!busy) {
-			pswgScanService.getMainOut().addListener(serviceListener);
-			//state.set(STATE_SCANNING);
-			if (quick)
-				pswgScanService.startScan(CHECK_SIZE_PSWG, NORMAL_SCAN);
-			else
-				pswgScanService.startScan(CHECK_HASH_PSWG, NORMAL_SCAN);
-			
-		//	busySince = System.currentTimeMillis();
-		//	busy = true;
-		//} else {
-		//	long now = System.currentTimeMillis();
-		//	long diff = now - busySince;
-		//	PSWG.log("Manager busy: " + diff);
-			//scanPswgFinished(null, 0);
-		//}
-	}
-	
-	public void scanPswgFinished(ArrayList<Resource> resources, long scanResult)
-	{
-		pswgScanService.getMainOut().removeListener(serviceListener);
-		
-		this.resources = resources;
-		dlSizeRequired.set(scanResult);
-		
-		if (resources == null) {
-			PSWG.log("Scan returned null resources");
-			//Platform.runLater(() -> {
-			//	state.set(STATE_SCAN_REQUIRED);
-			//});
-			//busy = false;
-			return;
-		}
 
-		if (scanResult > 0)
-			Platform.runLater(() -> {
-				//state.set(STATE_UPDATE_REQUIRED);
-				mainOut.set(String.format("Required download size: %s B", scanResult));
-			});
-		else if (scanResult == -1)
-			Platform.runLater(() -> {
-				//state.set(STATE_SCAN_REQUIRED);
-				mainOut.set("Scan interrupted");
-			});
-		else
-			Platform.runLater(() -> {
-				//state.set(STATE_PLAY);
-				mainOut.set("All scans passed");
-			});
-
-		PSWG.log("PSWG scan finished: " + dlSizeRequired);
-		//busy = false;
-	}
-	
-	public void gameFinished(int index)
+	public void fullScan()
 	{
-		
-	}
+		if (pswgScanService.isRunning())
+			return;
 	
-	public void installPswg()
-	{
-		
+		pswgScanService.startScan(CHECK_HASH_PSWG, NORMAL_SCAN);
 	}
 	
 	public void updatePswg()
 	{
-		//if (!busy) {
-			updateService.getMainOut().addListener(serviceListener);
-			updateService.startUpdate(resources);
-			//busySince = System.currentTimeMillis();
-			//busy = true;
-	
-		//} else {
-		//	long now = System.currentTimeMillis();
-		//	long diff = now - busySince;
-		//	System.out.println("manager is busy for: " + diff);
-		//}
-	}
-	
-	public void updatePswgFinished()
-	{
-		updateService.getMainOut().removeListener(serviceListener);
+		updateService.reset();
+		updateService.start();
 	}
 	
 	public void requestStop()
@@ -454,11 +353,6 @@ public class Manager
 		
 		if (updateService.isRunning())
 			updateService.cancel();
-	}
-	
-	public ArrayList<Resource> getResources()
-	{
-		return resources;
 	}
 	
 	public void pingLoginServer()
@@ -487,7 +381,7 @@ public class Manager
 				loginServerPlayPort.getValue()));
 		
 		GameService gameService = new GameService(this);
-		SWG swg = new SWG(gameService);
+		Instance swg = new Instance(gameService);
 		instances.add(swg);
 		
 		gameService.start();
@@ -532,11 +426,6 @@ public class Manager
 		
 		return file;
 	}
-	
-	//public boolean isBusy()
-	//{
-	//	return busy;
-	//}
 	
 	public static String getFileChecksum(File file)
 	{
@@ -733,13 +622,15 @@ public class Manager
 	{
 	    Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
 	        @Override
-	        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+	        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException
+	        {
 	            Files.delete(file);
 	            return FileVisitResult.CONTINUE;
 	        }
 
 	        @Override
-	        public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+	        public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException
+	        {
 	            // try to delete the file anyway, even if its attributes
 	            // could not be read, since delete-only access is
 	            // theoretically possible
@@ -761,15 +652,18 @@ public class Manager
 	    });
 	}
 	
-	public SimpleStringProperty getLoginServerHost() {
+	public SimpleStringProperty getLoginServerHost()
+	{
 		return loginServerHost;
 	}
 
-	public SimpleStringProperty getLoginServerPlayPort() {
+	public SimpleStringProperty getLoginServerPlayPort()
+	{
 		return loginServerPlayPort;
 	}
 
-	public SimpleStringProperty getLoginServerPingPort() {
+	public SimpleStringProperty getLoginServerPingPort()
+	{
 		return loginServerPingPort;
 	}
 	
@@ -798,7 +692,7 @@ public class Manager
 		return mainOut;
 	}
 	
-	public ObservableList<SWG> getInstances()
+	public ObservableList<Instance> getInstances()
 	{
 		return instances;
 	}
@@ -808,11 +702,13 @@ public class Manager
 		return showWine;
 	}
 
-	public SimpleStringProperty getWineBinary() {
+	public SimpleStringProperty getWineBinary()
+	{
 		return wineBinary;
 	}
 
-	public void setWineBinary(SimpleStringProperty wineBinary) {
+	public void setWineBinary(SimpleStringProperty wineBinary)
+	{
 		this.wineBinary = wineBinary;
 	}
 	
@@ -824,5 +720,20 @@ public class Manager
 	public SimpleBooleanProperty getPswgReady()
 	{
 		return pswgReady;
+	}
+
+	public SwgScanService getSwgScanService()
+	{
+		return swgScanService;
+	}
+
+	public PswgScanService getPswgScanService()
+	{
+		return pswgScanService;
+	}
+	
+	public ArrayList<Resource> getResources()
+	{
+		return resources;
 	}
 }

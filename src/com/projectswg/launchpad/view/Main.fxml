@@ -18,14 +18,14 @@
             <Region prefHeight="8.0" />
             <GridPane vgap="10.0">
                <children>
-                  <Button fx:id="scanButton" disable="true" mnemonicParsing="false" prefWidth="80.0" text="Scan" visible="false" GridPane.rowIndex="1" />
-                  <Button fx:id="playButton" disable="true" mnemonicParsing="false" prefWidth="80.0" text="Play" visible="false" GridPane.rowIndex="0" />
-                  <ProgressBar fx:id="progressBar" minWidth="200.0" progress="0.0" visible="false" GridPane.rowIndex="3" />
-                  <ProgressIndicator fx:id="progressIndicator" focusTraversable="false" mouseTransparent="true" visible="false" GridPane.rowIndex="1" />
-                  <Button fx:id="updateButton" mnemonicParsing="false" prefWidth="80.0" text="Update" visible="false" GridPane.rowIndex="1" />
+                  <Button fx:id="scanButton" mnemonicParsing="false" prefWidth="80.0" text="Scan" visible="false" GridPane.rowIndex="2" />
+                  <Button fx:id="playButton" disable="true" mnemonicParsing="false" prefWidth="80.0" text="Play" GridPane.rowIndex="0" />
+                  <ProgressBar fx:id="progressBar" minWidth="200.0" progress="0.0" visible="false" GridPane.rowIndex="4" />
+                  <ProgressIndicator fx:id="progressIndicator" focusTraversable="false" mouseTransparent="true" visible="false" GridPane.rowIndex="2" />
+                  <Button fx:id="updateButton" mnemonicParsing="false" prefWidth="80.0" text="Update" visible="false" GridPane.rowIndex="2" />
                   <Button fx:id="cancelButton" mnemonicParsing="false" prefWidth="80.0" text="Cancel" visible="false" />
-                  <Button fx:id="setupButton" mnemonicParsing="false" prefWidth="80.0" text="Setup" GridPane.rowIndex="1" />
-                  <HBox alignment="CENTER" prefHeight="100.0" GridPane.rowIndex="2">
+                  <Button fx:id="setupButton" mnemonicParsing="false" prefWidth="80.0" text="Setup" visible="false" GridPane.rowIndex="2" />
+                  <HBox alignment="CENTER" prefHeight="100.0" GridPane.rowIndex="3">
                      <children>
                         <Pane fx:id="mainDisplayPane" maxWidth="Infinity" HBox.hgrow="ALWAYS">
                            <HBox.margin>
@@ -39,6 +39,7 @@
                </columnConstraints>
                <rowConstraints>
                   <RowConstraints maxHeight="50.0" vgrow="ALWAYS" />
+                  <RowConstraints maxHeight="5.0" minHeight="5.0" prefHeight="5.0" vgrow="ALWAYS" />
                   <RowConstraints maxHeight="50.0" vgrow="ALWAYS" />
                   <RowConstraints maxHeight="40.0" vgrow="ALWAYS" />
                   <RowConstraints maxHeight="Infinity" vgrow="ALWAYS" />

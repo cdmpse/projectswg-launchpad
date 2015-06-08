@@ -67,11 +67,7 @@ public class ExtrasController implements ModalComponent
 	public void init(MainController mainController)
 	{
 		this.mainController = mainController;
-	}
-	
-	@Override
-	public void onShow()
-	{
+		
 		extrasRoot.getChildren().clear();
 		for (ExtraModule module : modules) {
 			PSWG.log("Loadding extra module: " + module.toString());

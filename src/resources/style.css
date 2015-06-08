@@ -29,7 +29,7 @@
 	-fx-image: url("/resources/pswg.png");
 }
 
-.text-field {
+#swgFolderTextField, #pswgFolderTextField {
 	-fx-background-color: white;
 	-fx-border-color: black;
 }

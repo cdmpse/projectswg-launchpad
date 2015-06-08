@@ -24,35 +24,18 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Date;
-import java.util.prefs.Preferences;
-
 import com.projectswg.launchpad.PSWG;
-
-import javafx.beans.property.SimpleStringProperty;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 
 public class GameService extends Service<Void>
 {	
-	private SimpleStringProperty mainOut;
-	private Process process;
 	private final Manager manager;
-	
+	private Process process;
 	
 	public GameService(Manager manager)
 	{
 		this.manager = manager;
-		mainOut = new SimpleStringProperty();
-	}
-	
-	public Process getProcess()
-	{
-		return process;
-	}
-	
-	public SimpleStringProperty getMainOut()
-	{
-		return mainOut;
 	}
 
 	@Override
@@ -107,7 +90,7 @@ public class GameService extends Service<Void>
 					Date now = new Date();
 					String sinp = null;
 					while ((sinp = stdInput.readLine()) != null)
-						mainOut.set(now.toString() + ": " + sinp);
+						updateMessage(now.toString() + ": " + sinp);
 				
 				} catch(IOException e) {
 					e.printStackTrace();

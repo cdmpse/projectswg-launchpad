@@ -20,52 +20,20 @@
 package com.projectswg.launchpad.model;
 
 import javafx.scene.control.Button;
+import javafx.stage.Stage;
 
 import com.projectswg.launchpad.controller.GameController;
 import com.projectswg.launchpad.service.GameService;
 
 
-public class SWG
+public class Instance
 {
-	public static final String[] FILES = {
-
-		"SwgClientSetup_r.exe",
-		"BugTool.exe",
-
-		"bottom.tre",
-		"data_animation_00.tre",
-		"data_music_00.tre",
-		"data_other_00.tre",
-		"data_sample_00.tre",
-		"data_sample_01.tre",
-		"data_sample_02.tre",
-		"data_sample_03.tre",
-		"data_sample_04.tre",
-		"data_skeletal_mesh_00.tre",
-		"data_skeletal_mesh_01.tre",
-		"data_static_mesh_00.tre",
-		"data_static_mesh_01.tre",
-		"data_texture_00.tre",
-		"data_texture_01.tre",
-		"data_texture_02.tre",
-		"data_texture_03.tre",
-		"data_texture_04.tre",
-		"data_texture_05.tre",
-		"data_texture_06.tre",
-		"data_texture_07.tre",
-		"default_patch.tre",
-
-		"dbghelp.dll",
-		"dpvs.dll",
-		"Mss32.dll",
-		"qt-mt305.dll"
-	};
-	
 	private GameService gameService;
 	private GameController gameController;
 	private Button gameButton;
+	private Stage stage;
 	
-	public SWG(GameService gameService)
+	public Instance(GameService gameService)
 	{
 		this.gameService = gameService;
 	}
@@ -94,5 +62,15 @@ public class SWG
 	public GameService getGameService()
 	{
 		return gameService;
+	}
+	
+	public Stage getStage()
+	{
+		return stage;
+	}
+	
+	public void setStage(Stage stage)
+	{
+		this.stage = stage;
 	}
 }

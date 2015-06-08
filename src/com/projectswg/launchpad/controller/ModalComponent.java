@@ -24,7 +24,7 @@ import javafx.scene.Parent;
 public interface ModalComponent extends FxmlController
 {
 	public void init(MainController mainController);
+	@Override
 	public Parent getRoot();
 	public String getLabel();
-	public void onShow();
 }

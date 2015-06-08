@@ -22,16 +22,19 @@ package com.projectswg.launchpad.controller;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.ArrayList;
+
 import com.projectswg.launchpad.PSWG;
 import com.projectswg.launchpad.extras.TREFix;
 import com.projectswg.launchpad.service.Manager;
+import com.projectswg.launchpad.model.Resource;
+
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.ParallelTransition;
 import javafx.animation.ScaleTransition;
 import javafx.animation.Timeline;
-import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -46,6 +49,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import javafx.util.Pair;
 
 public class MainController implements FxmlController
 {
@@ -93,8 +97,6 @@ public class MainController implements FxmlController
 	// observables
 	private SimpleIntegerProperty animationLevel;
 	private ObservableList<GameController> games;
-	
-	private List<String> screens;
 	
 	// animation
 	private GaussianBlur blur;
@@ -175,16 +177,114 @@ public class MainController implements FxmlController
 		addButtonListeners();
 		
 		manager.getMainOut().addListener((observable, oldValue, newValue) -> {
-			Platform.runLater(() -> {
-				mainDisplay.queueString(newValue);
-			});
+			mainDisplay.queueString(newValue);
 		});
 		
-		manager.getPswgReady().addListener((observable, oldValue, newValue) -> {
-			if (newValue) {
+		manager.getSwgReady().addListener((observable, oldValue, newValue) -> {
+			
+			PSWG.log(String.format("swgReady changed: %s -> %s", oldValue, newValue));
+			if (manager.getPswgReady().getValue()) {
 				playButton.setVisible(true);
+				updateButton.setVisible(false);
+				setupButton.setVisible(false);
+				
+				gameSettingsButton.setDisable(false);
+				extrasButton.setDisable(false);
+			}
+		});
+		
+		/*
+		manager.getPswgReady().addListener((observable, oldValue, newValue) -> {
+			PSWG.log(String.format("pswgReady changed: %s -> %s", oldValue, newValue));
+			
+			if (newValue && manager.getSwgReady().getValue()) {
+				
+				setupButton.setVisible(false);
+				updateButton.setVisible(false);
+				playButton.setDisable(false);
+				
+				PSWG.log("pswgReady and swgReady");
+				
 			} else {
-				playButton.setVisible(false);
+				
+				playButton.setDisable(true);
+				updateButton.setVisible(false);
+				//setupButton.setVisible(true);
+				
+				PSWG.log("psgNotReady or swgNotReady");
+			}
+		});
+		*/
+		
+		manager.getSwgScanService().runningProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue) {
+				PSWG.log("SWG scan started");
+				
+				launcherSettingsButton.setDisable(true);
+				gameSettingsButton.setDisable(true);
+				extrasButton.setDisable(true);
+		
+				setupButton.setVisible(false);
+				progressIndicator.setVisible(true);
+				
+			} else {
+				launcherSettingsButton.setDisable(false);
+				gameSettingsButton.setDisable(false);
+				extrasButton.setDisable(false);
+				
+				boolean result = manager.getSwgScanService().getValue();
+				cancelButton.setVisible(false);
+				progressIndicator.setVisible(false);
+				
+				if (result) {
+				
+				} else {
+					setupButton.setVisible(true);
+					playButton.setDisable(true);
+				}
+			}
+		});
+		
+		manager.getPswgScanService().runningProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue) {
+				PSWG.log("PSWG scan started");
+				
+				launcherSettingsButton.setDisable(true);
+				gameSettingsButton.setDisable(true);
+				extrasButton.setDisable(true);
+				
+				playButton.setDisable(true);
+				scanButton.setVisible(false);
+				setupButton.setVisible(false);
+				cancelButton.setVisible(true);
+				progressIndicator.setVisible(true);
+				
+			} else {
+				launcherSettingsButton.setDisable(false);
+
+				PSWG.log("PSWG scan done");
+				cancelButton.setVisible(false);
+				progressIndicator.setVisible(false);
+				Pair<Double, ArrayList<Resource>> result = manager.getPswgScanService().getValue();
+				if (result == null) {
+					scanButton.setVisible(true);
+					return;
+				}
+				
+				final double dlTotal = manager.getPswgScanService().getValue().getKey();
+				if (dlTotal > 0) {
+					updateButton.setVisible(true);
+					updateButton.requestFocus();
+					mainDisplay.queueString(String.format("Download required: %s B", dlTotal));
+				} else {
+					gameSettingsButton.setDisable(false);
+					extrasButton.setDisable(false);
+
+					playButton.setDisable(false);
+					scanButton.setVisible(true);
+					playButton.requestFocus();
+					mainDisplay.queueString("Ready");
+				}
 			}
 		});
 		
@@ -193,10 +293,48 @@ public class MainController implements FxmlController
 				updateButton.setVisible(false);
 				cancelButton.setVisible(true);
 				progressIndicator.setVisible(true);
+			} else {
+				switch (manager.getUpdateService().getState()) {
+				case FAILED:
+					PSWG.log("Update failed: " + manager.getUpdateService().getException());
+					cancelButton.setVisible(false);
+					progressIndicator.setVisible(false);
+					scanButton.setVisible(true);
+					scanButton.requestFocus();
+					mainDisplay.queueString("Update failed");
+					break;
+				
+				case CANCELLED:
+					PSWG.log("Update failed: " + manager.getUpdateService().getException());
+					cancelButton.setVisible(false);
+					progressIndicator.setVisible(false);
+					scanButton.setVisible(true);
+					scanButton.requestFocus();
+					mainDisplay.queueString("Update cancelled");
+					break;
+					
+				case SUCCEEDED:
+					PSWG.log("Update succeeded");
+					
+					cancelButton.setVisible(false);
+					progressIndicator.setVisible(false);
+					if (manager.getUpdateService().getValue()) {
+						playButton.setVisible(true);
+						scanButton.setVisible(true);
+					} else {
+						
+						PSWG.log(manager.getUpdateService().getException().getMessage());
+						scanButton.setVisible(true);
+	
+					}
+					break;
+					
+				default:
+				}
 			}
 		});
 		
-		manager.getUpdateService().getFileDownloadProgress().addListener((observable, oldValue, newValue) -> {
+		manager.getUpdateService().progressProperty().addListener((observable, oldValue, newValue) -> {
 			if (oldValue.intValue() == -1)
 				showProgressBar();
 			PSWG.log("File download progress: " + newValue);
@@ -205,126 +343,24 @@ public class MainController implements FxmlController
 				hideProgressBar();
 		});
 		
-		manager.getDlSizeRequired().addListener((observable, oldValue, newValue) -> {
-			if (newValue.doubleValue() > 0) {
-				setupButton.setVisible(false);
-				updateButton.setVisible(true);
-			}
-		});
-
-		manager.getSwgFolder().addListener((observable, oldValue, newValue) -> {
-			if (newValue.equals("")) {
-				setupButton.setVisible(true);
-				updateButton.setVisible(false);
-			}
-		});
-		
-		// set state
-		if (manager.getPswgReady().getValue()) {
+		// initial setup
+		if (manager.getSwgReady().getValue() && manager.getPswgReady().getValue()) {
 			playButton.setVisible(true);
 			setupButton.setVisible(false);
+			scanButton.setVisible(true);
 		} else {
+			mainDisplay.queueString("Setup required");
+			setupButton.setVisible(true);
 			gameSettingsButton.setDisable(true);
 			extrasButton.setDisable(true);
 		}
-		
-		// theme
-		pswg.loadTheme(PSWG.PREFS.get("theme", "Default"));
-		
+
 		/*
 		 * Extras
 		 */
 		TREFix trefix = new TREFix(this);
 		extrasComponent.addExtra(trefix);
 	}
-	
-	/*
-	public void setControlsState(int state)
-	{
-		switch (state) {
-		case Manager.STATE_SETUP:
-			launcherSettingsButton.setDisable(false);
-			gameSettingsButton.setDisable(true);
-			extrasButton.setDisable(true);
-			
-			setupButton.setVisible(true);
-			playButton.setVisible(false);
-			scanButton.setVisible(false);
-			updateButton.setVisible(false);
-			progressIndicator.setVisible(false);
-			
-			mainDisplay.queueString("Setup required");
-			break;
-			
-		case Manager.STATE_SCAN_REQUIRED:
-			launcherSettingsButton.setDisable(false);
-			gameSettingsButton.setDisable(true);
-			extrasButton.setDisable(true);
-			
-			playButton.setVisible(false);
-			scanButton.setVisible(true);
-			updateButton.setVisible(false);
-			setupButton.setVisible(false);
-			progressIndicator.setVisible(false);
-			
-			mainDisplay.queueString("Scan required");
-			break;
-			
-		case Manager.STATE_SCANNING:
-			launcherSettingsButton.setDisable(false);
-			gameSettingsButton.setDisable(true);
-			extrasButton.setDisable(true);
-			playButton.setDisable(true);
-			
-			playButton.setVisible(true);
-			scanButton.setVisible(false);
-			updateButton.setVisible(false);
-			setupButton.setVisible(false);
-			progressIndicator.setVisible(true);
-			break;
-			
-		case Manager.STATE_UPDATE_REQUIRED:
-			updateButton.setDisable(false);
-			playButton.setDisable(true);
-			launcherSettingsButton.setDisable(false);
-			gameSettingsButton.setDisable(true);
-			extrasButton.setDisable(true);
-			
-			playButton.setVisible(true);
-			scanButton.setVisible(false);
-			updateButton.setVisible(true);
-			setupButton.setVisible(false);
-			progressIndicator.setVisible(false);
-			
-			mainDisplay.queueString("Update required");
-			break;
-		
-		case Manager.STATE_UPDATING:
-			
-			break;
-			
-		case Manager.STATE_PLAY:
-			playButton.setDisable(false);
-			launcherSettingsButton.setDisable(false);
-			gameSettingsButton.setDisable(false);
-			extrasButton.setDisable(false);
-			scanButton.setDisable(false);
-			
-			playButton.setVisible(true);
-			scanButton.setVisible(true);
-			updateButton.setVisible(false);
-			setupButton.setVisible(false);
-			progressIndicator.setVisible(false);
-			
-			mainDisplay.queueString("Ready to play");
-			
-			Platform.runLater(() -> {
-				playButton.requestFocus();
-			});
-			break;
-		}
-	}
-	*/
 	
 	public void addButtonListeners()
 	{
@@ -337,12 +373,11 @@ public class MainController implements FxmlController
 		});
 		
 		cancelButton.setOnAction((e) -> {
-			//if (manager.isBusy())
 			manager.requestStop();
 		});
 		
 		scanButton.setOnAction((e) -> {
-			manager.scanPswg(false);
+			manager.fullScan();
 		});
 		
 		launcherSettingsButton.setOnAction((e) -> {
@@ -480,11 +515,6 @@ public class MainController implements FxmlController
 	public Manager getManager()
 	{
 		return manager;
-	}
-	
-	public GaussianBlur getBlur()
-	{
-		return blur;
 	}
 	
 	public SimpleIntegerProperty getAnimationLevel()

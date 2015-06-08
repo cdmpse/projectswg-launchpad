@@ -32,24 +32,14 @@ import java.util.prefs.Preferences;
 import com.projectswg.launchpad.controller.FxmlController;
 import com.projectswg.launchpad.controller.GameController;
 import com.projectswg.launchpad.controller.MainController;
-import com.projectswg.launchpad.model.SWG;
-import com.projectswg.launchpad.service.GameService;
+import com.projectswg.launchpad.model.Instance;
 import com.projectswg.launchpad.service.Manager;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.Tooltip;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
-import javafx.scene.layout.Background;
-import javafx.scene.paint.Color;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Side;
 
 public class PSWG extends Application
 {
@@ -71,10 +61,7 @@ public class PSWG extends Application
 	
 	private HashMap<String, FxmlController> controllers;
 	private ArrayList<GameController> gameControllers;
-
 	private Stage primaryStage;
-	private ArrayList<Stage> gameStages;
-	
 	private Manager manager;
 	
 	
@@ -82,7 +69,6 @@ public class PSWG extends Application
 	public void start(Stage primaryStage)
 	{
 		this.primaryStage = primaryStage;
-		gameStages = new ArrayList<>();
 
 		manager = new Manager();
 		controllers = new HashMap<>();
@@ -96,23 +82,38 @@ public class PSWG extends Application
 		manager.loadPrefs();
 	}
 	
-	public GameController addGameStage(String title)
+	public void loadCss()
 	{
-		Stage stage = new Stage();
-		Image icon = new Image("/resources/pswg_icon.png");
-		if (icon.isError())
-			PSWG.log("Error loading application icon");
-		else
-			stage.getIcons().add(icon);
+		String cssPath = CSS_DEFAULT;
+		String theme = PREFS.get("theme", "Default");
 		
-		stage.setTitle(title);
-		String theme = PREFS.get("theme", "");
-		GameController gameController = (GameController)PSWG.loadFxml(theme, PSWG.FXML_SCREENS.get("game"));
-		Scene scene = new Scene(gameController.getRoot());
-		stage.setScene(scene);
-		stage.setResizable(true);
-		gameStages.add(stage);
-		return gameController;
+		if (!theme.equals("Default")) {
+			try {
+				String codeSource = new File(PSWG.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
+				File file = new File(codeSource + "/" + THEMES_FOLDER + "/" + theme + "/style.css");
+				if (!file.isFile()) {
+					PSWG.log("Theme css file not found: " + theme);
+					return;
+				}
+				cssPath = file.toURI().toURL().toExternalForm();
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+				PSWG.log("Error setting theme: MalformedURLException");
+				return;
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+				PSWG.log("Error setting theme: URISyntaxException");
+				return;
+			}
+		}
+		
+		primaryStage.getScene().getStylesheets().clear();
+		primaryStage.getScene().getStylesheets().add(cssPath);
+		
+		for (Instance swg : manager.getInstances()) {
+			swg.getGameController().getStage().getScene().getStylesheets().clear();
+			swg.getGameController().getStage().getScene().getStylesheets().add(cssPath);
+		}
 	}
 	
 	public void loadFxmls()
@@ -120,7 +121,7 @@ public class PSWG extends Application
 		controllers.clear();
 		 
 		for (Map.Entry<String, String> entry : FXML_SCREENS.entrySet())
-			controllers.put(entry.getKey(), loadFxml(PREFS.get("theme", ""), entry.getValue()));
+			controllers.put(entry.getKey(), loadFxml(entry.getValue()));
 		
 		Scene scene = new Scene(controllers.get("main").getRoot());
 		primaryStage.setScene(scene);
@@ -135,12 +136,13 @@ public class PSWG extends Application
 		
 		// games
 		gameControllers.clear();
-		for (SWG swg : manager.getInstances()) {
-			GameController gameController = (GameController)loadFxml(PREFS.get("theme", ""), FXML_GAME);
+		for (Instance swg : manager.getInstances()) {
+			GameController gameController = (GameController)loadFxml(FXML_GAME);
 			swg.setGameController(gameController);
 			gameControllers.add(gameController);
 		}
 
+		loadCss();
 	}
 	
 	public HashMap<String, FxmlController> getControllers()
@@ -169,8 +171,10 @@ public class PSWG extends Application
 			System.out.println("[ PSWGLog ] " + text);
 	}
 
-	public static FxmlController loadFxml(String theme, String fxml)
+	public static FxmlController loadFxml(String fxml)
 	{
+		PSWG.log("loadFxml: " + fxml);
+		
 		String codeSource = "";
 		try {
 			codeSource = new File(PSWG.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
@@ -180,7 +184,9 @@ public class PSWG extends Application
 		}
 		
 		FXMLLoader fxmlLoader = null;
-		if (!theme.equals("")) {
+		String theme = PREFS.get("theme", "Default");
+		
+		if (!theme.equals("Default")) {
 			File file = new File(codeSource + "/" + THEMES_FOLDER + "/" + theme + "/" + fxml);
 			if (file.isFile()) {
 				fxmlLoader = new FXMLLoader();
@@ -193,8 +199,9 @@ public class PSWG extends Application
 				}
 			}
 		}
-	
+		
 		if (fxmlLoader == null) {
+			// theme wasnt loaded, load default
 			fxmlLoader = new FXMLLoader(PSWG.class.getResource("view/" + fxml));
 			try { 
 				fxmlLoader.load();
@@ -205,39 +212,6 @@ public class PSWG extends Application
 		}
 		
 		return fxmlLoader.getController();
-	}
-
-	public void loadTheme(String theme)
-	{
-		String cssPath = CSS_DEFAULT;
-		
-		if (!theme.equals("Default") && !theme.equals("")) {
-			try {
-			String codeSource = new File(PSWG.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
-			File file = new File(codeSource + "/" + THEMES_FOLDER + "/" + theme + "/style.css");
-			if (!file.isFile()) {
-				PSWG.log("Theme css file not found: " + theme);
-				return;
-			}
-			cssPath = file.toURI().toURL().toExternalForm();
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-				PSWG.log("Error setting theme: MalformedURLException");
-				return;
-			} catch (URISyntaxException e) {
-				e.printStackTrace();
-				PSWG.log("Error setting theme: URISyntaxException");
-				return;
-			}
-		}
-		
-		primaryStage.getScene().getStylesheets().clear();
-		primaryStage.getScene().getStylesheets().add(cssPath);
-		
-		for (SWG swg : manager.getInstances()) {
-			swg.getGameController().getStage().getScene().getStylesheets().clear();
-			swg.getGameController().getStage().getScene().getStylesheets().add(cssPath);
-		}
 	}
 	
 	public static boolean isWindows()
