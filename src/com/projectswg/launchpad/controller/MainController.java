@@ -281,18 +281,11 @@ public class MainController implements FxmlController
 					
 				case SUCCEEDED:
 					ProjectSWG.log("Update succeeded");
-					
 					cancelButton.setVisible(false);
 					progressIndicator.setVisible(false);
-					if (manager.getUpdateService().getValue()) {
+					scanButton.setVisible(true);
+					if (manager.getUpdateService().getValue())
 						playButton.setVisible(true);
-						scanButton.setVisible(true);
-					} else {
-						
-						ProjectSWG.log(manager.getUpdateService().getException().getMessage());
-						scanButton.setVisible(true);
-	
-					}
 					break;
 					
 				default:
