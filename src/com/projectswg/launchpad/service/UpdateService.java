@@ -33,7 +33,7 @@ import javafx.concurrent.Task;
 
 import javax.xml.bind.DatatypeConverter;
 
-import com.projectswg.launchpad.PSWG;
+import com.projectswg.launchpad.ProjectSWG;
 import com.projectswg.launchpad.model.Resource;
 
 public class UpdateService extends Service<Boolean>
@@ -53,7 +53,7 @@ public class UpdateService extends Service<Boolean>
 			@Override
 			protected Boolean call() throws Exception
 			{
-				PSWG.log("UpdateService: start");
+				ProjectSWG.log("UpdateService: start");
 				
 		    	ArrayList<Resource> resources = manager.getResources();
 				ArrayList<Resource> downloadList = new ArrayList<Resource>();
@@ -66,12 +66,12 @@ public class UpdateService extends Service<Boolean>
 					updateProgress(-1, 0);
 					updateMessage(String.format("Downloading resources: %s / %s", i + 1, downloadList.size()));
 					if (!downloadResource(downloadList.get(i))) {
-						PSWG.log(downloadList.get(i).getName() + " did not download successfully");
+						ProjectSWG.log(downloadList.get(i).getName() + " did not download successfully");
 						return false;
 					}
 				}
 
-				PSWG.log("UpdateService: end");
+				ProjectSWG.log("UpdateService: end");
 				return true;
 			}
 			

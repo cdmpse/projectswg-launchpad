@@ -26,7 +26,7 @@ import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
-import com.projectswg.launchpad.PSWG;
+import com.projectswg.launchpad.ProjectSWG;
 
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
@@ -56,11 +56,11 @@ public class PingService extends Service<String>
 				String port = manager.getLoginServerPingPort().getValue();
 				
 				if (host == null || port == null) {
-					PSWG.log("Pinger: host or port null");
+					ProjectSWG.log("Pinger: host or port null");
 					return "ERR";
 				}
 				if (host.equals("") || port.equals("")) {
-					PSWG.log("Pinger: host or port blank");
+					ProjectSWG.log("Pinger: host or port blank");
 					return "ERR";
 				}
 				try {
@@ -76,7 +76,7 @@ public class PingService extends Service<String>
 					socket.close();
 					long endTime = System.currentTimeMillis();
 					String responseText = new String(response.getData());
-					PSWG.log("Ping response: " + responseText + " -> " + (endTime - startTime));
+					ProjectSWG.log("Ping response: " + responseText + " -> " + (endTime - startTime));
 					return "" + (endTime - startTime);
 				} catch (UnknownHostException e) {
 					return "UNK";

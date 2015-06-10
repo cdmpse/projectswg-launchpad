@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-	<project name="ProjectSWG Launchpad" default="do-deploy" basedir="."  xmlns:fx="javafx:com.sun.javafx.tools.ant">
+	<project name="ProjectSWG" default="do-deploy" basedir="."  xmlns:fx="javafx:com.sun.javafx.tools.ant">
+	
 	<target name="init-fx-tasks">
 		<path id="fxant">
 			<filelist>
@@ -12,6 +13,7 @@
 			uri="javafx:com.sun.javafx.tools.ant"
 			classpathref="fxant"/>
 	</target>
+	
 	<target name="setup-staging-area">
 		<delete dir="externalLibs" />
 		<delete dir="project" />
@@ -37,6 +39,7 @@
 	
 		<mkdir dir="projectRefs" />
 	</target>
+	
 	<target name='do-compile'>
 		<delete dir="build" />
 		<mkdir dir="build/src" />
@@ -79,8 +82,8 @@
 			</fileset>
 		</copy>
 		
-	
 	</target>
+		
 	<target name="do-deploy" depends="setup-staging-area, do-compile, init-fx-tasks">
 		<delete file="dist"/>
 		<delete file="deploy" />
@@ -96,13 +99,13 @@
 	
 	
 		<fx:resources id="appRes">
-			<fx:fileset dir="dist" includes="PSWGLaunchpad.jar"/>
+			<fx:fileset dir="dist" includes="ProjectSWG.jar"/>
 			<fx:fileset dir="dist" includes="libs/*"/>
 		</fx:resources>
 	
 		<fx:application id="fxApplication"
-			name="PSWGLaunchpad"
-			mainClass="com.projectswg.launchpad.PSWGLaunchpad"
+			name="ProjectSWG"
+			mainClass="com.projectswg.launchpad.ProjectSWG"
 			toolkit="fx"
 		/>
 	
@@ -110,7 +113,7 @@
 	
 	
 	
-		<fx:jar destfile="dist/PSWGLaunchpad.jar">
+		<fx:jar destfile="dist/ProjectSWG.jar">
 			<fx:application refid="fxApplication"/>
 			<fileset dir="build/classes">
 			</fileset>
@@ -118,7 +121,7 @@
 	
 			<manifest>
 				<attribute name="Implementation-Vendor" value="projectswg.com"/>
-				<attribute name="Implementation-Title" value="PSWGLaunchpad"/>
+				<attribute name="Implementation-Title" value="ProjectSWG"/>
 				<attribute name="Implementation-Version" value="1.0"/>
 				<attribute name="JavaFX-Feature-Proxy" value="None"/>
 			</manifest>
@@ -134,16 +137,14 @@
 			includeDT="false"
 			offlineAllowed="true"
 			outdir="${basedir}/deploy"
-			outfile="ProjectSWG Launchpad" nativeBundles="exe"
+			outfile="ProjectSWG" nativeBundles="exe"
 			updatemode="background" >
 	
 			<fx:platform basedir="${java.home}"/>
-			<fx:info title="ProjectSWG Launchpad" vendor="projectswg.com"/>
+			<fx:info title="ProjectSWG" vendor="projectswg.com"/>
 	
 			<fx:application refId="fxApplication"/>
 			<fx:resources refid="appRes"/>
-			
-			<fx:permissions elevated="true" cacheCertificates="true"/>
 			
 		</fx:deploy>
 	

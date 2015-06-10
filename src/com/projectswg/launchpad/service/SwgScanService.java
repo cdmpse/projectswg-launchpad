@@ -21,9 +21,8 @@ package com.projectswg.launchpad.service;
 
 import java.io.File;
 
-import com.projectswg.launchpad.PSWG;
+import com.projectswg.launchpad.ProjectSWG;
 
-import javafx.application.Platform;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 
@@ -93,7 +92,7 @@ public class SwgScanService extends Service<Boolean>
 					
 					file = new File(manager.getSwgFolder().getValue() + "/" + fileName);
 					if (!file.isFile()) {
-						PSWG.log("SWG file not found: " + manager.getSwgFolder().getValue() + "/" + fileName);
+						ProjectSWG.log("SWG file not found: " + manager.getSwgFolder().getValue() + "/" + fileName);
 						updateMessage("SWG scan failed");
 						return false;
 					}

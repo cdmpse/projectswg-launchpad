@@ -41,7 +41,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.fxml.FXMLLoader;
 
-public class PSWG extends Application
+public class ProjectSWG extends Application
 {
 	public static final String PSWG_URL = "http://www.projectswg.com";
 	public static final Map<String, String> FXML_SCREENS;
@@ -57,7 +57,7 @@ public class PSWG extends Application
 	public static final String CSS_NAME = "style.css";
 	public static final String CSS_DEFAULT = "/resources/style.css";
 	public static final String THEMES_FOLDER = "themes";
-	public static final Preferences PREFS = Preferences.userNodeForPackage(PSWG.class);
+	public static final Preferences PREFS = Preferences.userNodeForPackage(ProjectSWG.class);
 	
 	private HashMap<String, FxmlController> controllers;
 	private ArrayList<GameController> gameControllers;
@@ -89,20 +89,20 @@ public class PSWG extends Application
 		
 		if (!theme.equals("Default")) {
 			try {
-				String codeSource = new File(PSWG.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
+				String codeSource = new File(ProjectSWG.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
 				File file = new File(codeSource + "/" + THEMES_FOLDER + "/" + theme + "/style.css");
 				if (!file.isFile()) {
-					PSWG.log("Theme css file not found: " + theme);
+					ProjectSWG.log("Theme css file not found: " + theme);
 					return;
 				}
 				cssPath = file.toURI().toURL().toExternalForm();
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
-				PSWG.log("Error setting theme: MalformedURLException");
+				ProjectSWG.log("Error setting theme: MalformedURLException");
 				return;
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
-				PSWG.log("Error setting theme: URISyntaxException");
+				ProjectSWG.log("Error setting theme: URISyntaxException");
 				return;
 			}
 		}
@@ -128,7 +128,7 @@ public class PSWG extends Application
 		primaryStage.setTitle("ProjectSWG");
 		Image icon = new Image("/resources/pswg_icon.png");
 		if (icon.isError())
-			PSWG.log("Error loading application icon");
+			ProjectSWG.log("Error loading application icon");
 		else
 			primaryStage.getIcons().add(icon);
 		
@@ -173,11 +173,11 @@ public class PSWG extends Application
 
 	public static FxmlController loadFxml(String fxml)
 	{
-		PSWG.log("loadFxml: " + fxml);
+		ProjectSWG.log("loadFxml: " + fxml);
 		
 		String codeSource = "";
 		try {
-			codeSource = new File(PSWG.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
+			codeSource = new File(ProjectSWG.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
 		} catch (URISyntaxException e1) {
 			e1.printStackTrace();
 			return null;
@@ -191,7 +191,7 @@ public class PSWG extends Application
 			if (file.isFile()) {
 				fxmlLoader = new FXMLLoader();
 				try {
-					PSWG.log("loading: " + codeSource + "/" + THEMES_FOLDER + "/" + theme + "/" + fxml);
+					ProjectSWG.log("loading: " + codeSource + "/" + THEMES_FOLDER + "/" + theme + "/" + fxml);
 					fxmlLoader.load(new FileInputStream(codeSource + "/" + THEMES_FOLDER + "/" + theme + "/" + fxml));
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -202,7 +202,7 @@ public class PSWG extends Application
 		
 		if (fxmlLoader == null) {
 			// theme wasnt loaded, load default
-			fxmlLoader = new FXMLLoader(PSWG.class.getResource("view/" + fxml));
+			fxmlLoader = new FXMLLoader(ProjectSWG.class.getResource("view/" + fxml));
 			try { 
 				fxmlLoader.load();
 			} catch (IOException e) {

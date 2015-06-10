@@ -23,7 +23,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import com.projectswg.launchpad.PSWG;
+import com.projectswg.launchpad.ProjectSWG;
 import com.projectswg.launchpad.service.Manager;
 
 import javafx.fxml.FXML;
@@ -178,7 +178,7 @@ public class SetupController implements ModalComponent
 	
 	public void swgFolderNotSet()
 	{
-		PSWG.log("SetupComponent::swgFolderNotSet");
+		ProjectSWG.log("SetupComponent::swgFolderNotSet");
 		
 		swgFolderTextField.setEffect(redGlow);
 		swgFolderButton.setDisable(false);
@@ -189,7 +189,7 @@ public class SetupController implements ModalComponent
 	
 	public void pswgFolderNotSet()
 	{
-		PSWG.log("SetupComponent::pswgFolderNotSet");
+		ProjectSWG.log("SetupComponent::pswgFolderNotSet");
 	
 		swgFolderTextField.setEffect(greenGlow);
 		swgFolderButton.setDisable(false);
@@ -201,7 +201,7 @@ public class SetupController implements ModalComponent
 	
 	public void setupDone()
 	{
-		PSWG.log("SetupComponent::updateRequired");
+		ProjectSWG.log("SetupComponent::updateRequired");
 		
 		swgFolderTextField.setEffect(greenGlow);
 		swgFolderButton.setDisable(false);

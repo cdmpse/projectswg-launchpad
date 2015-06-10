@@ -23,13 +23,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.file.Files;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -53,7 +51,7 @@ import javax.xml.bind.DatatypeConverter;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
-import com.projectswg.launchpad.PSWG;
+import com.projectswg.launchpad.ProjectSWG;
 import com.projectswg.launchpad.model.Resource;
 
 public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
@@ -114,24 +112,24 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 				
 				String resourceListPath = manager.getPswgFolder().getValue() + "/launcherS.dl.dat";
 				
-				PSWG.log("Reading encrypted resource list from local: " + resourceListPath);
+				ProjectSWG.log("Reading encrypted resource list from local: " + resourceListPath);
 				
 				resourceList = readEncryptedResourceListFromLocal(resourceListPath);
 				
 				if (resourceList == null) {
-					PSWG.log("Failed to read resource list from local");
+					ProjectSWG.log("Failed to read resource list from local");
 					updateMessage("Fetching resource list");
 					
 					resourceList = getResourceListFromRemote();
 					if (!writeEncryptedResourceList(resourceList)) {
-						PSWG.log("Error writing resource");
+						ProjectSWG.log("Error writing resource");
 						return null;
 					}
 				}
 				
 				resources = parseResourceList(resourceList);
 				if (resources == null) {
-					PSWG.log("Error parsing resource list");
+					ProjectSWG.log("Error parsing resource list");
 					return null;
 				}
 				
@@ -142,7 +140,7 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 			
 			private double scanResources(ArrayList<Resource> resources)
 			{
-				PSWG.log("Scanning resources");
+				ProjectSWG.log("Scanning resources");
 				
 				Resource resource;
 				String resourceName;
@@ -159,7 +157,7 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 					resource = resources.get(i);
 					resourceName = resource.getName();
 					
-					PSWG.log(String.format("Scanning %s [ %s / %s ]", resourceName, i + 1, resources.size()));
+					ProjectSWG.log(String.format("Scanning %s [ %s / %s ]", resourceName, i + 1, resources.size()));
 					if (scanType == Manager.CHECK_HASH_PSWG)
 						updateMessage(String.format("Scanning %s [ %s / %s ]", resourceName, i + 1, resources.size()));
 
@@ -171,7 +169,7 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 					
 					file = new File(manager.getPswgFolder().getValue() + "/" + resourceName);
 					if (!file.isFile()) {
-						PSWG.log("File not found: " + file.getAbsolutePath());
+						ProjectSWG.log("File not found: " + file.getAbsolutePath());
 					} else {
 						switch (scanType) {
 						case Manager.CHECK_EXIST_PSWG:
@@ -189,7 +187,7 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 						}
 					}
 					
-					PSWG.log("Scan result: " + scanResult);
+					ProjectSWG.log("Scan result: " + scanResult);
 
 					resource.setDlFlag(!scanResult);
 					if (!scanResult)
@@ -236,10 +234,10 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 					
 					for (String l : fullText.split("\r\n")) {
 						list.add(l);
-						PSWG.log(String.format("Read encrypted text: %s", l));
+						ProjectSWG.log(String.format("Read encrypted text: %s", l));
 					}
 				} catch (IOException e) {
-					PSWG.log(e.toString());
+					ProjectSWG.log(e.toString());
 					return null;
 				}
 				return list;
@@ -247,7 +245,7 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 			
 			private ArrayList<String> getResourceListFromRemote()
 			{
-				PSWG.log("Fetching resource list from remote");
+				ProjectSWG.log("Fetching resource list from remote");
 				ArrayList<String> copy = new ArrayList<String>();
 				try {
 					URL url = new URL(Manager.PATCH_SERVER_FILES + RESOURCE_LIST);
@@ -257,16 +255,16 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 					BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
 					String line;
 					for (int i = 0; (line = in.readLine()) != null; i++) {
-						PSWG.log(String.format("(Resource List) %s: %s", i, line));
+						ProjectSWG.log(String.format("(Resource List) %s: %s", i, line));
 						copy.add(line);
 					}
 					in.close();
 					
 				} catch (MalformedURLException e) {
-					PSWG.log(e.toString());
+					ProjectSWG.log(e.toString());
 					return null;
 				} catch (IOException e) {
-					PSWG.log(e.toString());
+					ProjectSWG.log(e.toString());
 					return null;
 				}
 
@@ -275,7 +273,7 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 
 			private ArrayList<Resource> parseResourceList(ArrayList<String> resourceList)
 			{
-				PSWG.log("Parsing resource list");
+				ProjectSWG.log("Parsing resource list");
 				updateMessage("Parsing resource list");
 				
 				ArrayList<Resource> resources = new ArrayList<Resource>();
@@ -284,28 +282,28 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 				
 				int size = resourceList.size();
 				if (size == 0) {
-					PSWG.log("Parsed resource list was empty.");
+					ProjectSWG.log("Parsed resource list was empty.");
 					return null;
 				}
 				
 				if (!Pattern.matches("^[0-9]+$", resourceList.get(RESOURCE_COUNT_LINE))) {
-					PSWG.log("Error reading resource list line: linecount -> " + resourceList.get(RESOURCE_COUNT_LINE));
-					PSWG.log("exiting");
+					ProjectSWG.log("Error reading resource list line: linecount -> " + resourceList.get(RESOURCE_COUNT_LINE));
+					ProjectSWG.log("exiting");
 					return null;
 				}
 				
 				if (!Pattern.matches("^[0-9]{10,}$", resourceList.get(TIMESTAMP_LINE))) {
-					PSWG.log("Error reading resource list: timestamp line -> " + resourceList.get(TIMESTAMP_LINE));
+					ProjectSWG.log("Error reading resource list: timestamp line -> " + resourceList.get(TIMESTAMP_LINE));
 					return null;
 				}
 				
 				if (!resourceList.get(BEGIN_LINE).equals("BEGIN")) {
-					PSWG.log("Error reading resource list: begin line");
+					ProjectSWG.log("Error reading resource list: begin line");
 					return null;
 				}
 				
 				if (!resourceList.get(size - 1).equals("END")) {
-					PSWG.log("Error reading resource list line: end -> " + resourceList.get(size - 2).equals("END"));
+					ProjectSWG.log("Error reading resource list line: end -> " + resourceList.get(size - 2).equals("END"));
 					return null;
 				}
 			
@@ -317,7 +315,7 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 					line = resourceList.get(i);
 					matcher = pattern.matcher(line);
 					if (!matcher.find()) {
-						PSWG.log(String.format("Error reading resource list: %s, %s", i, line));
+						ProjectSWG.log(String.format("Error reading resource list: %s, %s", i, line));
 						return null;
 					}
 					
@@ -332,7 +330,7 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 				int resourceCount = Integer.parseInt(resourceList.get(RESOURCE_COUNT_LINE));
 				
 				if (resources.size() != resourceCount) {
-					PSWG.log(String.format("Resource count mismatch: %s, %s", resources.size(), resourceCount));
+					ProjectSWG.log(String.format("Resource count mismatch: %s, %s", resources.size(), resourceCount));
 					return null;
 				}
 				
@@ -402,7 +400,7 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 			
 			private boolean writeEncryptedResourceList(ArrayList<String> resourceList)
 			{
-				PSWG.log("Writing encoded resource list");
+				ProjectSWG.log("Writing encoded resource list");
 				file = new File(manager.getPswgFolder().getValue() + "/launcherS.dl.dat");
 				file.getParentFile().mkdirs();
 				StringBuilder fullText = new StringBuilder();
@@ -414,7 +412,7 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 					fos.write(encrypt(fullText.toString(), Manager.AES_SESSION_KEY));
 					fos.close();
 				} catch (IOException e) {
-					PSWG.log(e.toString());
+					ProjectSWG.log(e.toString());
 					return false;
 				}
 				return true;
@@ -433,11 +431,11 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 				if (resource.getSize() != file.length())
 					return false;
 				
-				PSWG.log("Getting file checksum: " + file.getPath());
+				ProjectSWG.log("Getting file checksum: " + file.getPath());
 				
 				String checksum = Manager.getFileChecksum(file);
 				if (checksum == null) {
-					PSWG.log(String.format("Error getting file checksum: %s", file.getName()));
+					ProjectSWG.log(String.format("Error getting file checksum: %s", file.getName()));
 					return false;
 				}
 				

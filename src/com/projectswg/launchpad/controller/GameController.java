@@ -23,7 +23,7 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ResourceBundle;
-import com.projectswg.launchpad.PSWG;
+import com.projectswg.launchpad.ProjectSWG;
 
 
 
@@ -146,7 +146,7 @@ public class GameController implements FxmlController
 	public void setGameService(GameService gameService)
 	{
 		this.gameService = gameService;
-		if (PSWG.PREFS.getBoolean("debug", false)) {
+		if (ProjectSWG.PREFS.getBoolean("debug", false)) {
 			gameService.messageProperty().addListener((observable, oldValue, newValue) -> {
 				outputTextArea.appendText(newValue + "\n");
 			});

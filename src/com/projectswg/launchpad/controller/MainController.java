@@ -20,15 +20,12 @@
 package com.projectswg.launchpad.controller;
 
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
 import java.util.ArrayList;
-
-import com.projectswg.launchpad.PSWG;
+import com.projectswg.launchpad.ProjectSWG;
 import com.projectswg.launchpad.extras.TREFix;
 import com.projectswg.launchpad.service.Manager;
 import com.projectswg.launchpad.model.Resource;
-
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -101,7 +98,7 @@ public class MainController implements FxmlController
 	// animation
 	private GaussianBlur blur;
 	
-	private PSWG pswg;
+	private ProjectSWG pswg;
 	private Stage stage;
 	private Manager manager;
 	private ModalController modalController;
@@ -123,7 +120,7 @@ public class MainController implements FxmlController
 	{
 	}
 	
-	public void init(PSWG pswg)
+	public void init(ProjectSWG pswg)
 	{
 		this.pswg = pswg;
 		
@@ -138,14 +135,6 @@ public class MainController implements FxmlController
 		// main text display
 		mainDisplay = new NodeDisplay(mainDisplayPane);
 
-		/*
-		PSWG.log("Main::init .. Manager.state = " + manager.getState().getValue());
-		manager.getState().addListener((observable, oldValue, newValue) -> {
-			PSWG.log("Main::init .. Manager state changed: " + oldValue + " -> " + newValue);
-			setControlsState(newValue.intValue());
-		});
-		*/
-		
 		modalController = (ModalController)pswg.getControllers().get("modal");
 		settingsComponent = (SettingsController)pswg.getControllers().get("settings");
 		setupComponent = (SetupController)pswg.getControllers().get("setup");
@@ -166,12 +155,12 @@ public class MainController implements FxmlController
 		setupComponent.init(this);
 		extrasComponent.init(this);
 		
-		animationLevel.set(PSWG.PREFS.getInt("animation", 2));
+		animationLevel.set(ProjectSWG.PREFS.getInt("animation", 2));
 		
 		// add listeners
 		
 		animationLevel.addListener((observable, oldValue, newValue) -> {
-			PSWG.PREFS.putInt("animation", newValue.intValue());
+			ProjectSWG.PREFS.putInt("animation", newValue.intValue());
 		});
 		
 		addButtonListeners();
@@ -182,7 +171,7 @@ public class MainController implements FxmlController
 		
 		manager.getSwgReady().addListener((observable, oldValue, newValue) -> {
 			
-			PSWG.log(String.format("swgReady changed: %s -> %s", oldValue, newValue));
+			ProjectSWG.log(String.format("swgReady changed: %s -> %s", oldValue, newValue));
 			if (manager.getPswgReady().getValue()) {
 				playButton.setVisible(true);
 				updateButton.setVisible(false);
@@ -193,32 +182,9 @@ public class MainController implements FxmlController
 			}
 		});
 		
-		/*
-		manager.getPswgReady().addListener((observable, oldValue, newValue) -> {
-			PSWG.log(String.format("pswgReady changed: %s -> %s", oldValue, newValue));
-			
-			if (newValue && manager.getSwgReady().getValue()) {
-				
-				setupButton.setVisible(false);
-				updateButton.setVisible(false);
-				playButton.setDisable(false);
-				
-				PSWG.log("pswgReady and swgReady");
-				
-			} else {
-				
-				playButton.setDisable(true);
-				updateButton.setVisible(false);
-				//setupButton.setVisible(true);
-				
-				PSWG.log("psgNotReady or swgNotReady");
-			}
-		});
-		*/
-		
 		manager.getSwgScanService().runningProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue) {
-				PSWG.log("SWG scan started");
+				ProjectSWG.log("SWG scan started");
 				
 				launcherSettingsButton.setDisable(true);
 				gameSettingsButton.setDisable(true);
@@ -247,7 +213,7 @@ public class MainController implements FxmlController
 		
 		manager.getPswgScanService().runningProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue) {
-				PSWG.log("PSWG scan started");
+				ProjectSWG.log("PSWG scan started");
 				
 				launcherSettingsButton.setDisable(true);
 				gameSettingsButton.setDisable(true);
@@ -262,7 +228,7 @@ public class MainController implements FxmlController
 			} else {
 				launcherSettingsButton.setDisable(false);
 
-				PSWG.log("PSWG scan done");
+				ProjectSWG.log("PSWG scan done");
 				cancelButton.setVisible(false);
 				progressIndicator.setVisible(false);
 				Pair<Double, ArrayList<Resource>> result = manager.getPswgScanService().getValue();
@@ -296,7 +262,7 @@ public class MainController implements FxmlController
 			} else {
 				switch (manager.getUpdateService().getState()) {
 				case FAILED:
-					PSWG.log("Update failed: " + manager.getUpdateService().getException());
+					ProjectSWG.log("Update failed: " + manager.getUpdateService().getException());
 					cancelButton.setVisible(false);
 					progressIndicator.setVisible(false);
 					scanButton.setVisible(true);
@@ -305,7 +271,7 @@ public class MainController implements FxmlController
 					break;
 				
 				case CANCELLED:
-					PSWG.log("Update failed: " + manager.getUpdateService().getException());
+					ProjectSWG.log("Update failed: " + manager.getUpdateService().getException());
 					cancelButton.setVisible(false);
 					progressIndicator.setVisible(false);
 					scanButton.setVisible(true);
@@ -314,7 +280,7 @@ public class MainController implements FxmlController
 					break;
 					
 				case SUCCEEDED:
-					PSWG.log("Update succeeded");
+					ProjectSWG.log("Update succeeded");
 					
 					cancelButton.setVisible(false);
 					progressIndicator.setVisible(false);
@@ -323,7 +289,7 @@ public class MainController implements FxmlController
 						scanButton.setVisible(true);
 					} else {
 						
-						PSWG.log(manager.getUpdateService().getException().getMessage());
+						ProjectSWG.log(manager.getUpdateService().getException().getMessage());
 						scanButton.setVisible(true);
 	
 					}
@@ -337,7 +303,7 @@ public class MainController implements FxmlController
 		manager.getUpdateService().progressProperty().addListener((observable, oldValue, newValue) -> {
 			if (oldValue.intValue() == -1)
 				showProgressBar();
-			PSWG.log("File download progress: " + newValue);
+			ProjectSWG.log("File download progress: " + newValue);
 			progressBar.setProgress(newValue.doubleValue());
 			if (newValue.intValue() == -1)
 				hideProgressBar();
@@ -419,7 +385,7 @@ public class MainController implements FxmlController
 	
 	public void showProgressBar()
 	{
-		switch (PSWG.PREFS.getInt("animation", 2)) {
+		switch (ProjectSWG.PREFS.getInt("animation", 2)) {
 		case ANIMATION_NONE:
 			progressBar.setVisible(true);
 			break;
@@ -459,7 +425,7 @@ public class MainController implements FxmlController
 	
 	public void hideProgressBar()
 	{
-		switch (PSWG.PREFS.getInt("animation", 2)) {
+		switch (ProjectSWG.PREFS.getInt("animation", 2)) {
 		case ANIMATION_NONE:
 			progressBar.setVisible(false);;
 			break;
@@ -507,7 +473,7 @@ public class MainController implements FxmlController
 		return root;
 	}
 	
-	public PSWG getPswg()
+	public ProjectSWG getPswg()
 	{
 		return pswg;
 	}

@@ -45,15 +45,13 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import com.projectswg.launchpad.PSWG;
+import com.projectswg.launchpad.ProjectSWG;
 import com.projectswg.launchpad.model.Resource;
 import com.projectswg.launchpad.model.Instance;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.util.Pair;
@@ -89,8 +87,6 @@ public class Manager
 	public static final int NORMAL_SCAN = 0;
 	
 	public static final int MAX_INSTANCES = 5;
-	
-	private boolean showWine;
 	
 	private volatile ArrayList<Resource> resources;
 	private volatile ObservableList<Instance> instances;
@@ -148,12 +144,6 @@ public class Manager
 		// game instances
 		instances = FXCollections.observableArrayList();
 		
-		// Wine
-		if (PSWG.isWindows())
-			showWine = false;
-		else
-			showWine = true;
-		
 		swgReady.addListener((observable, oldValue, newValue) -> {
 			if (newValue) {
 				if (!pswgReady.getValue()) {
@@ -166,14 +156,14 @@ public class Manager
 		});
 		
 		swgScanService.setOnRunning((e) -> {
-			PSWG.log("swgScanService onRunning start");
+			ProjectSWG.log("swgScanService onRunning start");
 			mainOut.bind(swgScanService.messageProperty());
 			swgReady.set(false);
 		});
 		
 		swgScanService.setOnCancelled((e) -> {
 			mainOut.unbind();
-			PSWG.log("swgScanService: failed");
+			ProjectSWG.log("swgScanService: failed");
 			Platform.runLater(() -> {
 				swgReady.set(false);
 			});
@@ -181,7 +171,7 @@ public class Manager
 		
 		swgScanService.setOnFailed((e) -> {
 			mainOut.unbind();
-			PSWG.log("swgScanService: failed");
+			ProjectSWG.log("swgScanService: failed");
 			Platform.runLater(() -> {
 				swgReady.set(false);
 			});
@@ -190,7 +180,7 @@ public class Manager
 		swgScanService.setOnSucceeded((e) -> {
 			mainOut.unbind();
 
-			PSWG.log("swgScanService ended: " + swgScanService.getValue());
+			ProjectSWG.log("swgScanService ended: " + swgScanService.getValue());
 			
 			Platform.runLater(() -> {
 				swgReady.set(swgScanService.getValue());
@@ -199,19 +189,19 @@ public class Manager
 		
 		swgFolder.addListener((observable, oldValue, newValue) -> {
 			
-			PSWG.log(String.format("swgFolder changed: %s -> %s", oldValue, newValue));
-			PSWG.PREFS.put("swg_folder", newValue);
+			ProjectSWG.log(String.format("swgFolder changed: %s -> %s", oldValue, newValue));
+			ProjectSWG.PREFS.put("swg_folder", newValue);
 			
 			if (newValue.equals("")) {
-				PSWG.log("swgFolder is blank");
+				ProjectSWG.log("swgFolder is blank");
 				
 				Platform.runLater(() -> {
-					PSWG.log(String.format("setting swgReady: %s -> %s", swgReady.getValue(), false));
+					ProjectSWG.log(String.format("setting swgReady: %s -> %s", swgReady.getValue(), false));
 					swgReady.set(false);
 				});
 				
 			} else {
-				PSWG.log("swgFolder not blank, starting swg scan");
+				ProjectSWG.log("swgFolder not blank, starting swg scan");
 				
 				if (!swgScanService.isRunning()) {
 					swgScanService.reset();
@@ -233,17 +223,17 @@ public class Manager
 		
 		pswgScanService.setOnFailed((e) -> {
 			mainOut.unbind();
-			PSWG.log("pswgScanService failed");
+			ProjectSWG.log("pswgScanService failed");
 		});
 		
 		pswgScanService.setOnSucceeded((e) -> {
 			mainOut.unbind();
-			PSWG.log("pswgScanService onSucceeded");
+			ProjectSWG.log("pswgScanService onSucceeded");
 			
 			Pair<Double, ArrayList<Resource>> result = pswgScanService.getValue();
 			
 			if (result == null) {
-				PSWG.log("Scan failed");
+				ProjectSWG.log("Scan failed");
 				Platform.runLater(() -> {
 					mainOut.set("Scan failed");
 				});
@@ -260,12 +250,12 @@ public class Manager
 			} else
 				pswgReady.set(true);
 
-			PSWG.log("PSWG scan finished: " + dlTotal);
+			ProjectSWG.log("PSWG scan finished: " + dlTotal);
 		});
 		
 		pswgFolder.addListener((observable, oldValue, newValue) -> {
-			PSWG.log(String.format("pswgFolder changed: %s -> %s", oldValue, newValue));
-			PSWG.PREFS.put("pswg_folder", newValue);
+			ProjectSWG.log(String.format("pswgFolder changed: %s -> %s", oldValue, newValue));
+			ProjectSWG.PREFS.put("pswg_folder", newValue);
 			
 			if (newValue.equals("") || swgFolder.getValue().equals("")) {
 				
@@ -299,37 +289,37 @@ public class Manager
 		
 		// wine
 		wineBinary.addListener((observable, oldValue, newValue) -> {
-			PSWG.PREFS.put("wine_binary", newValue);
+			ProjectSWG.PREFS.put("wine_binary", newValue);
 		});
 		
 		wineArguments.addListener((observable, oldValue, newValue) -> {
-			PSWG.PREFS.put("wine_arguments", newValue);
+			ProjectSWG.PREFS.put("wine_arguments", newValue);
 		});
 		
 		wineEnvironmentVariables.addListener((observable, oldValue, newValue) -> {
-			PSWG.PREFS.put("wine_environment_variables", newValue);
+			ProjectSWG.PREFS.put("wine_environment_variables", newValue);
 		});
 		
 		// Login server	
-		Preferences loginServersNode = PSWG.PREFS.node("login_servers");
+		Preferences loginServersNode = ProjectSWG.PREFS.node("login_servers");
 		if (loginServersNode.get(PSWG_LOGIN_SERVER_NAME, "").equals(""))
 			loginServersNode.put(PSWG_LOGIN_SERVER_NAME, PSWG_LOGIN_SERVER_STRING);
 		
-		String loginServer = PSWG.PREFS.get("login_server", "");
+		String loginServer = ProjectSWG.PREFS.get("login_server", "");
 		if (loginServer.equals(""))
-			PSWG.PREFS.put("login_server", PSWG_LOGIN_SERVER_NAME);
+			ProjectSWG.PREFS.put("login_server", PSWG_LOGIN_SERVER_NAME);
 	}
 
 	public void loadPrefs()
 	{
 		// paths
-		pswgFolder.set(PSWG.PREFS.get("pswg_folder", ""));
-		swgFolder.set(PSWG.PREFS.get("swg_folder", ""));
+		pswgFolder.set(ProjectSWG.PREFS.get("pswg_folder", ""));
+		swgFolder.set(ProjectSWG.PREFS.get("swg_folder", ""));
 		
 		// wine
-		wineBinary.set(PSWG.PREFS.get("wine_binary",  ""));
-		wineArguments.set(PSWG.PREFS.get("wine_arguments", ""));
-		wineEnvironmentVariables.set(PSWG.PREFS.get("wine_environment_variables", ""));
+		wineBinary.set(ProjectSWG.PREFS.get("wine_binary",  ""));
+		wineArguments.set(ProjectSWG.PREFS.get("wine_arguments", ""));
+		wineEnvironmentVariables.set(ProjectSWG.PREFS.get("wine_environment_variables", ""));
 	}
 
 	public void fullScan()
@@ -366,16 +356,16 @@ public class Manager
 	public void startSWG()
 	{
 		if (instances.size() > MAX_INSTANCES) {
-			PSWG.log("Too many games running");
+			ProjectSWG.log("Too many games running");
 			return;
 		}
-		String pswgFolder = PSWG.PREFS.get("pswg_folder", "");
+		String pswgFolder = ProjectSWG.PREFS.get("pswg_folder", "");
 		if (pswgFolder.equals("")) {
-			PSWG.log("pswgFolder was empty");
+			ProjectSWG.log("pswgFolder was empty");
 			return;
 		}
 		
-		PSWG.log(String.format("Launching game: Folder: %s, Host: %s, Port: %s",
+		ProjectSWG.log(String.format("Launching game: Folder: %s, Host: %s, Port: %s",
 				pswgFolder,
 				loginServerHost.getValue(),
 				loginServerPlayPort.getValue()));
@@ -389,17 +379,17 @@ public class Manager
 	
 	public void launchGameSettings()
 	{
-		PSWG.log("Launching game settings...");
+		ProjectSWG.log("Launching game settings...");
 		
-		String pswgFolder = PSWG.PREFS.get("pswg_folder", "");
+		String pswgFolder = ProjectSWG.PREFS.get("pswg_folder", "");
 		if (pswgFolder.equals("")) {
-			PSWG.log("pswg_folder not set");
+			ProjectSWG.log("pswg_folder not set");
 			return;
 		}
 		
 		File dir = new File(pswgFolder);
 		if (!dir.exists()) {
-			PSWG.log("pswg_folder not found");
+			ProjectSWG.log("pswg_folder not found");
 			return;
 		}
 		
@@ -420,7 +410,7 @@ public class Manager
 				file.getParentFile().mkdirs();
 				file.createNewFile();
 			} catch (IOException e1) {
-				PSWG.log("Error getting local resource: " + path);
+				ProjectSWG.log("Error getting local resource: " + path);
 				return null;
 			}
 		
@@ -440,10 +430,10 @@ public class Manager
 			}
 			is.close();
 		} catch (NoSuchAlgorithmException e) {
-			PSWG.log(e.toString());
+			ProjectSWG.log(e.toString());
 			return null;
 		} catch (IOException e) {
-			PSWG.log(e.toString());
+			ProjectSWG.log(e.toString());
 			return null;
 		}
 		
@@ -499,17 +489,17 @@ public class Manager
 	
 	public void removeLoginServer(String loginServerName)
 	{
-		Preferences loginServersNode = Preferences.userNodeForPackage(PSWG.class).node("login_servers");
+		Preferences loginServersNode = Preferences.userNodeForPackage(ProjectSWG.class).node("login_servers");
 		loginServersNode.remove(loginServerName);
 	}
 	
 	public String[] getLoginServerValues(String loginServerName)
 	{
-		Preferences loginServersNode = Preferences.userNodeForPackage(PSWG.class).node("login_servers");
+		Preferences loginServersNode = Preferences.userNodeForPackage(ProjectSWG.class).node("login_servers");
 		String serverString = loginServersNode.get(loginServerName, "");
 		
 		if (serverString.equals("")) {
-			PSWG.log("Login server doesn't exist: " + loginServerName);
+			ProjectSWG.log("Login server doesn't exist: " + loginServerName);
 			if (loginServerName.equals(PSWG_LOGIN_SERVER_NAME)) {
 
 			} else {
@@ -524,11 +514,11 @@ public class Manager
 
 		matcher = pattern.matcher(serverString);
 		if (!matcher.find()) {
-			PSWG.log("loginServerString did not match pattern: " + serverString);
-			PSWG.log("Login server string corrupt. Creating new...");
+			ProjectSWG.log("loginServerString did not match pattern: " + serverString);
+			ProjectSWG.log("Login server string corrupt. Creating new...");
 			matcher = pattern.matcher(PSWG_LOGIN_SERVER_STRING);
 			if (!matcher.find()) {
-				PSWG.log("Critical error: PSWG_LOGIN_SERVER_STRING -> " + PSWG_LOGIN_SERVER_STRING);
+				ProjectSWG.log("Critical error: PSWG_LOGIN_SERVER_STRING -> " + PSWG_LOGIN_SERVER_STRING);
 				return null;
 			}
 		}
@@ -542,17 +532,17 @@ public class Manager
 	
 	public void setLoginServerByName(String loginServerName)
 	{
-		PSWG.PREFS.put("login_server", loginServerName);
+		ProjectSWG.PREFS.put("login_server", loginServerName);
 		
 		String[] loginServerValues = getLoginServerValues(loginServerName);
 		
-		PSWG.log("Setting login server hostname: " + loginServerValues[LOGIN_SERVER_HOSTNAME]);
-		PSWG.log("Setting login server playport: " + loginServerValues[LOGIN_SERVER_PORT]);
-		PSWG.log("Setting login server pingport: " + loginServerValues[LOGIN_SERVER_STATUSPORT]);
+		ProjectSWG.log("Setting login server hostname: " + loginServerValues[LOGIN_SERVER_HOSTNAME]);
+		ProjectSWG.log("Setting login server playport: " + loginServerValues[LOGIN_SERVER_PORT]);
+		ProjectSWG.log("Setting login server pingport: " + loginServerValues[LOGIN_SERVER_STATUSPORT]);
 		
-		setLoginServerHostname(PSWG.PREFS.get("login_server", ""), loginServerValues[LOGIN_SERVER_HOSTNAME]);
-		setLoginServerPort(PSWG.PREFS.get("login_server", ""), loginServerValues[LOGIN_SERVER_PORT]);
-		setLoginServerStatusPort(PSWG.PREFS.get("login_server", ""), loginServerValues[LOGIN_SERVER_STATUSPORT]);
+		setLoginServerHostname(ProjectSWG.PREFS.get("login_server", ""), loginServerValues[LOGIN_SERVER_HOSTNAME]);
+		setLoginServerPort(ProjectSWG.PREFS.get("login_server", ""), loginServerValues[LOGIN_SERVER_PORT]);
+		setLoginServerStatusPort(ProjectSWG.PREFS.get("login_server", ""), loginServerValues[LOGIN_SERVER_STATUSPORT]);
 
 		loginServerHost.set(loginServerValues[LOGIN_SERVER_HOSTNAME]);
 		loginServerPlayPort.set(loginServerValues[LOGIN_SERVER_PORT]);
@@ -561,7 +551,7 @@ public class Manager
 	
 	public void setLoginServerHostname(String loginServerName, String value)
 	{
-		Preferences loginServersNode = Preferences.userNodeForPackage(PSWG.class).node("login_servers");
+		Preferences loginServersNode = Preferences.userNodeForPackage(ProjectSWG.class).node("login_servers");
 		String[] loginServerValues = getLoginServerValues(loginServerName);
 		loginServersNode.put(loginServerName, String.format("%s,%s,%s",
 			value,
@@ -572,7 +562,7 @@ public class Manager
 	
 	public void setLoginServerPort(String loginServerName, String value)
 	{
-		Preferences loginServersNode = Preferences.userNodeForPackage(PSWG.class).node("login_servers");
+		Preferences loginServersNode = Preferences.userNodeForPackage(ProjectSWG.class).node("login_servers");
 		String[] loginServerValues = getLoginServerValues(loginServerName);
 		loginServersNode.put(loginServerName, String.format("%s,%s,%s",
 			loginServerValues[LOGIN_SERVER_HOSTNAME],
@@ -583,7 +573,7 @@ public class Manager
 	
 	public void setLoginServerStatusPort(String loginServerName, String value)
 	{
-		Preferences loginServersNode = Preferences.userNodeForPackage(PSWG.class).node("login_servers");
+		Preferences loginServersNode = Preferences.userNodeForPackage(ProjectSWG.class).node("login_servers");
 		String[] loginServerValues = getLoginServerValues(loginServerName);
 		loginServersNode.put(loginServerName, String.format("%s,%s,%s",
 			loginServerValues[LOGIN_SERVER_HOSTNAME],
@@ -594,10 +584,10 @@ public class Manager
 	
 	public void addLoginServer(String name)
 	{
-		Preferences loginServersNode = Preferences.userNodeForPackage(PSWG.class).node("login_servers");
+		Preferences loginServersNode = Preferences.userNodeForPackage(ProjectSWG.class).node("login_servers");
 		
 		if (!loginServersNode.get(name, "").equals("")) {
-			PSWG.log("Login server already exists");
+			ProjectSWG.log("Login server already exists");
 			return;
 		}
 		loginServersNode.put(name, ",,");
@@ -605,7 +595,7 @@ public class Manager
 	
 	public ArrayList<String> getLoginServers()
 	{
-		Preferences loginServersNode = Preferences.userNodeForPackage(PSWG.class).node("login_servers");
+		Preferences loginServersNode = Preferences.userNodeForPackage(ProjectSWG.class).node("login_servers");
 		ArrayList<String> serverList = new ArrayList<>();
 		try {
 			for (String name : loginServersNode.keys()) {
@@ -695,11 +685,6 @@ public class Manager
 	public ObservableList<Instance> getInstances()
 	{
 		return instances;
-	}
-	
-	public boolean getShowWine()
-	{
-		return showWine;
 	}
 
 	public SimpleStringProperty getWineBinary()

@@ -31,7 +31,7 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import java.util.regex.Pattern;
 
-import com.projectswg.launchpad.PSWG;
+import com.projectswg.launchpad.ProjectSWG;
 import com.projectswg.launchpad.service.Manager;
 
 import javafx.application.Platform;
@@ -145,10 +145,12 @@ public class SettingsController implements ModalComponent
 		initGeneralPane();
 		initSetupPane();
 		initDeveloperPane();
+		if (ProjectSWG.isWindows())
+			// remove wine pane
 		initWinePane();
 		initInfoPane();
 		
-		animationSlider.setValue(PSWG.PREFS.getInt("animation", 2));
+		animationSlider.setValue(ProjectSWG.PREFS.getInt("animation", 2));
 		
 		// initial setup
 		
@@ -179,9 +181,9 @@ public class SettingsController implements ModalComponent
 				mainController.getAnimationLevel().setValue(newValue);;
 		});
 		
-		closeAfterLaunchCheckBox.setSelected(PSWG.PREFS.getBoolean("close_after_launch", false));
+		closeAfterLaunchCheckBox.setSelected(ProjectSWG.PREFS.getBoolean("close_after_launch", false));
 		closeAfterLaunchCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
-			PSWG.PREFS.putBoolean("close_after_launch", newValue);
+			ProjectSWG.PREFS.putBoolean("close_after_launch", newValue);
 		});
 		
 		// Themes
@@ -191,16 +193,16 @@ public class SettingsController implements ModalComponent
 		});
 		refreshThemeList();
 
-		themeComboBox.setValue(PSWG.PREFS.get("theme", "Default"));
+		themeComboBox.setValue(ProjectSWG.PREFS.get("theme", "Default"));
 		themeComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue == null) {
-				PSWG.log("themeComboBox: newValue -> null");
+				ProjectSWG.log("themeComboBox: newValue -> null");
 				return;
 			}
 			if (oldValue == null)
 				return;
 			
-			PSWG.PREFS.put("theme", newValue);
+			ProjectSWG.PREFS.put("theme", newValue);
 			mainController.getPswg().loadFxmls();
 			Platform.runLater(() -> {
 				ModalController modal = (ModalController)mainController.getPswg().getControllers().get("modal");
@@ -221,17 +223,17 @@ public class SettingsController implements ModalComponent
 	{
 		loginServerLockedCheckBox.setSelected(true);
 		
-		Preferences loginServersNode = PSWG.PREFS.node("login_servers");
+		Preferences loginServersNode = ProjectSWG.PREFS.node("login_servers");
 		loginServerComboBox.getItems().clear();
 		try {
 			for (String server : loginServersNode.keys())
 				loginServerComboBox.getItems().add(server);
 		} catch (BackingStoreException e) {
-			PSWG.log("Error loading loginServers from prefs");
+			ProjectSWG.log("Error loading loginServers from prefs");
 			e.printStackTrace();
 		}
 		
-		loginServerComboBox.setValue(PSWG.PREFS.get("login_server", Manager.PSWG_LOGIN_SERVER_NAME));
+		loginServerComboBox.setValue(ProjectSWG.PREFS.get("login_server", Manager.PSWG_LOGIN_SERVER_NAME));
 	}
 	
 	public void initSetupLoginServerSettings()
@@ -307,7 +309,7 @@ public class SettingsController implements ModalComponent
 			if (newValue == null)
 				return;
 			
-			PSWG.log("Setting server: " + newValue);
+			ProjectSWG.log("Setting server: " + newValue);
 			
 			loginServerLockedCheckBox.setSelected(true);
 			if (newValue.equals(Manager.PSWG_LOGIN_SERVER_NAME)) {
@@ -328,7 +330,7 @@ public class SettingsController implements ModalComponent
 		
 		mainController.getManager().getPingService().setOnSucceeded((e) -> {
 			String result = (String)e.getSource().getValue();
-			PSWG.log("pingerOut: " + result);
+			ProjectSWG.log("pingerOut: " + result);
 			pingDisplay.queueString("" + result);
 		});
 
@@ -416,20 +418,20 @@ public class SettingsController implements ModalComponent
 	
 	public void initDeveloperPane()
 	{
-		localhostCheckBox.setSelected(PSWG.PREFS.getBoolean("localhost", false));
+		localhostCheckBox.setSelected(ProjectSWG.PREFS.getBoolean("localhost", false));
 		localhostCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
-			PSWG.PREFS.putBoolean("localhost", newValue);
+			ProjectSWG.PREFS.putBoolean("localhost", newValue);
 		});
 		
-		debugCheckBox.setSelected(PSWG.PREFS.getBoolean("debug", false));
+		debugCheckBox.setSelected(ProjectSWG.PREFS.getBoolean("debug", false));
 		debugCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
-			PSWG.PREFS.putBoolean("debug", newValue);
+			ProjectSWG.PREFS.putBoolean("debug", newValue);
 			openOnLaunchButton.setDisable(!newValue);
 		});
 		
-		openOnLaunchButton.setSelected(PSWG.PREFS.getBoolean("open_on_launch", false));
+		openOnLaunchButton.setSelected(ProjectSWG.PREFS.getBoolean("open_on_launch", false));
 		openOnLaunchButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
-			PSWG.PREFS.putBoolean("open_on_launch", newValue);
+			ProjectSWG.PREFS.putBoolean("open_on_launch", newValue);
 		});
 		
 		mainController.getManager().getPswgFolder().addListener((observable, oldValue, newValue) -> {
@@ -472,17 +474,17 @@ public class SettingsController implements ModalComponent
 				return;
 			
 			String swgPath =  file.getAbsolutePath();
-			PSWG.PREFS.put("wine_bin", swgPath);
+			ProjectSWG.PREFS.put("wine_bin", swgPath);
 		});
 		
-		wineArgumentsTextField.setText(PSWG.PREFS.get("wine_arguments", ""));
+		wineArgumentsTextField.setText(ProjectSWG.PREFS.get("wine_arguments", ""));
 		wineArgumentsTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-			PSWG.PREFS.put("wine_arguments", newValue);
+			ProjectSWG.PREFS.put("wine_arguments", newValue);
 		});
 		
-		wineEnvironmentVariablesTextField.setText(PSWG.PREFS.get("wine_environment_variables", ""));
+		wineEnvironmentVariablesTextField.setText(ProjectSWG.PREFS.get("wine_environment_variables", ""));
 		wineEnvironmentVariablesTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-			PSWG.PREFS.put("wine_environment_variables", newValue);
+			ProjectSWG.PREFS.put("wine_environment_variables", newValue);
 		});
 	}
 	
@@ -490,7 +492,7 @@ public class SettingsController implements ModalComponent
 	{
 		pswgHyperlink.setOnAction((e) -> {
 			try {
-				java.awt.Desktop.getDesktop().browse(new URI(PSWG.PSWG_URL));
+				java.awt.Desktop.getDesktop().browse(new URI(ProjectSWG.PSWG_URL));
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
@@ -512,9 +514,9 @@ public class SettingsController implements ModalComponent
 	
 	public void refreshThemeList()
 	{
-		File file = new File(PSWG.THEMES_FOLDER);
+		File file = new File(ProjectSWG.THEMES_FOLDER);
 		if (!file.isDirectory()) {
-			PSWG.log("Folder not found: " + PSWG.THEMES_FOLDER);
+			ProjectSWG.log("Folder not found: " + ProjectSWG.THEMES_FOLDER);
 			return;
 		}
 		
@@ -526,7 +528,7 @@ public class SettingsController implements ModalComponent
 		themeList.add("Default");
 
 		for (String dir : subdirs) {
-			file = new File(PSWG.THEMES_FOLDER + "/" + dir + "/" + PSWG.CSS_NAME);
+			file = new File(ProjectSWG.THEMES_FOLDER + "/" + dir + "/" + ProjectSWG.CSS_NAME);
 			if (file.isFile())
 				themeList.add(dir);
 		}

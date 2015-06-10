@@ -22,7 +22,7 @@ package com.projectswg.launchpad.controller;
 import java.util.ArrayList;
 import java.util.prefs.Preferences;
 
-import com.projectswg.launchpad.PSWG;
+import com.projectswg.launchpad.ProjectSWG;
 
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
@@ -66,7 +66,7 @@ public class GameDisplay
 		mainController.getManager().getInstances().addListener((ListChangeListener.Change<? extends Instance> e) -> {
 			while (e.next()) {
 				if (e.wasAdded()) {
-					if (PSWG.PREFS.getBoolean("close_after_launch", false))
+					if (ProjectSWG.PREFS.getBoolean("close_after_launch", false))
 						Platform.exit();
 					for (Instance swg : e.getAddedSubList()) {
 						addGame(swg);
@@ -100,12 +100,12 @@ public class GameDisplay
 		Stage stage = new Stage();
 		Image icon = new Image("/resources/pswg_icon.png");
 		if (icon.isError())
-			PSWG.log("Error loading application icon");
+			ProjectSWG.log("Error loading application icon");
 		else
 			stage.getIcons().add(icon);
 		
 		stage.setTitle(title);
-		GameController gameController = (GameController)PSWG.loadFxml(PSWG.FXML_GAME);
+		GameController gameController = (GameController)ProjectSWG.loadFxml(ProjectSWG.FXML_GAME);
 		Scene scene = new Scene(gameController.getRoot());
 		stage.setScene(scene);
 		stage.setResizable(true);
@@ -160,18 +160,18 @@ public class GameDisplay
 			displayGames();
 		});
 		
-		if (PSWG.PREFS.getBoolean("open_on_launch", false))
+		if (ProjectSWG.PREFS.getBoolean("open_on_launch", false))
 			gameController.show();
 	}
 	
 	public void displayGames()
 	{
-		PSWG.log("Displaying games");
+		ProjectSWG.log("Displaying games");
 		
-		Preferences prefs = Preferences.userNodeForPackage(PSWG.class);
+		Preferences prefs = Preferences.userNodeForPackage(ProjectSWG.class);
 		double rootHeight = root.boundsInParentProperty().get().getHeight();
 		double rootWidth = root.boundsInParentProperty().get().getWidth();
-		PSWG.log("display.size: " + display.size());
+		ProjectSWG.log("display.size: " + display.size());
 		double notch = rootWidth / (1 + display.size());
 
 		for (int i = 0; i < display.size(); i++) {
@@ -201,7 +201,7 @@ public class GameDisplay
 				final KeyFrame newMsgKF = new KeyFrame(Duration.millis(SLIDE_DURATION), newMsgKV);
 				slideLeft.getKeyFrames().add(newMsgKF);
 				slideLeft.setOnFinished((e) -> {
-					PSWG.log("after anim x: " + gameButton.getLayoutX());
+					ProjectSWG.log("after anim x: " + gameButton.getLayoutX());
 				});
 				
 				parallelTransition.getChildren().addAll(slideLeft);

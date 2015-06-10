@@ -24,7 +24,7 @@ import java.io.IOException;
 
 import javafx.scene.control.Button;
 
-import com.projectswg.launchpad.PSWG;
+import com.projectswg.launchpad.ProjectSWG;
 import com.projectswg.launchpad.controller.MainController;
 
 public class TREFix implements ExtraModule
@@ -45,13 +45,13 @@ public class TREFix implements ExtraModule
 		String pswgFolder = main.getManager().getPswgFolder().getValue();
 		
 		if (pswgFolder == null || pswgFolder.equals("")) {
-			PSWG.log("pswgFolder not set");
+			ProjectSWG.log("pswgFolder not set");
 			return;
 		}
 		
 		File dir = new File(pswgFolder);
 		if (!dir.exists()) {
-			PSWG.log("pswgFolder not found");
+			ProjectSWG.log("pswgFolder not found");
 			return;
 		}
 		

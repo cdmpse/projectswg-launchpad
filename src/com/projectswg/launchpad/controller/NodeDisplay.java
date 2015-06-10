@@ -20,7 +20,7 @@
 package com.projectswg.launchpad.controller;
 
 import java.util.ArrayList;
-import com.projectswg.launchpad.PSWG;
+import com.projectswg.launchpad.ProjectSWG;
 
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
@@ -75,7 +75,7 @@ public class NodeDisplay
 		TextFlow textFlow = new TextFlow();
 		Text text = new Text(s);
 		
-		PSWG.log("string queued: " + s);
+		ProjectSWG.log("string queued: " + s);
 		
 		textFlow.getChildren().add(text);
 		queueNode(textFlow);
@@ -84,7 +84,7 @@ public class NodeDisplay
 	private void processNextFromQueue()
 	{
 		if (root == null) {
-			PSWG.log("NodeDisplay root was null");
+			ProjectSWG.log("NodeDisplay root was null");
 			return;
 		}
 		
@@ -98,12 +98,12 @@ public class NodeDisplay
 		final Parent queuedNode = queue.remove(0);
 		
 		if (queuedNode == null) {
-			PSWG.log("NodeDisplay::displayNextFromQueue : queuedNode = null");
+			ProjectSWG.log("NodeDisplay::displayNextFromQueue : queuedNode = null");
 			return;
 		}
 		
 		if (queuedNode == prevNode) {
-			PSWG.log("NodeDisplay::displayNextFromQueue : queuedNode = prevNode");
+			ProjectSWG.log("NodeDisplay::displayNextFromQueue : queuedNode = prevNode");
 			return;
 		}
 		
@@ -129,7 +129,7 @@ public class NodeDisplay
 	
 	public void displayNode(Parent prevNode, Parent queuedNode)
 	{
-		switch (PSWG.PREFS.getInt("animation", 2)) {
+		switch (ProjectSWG.PREFS.getInt("animation", 2)) {
 		
 		case MainController.ANIMATION_NONE:
 			if (prevNode != null)

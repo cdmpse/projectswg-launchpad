@@ -23,7 +23,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.ArrayList;
 
-import com.projectswg.launchpad.PSWG;
+import com.projectswg.launchpad.ProjectSWG;
 import com.projectswg.launchpad.extras.ExtraModule;
 
 import javafx.fxml.FXML;
@@ -70,7 +70,7 @@ public class ExtrasController implements ModalComponent
 		
 		extrasRoot.getChildren().clear();
 		for (ExtraModule module : modules) {
-			PSWG.log("Loadding extra module: " + module.toString());
+			ProjectSWG.log("Loadding extra module: " + module.toString());
 			
 			Button button = module.createButton();
 			// css?

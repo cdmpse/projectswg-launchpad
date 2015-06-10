@@ -43,7 +43,7 @@ import java.util.ResourceBundle;
 
 
 
-import com.projectswg.launchpad.PSWG;
+import com.projectswg.launchpad.ProjectSWG;
 
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
@@ -185,7 +185,7 @@ public class ModalController implements FxmlController
 	public void hide()
 	{
 		if (modalComponent == null) {
-			PSWG.log("modalScreen::hide : null component");
+			ProjectSWG.log("modalScreen::hide : null component");
 			return;
 		}
 

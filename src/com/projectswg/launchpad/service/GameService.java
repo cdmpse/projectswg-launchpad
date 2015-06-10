@@ -24,7 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Date;
-import com.projectswg.launchpad.PSWG;
+import com.projectswg.launchpad.ProjectSWG;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 
@@ -66,18 +66,18 @@ public class GameService extends Service<Void>
 					"-s",
 					"ClientGame",
 					"loginServerPort0=" + port,
-					"loginServerAddress0=" + (PSWG.PREFS.getBoolean("localhost", false) ? Manager.LOCALHOST : host)
+					"loginServerAddress0=" + (ProjectSWG.PREFS.getBoolean("localhost", false) ? Manager.LOCALHOST : host)
 				};
 			
 				for (String s : processString)
-					PSWG.log("Starting SWG: " + s);
+					ProjectSWG.log("Starting SWG: " + s);
 
 				try {
 					final ProcessBuilder processBuilder = new ProcessBuilder(processString);
 				
 					File dir = new File(pswgFolder);
 					if (!dir.isDirectory()) {
-						PSWG.log("Directory doesn't exist: " + pswgFolder);
+						ProjectSWG.log("Directory doesn't exist: " + pswgFolder);
 						return null;
 					}
 					
