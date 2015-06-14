@@ -22,16 +22,19 @@ package com.projectswg.launchpad.controller;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.ArrayList;
+
 import com.projectswg.launchpad.ProjectSWG;
 import com.projectswg.launchpad.extras.TREFix;
 import com.projectswg.launchpad.service.Manager;
 import com.projectswg.launchpad.model.Resource;
+
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.ParallelTransition;
 import javafx.animation.ScaleTransition;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -107,6 +110,8 @@ public class MainController implements FxmlController
 	private SetupController setupComponent;
 	private NodeDisplay mainDisplay;
 	private GameDisplay gameDisplay;
+	private Timeline showDownloadLow, hideDownloadLow;
+	private ParallelTransition showDownloadHigh, hideDownloadHigh;
 	
 	
 	public MainController()
@@ -118,6 +123,7 @@ public class MainController implements FxmlController
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1)
 	{
+		
 	}
 	
 	public void init(ProjectSWG pswg)
@@ -227,67 +233,72 @@ public class MainController implements FxmlController
 				
 			} else {
 				launcherSettingsButton.setDisable(false);
-
-				ProjectSWG.log("PSWG scan done");
 				cancelButton.setVisible(false);
 				progressIndicator.setVisible(false);
-				Pair<Double, ArrayList<Resource>> result = manager.getPswgScanService().getValue();
-				if (result == null) {
-					scanButton.setVisible(true);
-					return;
-				}
 				
-				final double dlTotal = manager.getPswgScanService().getValue().getKey();
-				if (dlTotal > 0) {
-					updateButton.setVisible(true);
-					updateButton.requestFocus();
-					mainDisplay.queueString(String.format("Download required: %s B", dlTotal));
-				} else {
-					gameSettingsButton.setDisable(false);
-					extrasButton.setDisable(false);
-
-					playButton.setDisable(false);
+				switch (manager.getPswgScanService().getState()) {
+				case CANCELLED:
+					ProjectSWG.log("PSWG scan cancelled");
 					scanButton.setVisible(true);
-					playButton.requestFocus();
-					mainDisplay.queueString("Ready");
+					break;
+					
+				case SUCCEEDED:
+					ProjectSWG.log("PSWG scan succeeded");
+					Pair<Double, ArrayList<Resource>> result = manager.getPswgScanService().getValue();
+					if (result == null) {
+						scanButton.setVisible(true);
+						return;
+					}
+					
+					final double dlTotal = manager.getPswgScanService().getValue().getKey();
+					if (dlTotal > 0) {
+						updateButton.setVisible(true);
+					} else {
+						gameSettingsButton.setDisable(false);
+						extrasButton.setDisable(false);
+
+						playButton.setDisable(false);
+						scanButton.setVisible(true);
+						mainDisplay.queueString("Ready");
+					}
+					break;
+				default:
 				}
 			}
 		});
 		
 		manager.getUpdateService().runningProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue) {
+				launcherSettingsButton.setDisable(true);
 				updateButton.setVisible(false);
 				cancelButton.setVisible(true);
 				progressIndicator.setVisible(true);
 			} else {
+				launcherSettingsButton.setDisable(false);
 				switch (manager.getUpdateService().getState()) {
 				case FAILED:
-					ProjectSWG.log("Update failed: " + manager.getUpdateService().getException());
 					cancelButton.setVisible(false);
 					progressIndicator.setVisible(false);
 					scanButton.setVisible(true);
-					scanButton.requestFocus();
-					mainDisplay.queueString("Update failed");
 					break;
 				
 				case CANCELLED:
-					ProjectSWG.log("Update failed: " + manager.getUpdateService().getException());
 					cancelButton.setVisible(false);
 					progressIndicator.setVisible(false);
 					scanButton.setVisible(true);
-					scanButton.requestFocus();
-					mainDisplay.queueString("Update cancelled");
 					break;
 					
 				case SUCCEEDED:
-					ProjectSWG.log("Update succeeded");
+					gameSettingsButton.setDisable(false);
+					extrasButton.setDisable(false);
 					cancelButton.setVisible(false);
 					progressIndicator.setVisible(false);
 					scanButton.setVisible(true);
-					if (manager.getUpdateService().getValue())
+					if (manager.getUpdateService().getValue()) {
+						playButton.setDisable(false);
 						playButton.setVisible(true);
+					}
 					break;
-					
 				default:
 				}
 			}
@@ -295,16 +306,20 @@ public class MainController implements FxmlController
 		
 		manager.getUpdateService().progressProperty().addListener((observable, oldValue, newValue) -> {
 			if (oldValue.intValue() == -1)
-				showProgressBar();
-			ProjectSWG.log("File download progress: " + newValue);
+				Platform.runLater(() -> {
+					showProgressBar();
+				});
 			progressBar.setProgress(newValue.doubleValue());
 			if (newValue.intValue() == -1)
-				hideProgressBar();
+				Platform.runLater(() -> {
+					hideProgressBar();
+				});
 		});
 		
 		// initial setup
 		if (manager.getSwgReady().getValue() && manager.getPswgReady().getValue()) {
 			playButton.setVisible(true);
+			playButton.setDisable(false);
 			setupButton.setVisible(false);
 			scanButton.setVisible(true);
 		} else {
@@ -314,6 +329,62 @@ public class MainController implements FxmlController
 			extrasButton.setDisable(true);
 		}
 
+		// animation
+		
+		// show low anim
+		// fade
+		showDownloadLow = new Timeline();
+		final KeyValue showDownloadLowKV = new KeyValue(progressBar.opacityProperty(), 1, Interpolator.EASE_BOTH);
+		final KeyFrame showDownloadLowKF = new KeyFrame(Duration.millis(FADE_DURATION), showDownloadLowKV);
+		showDownloadLow.getKeyFrames().add(showDownloadLowKF);
+		
+		// show full anim
+		// scale
+		final ScaleTransition showDownloadHighScale = new ScaleTransition(Duration.millis(SLIDE_DURATION), progressBar);
+		showDownloadHighScale.setFromX(0);
+		showDownloadHighScale.setFromY(0);
+		showDownloadHighScale.setToX(1);
+		showDownloadHighScale.setToY(1);
+		// fade
+		final Timeline showDownloadHighFade = new Timeline();
+		final KeyValue showDownloadHighFadeKV = new KeyValue(progressBar.opacityProperty(), 1, Interpolator.EASE_BOTH);
+		final KeyFrame showDownloadHighFadeKF = new KeyFrame(Duration.millis(FADE_DURATION), showDownloadHighFadeKV);
+		showDownloadHighFade.getKeyFrames().add(showDownloadHighFadeKF);
+		// combine and play
+		showDownloadHigh = new ParallelTransition();
+		showDownloadHigh.getChildren().addAll(showDownloadHighScale, showDownloadHighFade);
+		
+		// hide low anim
+		// long fade
+		hideDownloadLow = new Timeline();
+		final KeyValue hideDownloadLowKV = new KeyValue(progressBar.opacityProperty(), 0, Interpolator.EASE_BOTH);
+		final KeyFrame hideDownloadLowKF = new KeyFrame(Duration.millis(SLIDE_DURATION), hideDownloadLowKV);
+		hideDownloadLow.getKeyFrames().add(hideDownloadLowKF);
+		hideDownloadLow.setOnFinished((event) -> {
+			progressBar.setOpacity(1);
+			progressBar.setVisible(false);;
+		});
+		
+		// hide full anim
+		// scale
+		final ScaleTransition hideDownloadHighScale = new ScaleTransition(Duration.millis(SLIDE_DURATION), progressBar);
+		hideDownloadHighScale.setFromX(1);
+		hideDownloadHighScale.setFromY(1);
+		hideDownloadHighScale.setToX(0);
+		hideDownloadHighScale.setToY(0);
+		// short fade
+		final Timeline highDownloadHighFade = new Timeline();
+		final KeyValue highDownloadHighFadeKV = new KeyValue(progressBar.opacityProperty(), 0, Interpolator.EASE_BOTH);
+		final KeyFrame highDownloadHighFadeKF = new KeyFrame(Duration.millis(FADE_DURATION), highDownloadHighFadeKV);
+		highDownloadHighFade.getKeyFrames().add(highDownloadHighFadeKF);
+		// combine and play
+		hideDownloadHigh = new ParallelTransition();
+		hideDownloadHigh.getChildren().addAll(hideDownloadHighScale, highDownloadHighFade);
+		hideDownloadHigh.setOnFinished((event) -> {
+			progressBar.setOpacity(1);
+			progressBar.setVisible(false);;
+		});
+		
 		/*
 		 * Extras
 		 */
@@ -382,36 +453,15 @@ public class MainController implements FxmlController
 		case ANIMATION_NONE:
 			progressBar.setVisible(true);
 			break;
-			
 		case ANIMATION_LOW:
 			progressBar.setOpacity(0);
 			progressBar.setVisible(true);
-			// fade
-			final Timeline longFadeIn = new Timeline();
-			final KeyValue longFadeInKV = new KeyValue(progressBar.opacityProperty(), 1, Interpolator.EASE_BOTH);
-			final KeyFrame longFadeInKF = new KeyFrame(Duration.millis(FADE_DURATION), longFadeInKV);
-			longFadeIn.getKeyFrames().add(longFadeInKF);
-			longFadeIn.play();
+			showDownloadLow.play();
 			break;
-			
 		case ANIMATION_HIGH:
 			progressBar.setOpacity(0);
 			progressBar.setVisible(true);
-			// scale
-			final ScaleTransition scaleProgressUp = new ScaleTransition(Duration.millis(SLIDE_DURATION), progressBar);
-			scaleProgressUp.setFromX(0);
-			scaleProgressUp.setFromY(0);
-			scaleProgressUp.setToX(1);
-			scaleProgressUp.setToY(1);
-			// fade
-			final Timeline shortFadeIn = new Timeline();
-			final KeyValue shortFadeInKV = new KeyValue(progressBar.opacityProperty(), 1, Interpolator.EASE_BOTH);
-			final KeyFrame shortFadeInKF = new KeyFrame(Duration.millis(FADE_DURATION), shortFadeInKV);
-			shortFadeIn.getKeyFrames().add(shortFadeInKF);
-			// combine and play
-			ParallelTransition parallelTransition = new ParallelTransition();
-			parallelTransition.getChildren().addAll(scaleProgressUp, shortFadeIn);
-			parallelTransition.play();
+			showDownloadHigh.play();
 			break;
 		}
 	}
@@ -422,40 +472,11 @@ public class MainController implements FxmlController
 		case ANIMATION_NONE:
 			progressBar.setVisible(false);;
 			break;
-			
 		case ANIMATION_LOW:
-			// long fade
-			final Timeline longFadeOut = new Timeline();
-			final KeyValue longFadeOutKV = new KeyValue(progressBar.opacityProperty(), 0, Interpolator.EASE_BOTH);
-			final KeyFrame longFadeOutKF = new KeyFrame(Duration.millis(SLIDE_DURATION), longFadeOutKV);
-			longFadeOut.getKeyFrames().add(longFadeOutKF);
-			longFadeOut.setOnFinished((event) -> {
-				progressBar.setOpacity(1);
-				progressBar.setVisible(false);;
-			});
-			longFadeOut.play();
+			hideDownloadLow.play();
 			break;
-			
 		case ANIMATION_HIGH:
-			// scale
-			final ScaleTransition scaleProgressUp = new ScaleTransition(Duration.millis(SLIDE_DURATION), progressBar);
-			scaleProgressUp.setFromX(1);
-			scaleProgressUp.setFromY(1);
-			scaleProgressUp.setToX(0);
-			scaleProgressUp.setToY(0);
-			// short fade
-			final Timeline shortFadeOut = new Timeline();
-			final KeyValue shortFadeOutKV = new KeyValue(progressBar.opacityProperty(), 0, Interpolator.EASE_BOTH);
-			final KeyFrame shortFadeOutKF = new KeyFrame(Duration.millis(FADE_DURATION), shortFadeOutKV);
-			shortFadeOut.getKeyFrames().add(shortFadeOutKF);
-			// combine and play
-			ParallelTransition parallelTransition = new ParallelTransition();
-			parallelTransition.getChildren().addAll(scaleProgressUp, shortFadeOut);
-			parallelTransition.setOnFinished((event) -> {
-				progressBar.setOpacity(1);
-				progressBar.setVisible(false);;
-			});
-			parallelTransition.play();
+			hideDownloadHigh.play();
 			break;
 		}
 	}

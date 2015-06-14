@@ -188,6 +188,8 @@ public class Manager
 		});
 		
 		swgFolder.addListener((observable, oldValue, newValue) -> {
+			//if (newValue == null)
+			//	return;
 			
 			ProjectSWG.log(String.format("swgFolder changed: %s -> %s", oldValue, newValue));
 			ProjectSWG.PREFS.put("swg_folder", newValue);
@@ -219,10 +221,17 @@ public class Manager
 		
 		pswgScanService.setOnCancelled((e) -> {
 			mainOut.unbind();
+			ProjectSWG.log("pswgScanService cancelled");
+			Platform.runLater(() -> {
+				mainOut.set("Scan cancelled");
+			});
 		});
 		
 		pswgScanService.setOnFailed((e) -> {
 			mainOut.unbind();
+			Platform.runLater(() -> {
+				mainOut.set("Scan failed");
+			});
 			ProjectSWG.log("pswgScanService failed");
 		});
 		
@@ -245,7 +254,7 @@ public class Manager
 			
 			if (dlTotal > 0) {
 				Platform.runLater(() -> {
-					mainOut.set(String.format("Required download size: %s B", dlTotal));
+					mainOut.set(String.format("Update required : %.2f MB", dlTotal / 1024 / 1024));
 				});
 			} else
 				pswgReady.set(true);
@@ -254,6 +263,9 @@ public class Manager
 		});
 		
 		pswgFolder.addListener((observable, oldValue, newValue) -> {
+			//if (newValue == null || swgFolder.getValue() == null)
+			//	return;
+			
 			ProjectSWG.log(String.format("pswgFolder changed: %s -> %s", oldValue, newValue));
 			ProjectSWG.PREFS.put("pswg_folder", newValue);
 			
@@ -277,14 +289,27 @@ public class Manager
 		
 		updateService.setOnCancelled((e) -> {
 			mainOut.unbind();
+			Platform.runLater(() -> {
+				mainOut.set("Update cancelled");
+			});
 		});
 		
 		updateService.setOnFailed((e) -> {
 			mainOut.unbind();
+			ProjectSWG.log("Update failed: " + updateService.getException());
+			Platform.runLater(() -> {
+				mainOut.set("Update failed");
+			});
 		});
 		
 		updateService.setOnSucceeded((e) -> {
 			mainOut.unbind();
+			Platform.runLater(() -> {
+				if (updateService.getValue())
+					mainOut.set("Ready");
+				else
+					mainOut.set("Update failed");
+			});
 		});
 		
 		// wine
@@ -312,6 +337,9 @@ public class Manager
 
 	public void loadPrefs()
 	{
+		//swgFolder.set(null);
+		//pswgFolder.set(null);
+		
 		// paths
 		pswgFolder.set(ProjectSWG.PREFS.get("pswg_folder", ""));
 		swgFolder.set(ProjectSWG.PREFS.get("swg_folder", ""));

@@ -105,33 +105,40 @@ public class GameDisplay
 			stage.getIcons().add(icon);
 		
 		stage.setTitle(title);
-		GameController gameController = (GameController)ProjectSWG.loadFxml(ProjectSWG.FXML_GAME);
+		GameController gameController = (GameController)ProjectSWG.loadFxml(ProjectSWG.PREFS.get("theme", "Default"), ProjectSWG.FXML_GAME);
 		Scene scene = new Scene(gameController.getRoot());
 		stage.setScene(scene);
 		stage.setResizable(true);
 		gameController.init();
 		gameController.setStage(stage);
 		swg.setStage(stage);
+		
 		Button gameButton = new Button(MainController.WHITE_CIRCLE);
 		swg.setGameButton(gameButton);
 		swg.setGameController(gameController);
 		GameService gameService = swg.getGameService();
 		display.add(swg);
+		
+		// menu
 		ContextMenu contextMenu = new ContextMenu();
+		
 		MenuItem cm1Remove = new MenuItem("Remove");
 		cm1Remove.setOnAction((e) -> {
 			if (gameService.isRunning())
 				gameService.cancel();
 			mainController.getManager().getInstances().remove(swg);
 		});
+		
 		MenuItem cm2Stop = new MenuItem("Stop");
 		cm2Stop.setOnAction((e) -> {
 			gameService.cancel();
 		});
+		
 		MenuItem cm3Show = new MenuItem("Show");
 		cm3Show.setOnAction((e) -> {
 			gameController.show();
 		});
+		
 		contextMenu.getItems().addAll(cm1Remove, cm2Stop, cm3Show);
 		gameButton.setMaxSize(50, 100);
 		gameButton.setBackground(Background.EMPTY);

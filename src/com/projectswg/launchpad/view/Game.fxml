@@ -18,14 +18,14 @@
    <children>
       <HBox alignment="CENTER" maxWidth="Infinity" spacing="10.0">
          <children>
-            <Button fx:id="clearButton" mnemonicParsing="false" text="Clear" />
-            <Button fx:id="saveAsButton" mnemonicParsing="false" text="Save as..." />
+            <Button fx:id="clearButton" focusTraversable="false" mnemonicParsing="false" text="Clear" />
+            <Button fx:id="saveAsButton" focusTraversable="false" mnemonicParsing="false" text="Save as..." />
             <Region HBox.hgrow="ALWAYS" />
             <TextField fx:id="findTextField" />
-            <Button fx:id="findButton" mnemonicParsing="false" text="Find" />
+            <Button fx:id="findButton" defaultButton="true" focusTraversable="false" mnemonicParsing="false" text="Find" />
             <Region maxWidth="Infinity" HBox.hgrow="ALWAYS" />
             <Pane fx:id="gameStatusPane" />
-            <Button fx:id="stopButton" mnemonicParsing="false" text="Stop" HBox.hgrow="ALWAYS" />
+            <Button fx:id="stopButton" focusTraversable="false" mnemonicParsing="false" text="Stop" HBox.hgrow="ALWAYS" />
          </children>
       </HBox>
       <TextArea fx:id="outputTextArea" editable="false" maxHeight="Infinity" maxWidth="Infinity" VBox.vgrow="ALWAYS" />

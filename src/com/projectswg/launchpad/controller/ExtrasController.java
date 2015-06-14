@@ -21,11 +21,7 @@ package com.projectswg.launchpad.controller;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.ArrayList;
-
-import com.projectswg.launchpad.ProjectSWG;
 import com.projectswg.launchpad.extras.ExtraModule;
-
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -39,17 +35,19 @@ public class ExtrasController implements ModalComponent
 	public static final String LABEL = "Extras";
 	
 	private MainController mainController;
-	private ArrayList<ExtraModule> modules;
 	
 	
 	public ExtrasController()
 	{
-		modules = new ArrayList<>();
 	}
 	
 	public void addExtra(ExtraModule module)
 	{
-		modules.add(module);
+		Button button = module.createButton();
+		// css?
+		button.setPrefHeight(90);
+		button.setPrefWidth(90);
+		extrasRoot.getChildren().add(button);
 	}
 	
 	@Override
@@ -69,15 +67,6 @@ public class ExtrasController implements ModalComponent
 		this.mainController = mainController;
 		
 		extrasRoot.getChildren().clear();
-		for (ExtraModule module : modules) {
-			ProjectSWG.log("Loadding extra module: " + module.toString());
-			
-			Button button = module.createButton();
-			// css?
-			button.setPrefHeight(90);
-			button.setPrefWidth(90);
-			extrasRoot.getChildren().add(button);
-		}
 	}
 	
 	@Override

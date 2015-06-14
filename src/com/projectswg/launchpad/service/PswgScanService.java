@@ -106,7 +106,6 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 			{
 				updateProgress(0, 1);
 
-				//int downloadSizeRequired = 0;
 				ArrayList<String> resourceList = null;
 				ArrayList<Resource> resources = null;
 				

@@ -23,7 +23,6 @@ import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import com.projectswg.launchpad.ProjectSWG;
 import com.projectswg.launchpad.service.Manager;
 
 import javafx.fxml.FXML;
@@ -136,6 +135,8 @@ public class SetupController implements ModalComponent
 		});
 		
 		manager.getPswgFolder().addListener((observable, oldValue, newValue) -> {
+			//if (newValue == null || manager.getSwgFolder().getValue() == null)
+			//	return;
 			if (!newValue.equals("")) {
 				pswgFolderTextField.setEffect(greenGlow);
 				if (!manager.getSwgFolder().getValue().equals("")) {
@@ -159,9 +160,8 @@ public class SetupController implements ModalComponent
 			swgFolderTextField.setEffect(redGlow);
 			pswgFolderButton.setDisable(true);
 		}
-		if (!manager.getPswgFolder().getValue().equals("")) {
+		if (!manager.getPswgFolder().getValue().equals(""))
 			pswgFolderTextField.setEffect(greenGlow);
-		}
 	}
 	
 	@Override
@@ -174,41 +174,5 @@ public class SetupController implements ModalComponent
 	public Parent getRoot()
 	{
 		return setupRoot;
-	}
-	
-	public void swgFolderNotSet()
-	{
-		ProjectSWG.log("SetupComponent::swgFolderNotSet");
-		
-		swgFolderTextField.setEffect(redGlow);
-		swgFolderButton.setDisable(false);
-	
-		pswgFolderButton.setDisable(true);
-		pswgFolderTextField.setEffect(null);
-	}
-	
-	public void pswgFolderNotSet()
-	{
-		ProjectSWG.log("SetupComponent::pswgFolderNotSet");
-	
-		swgFolderTextField.setEffect(greenGlow);
-		swgFolderButton.setDisable(false);
-		
-		pswgFolderButton.setDisable(false);
-		pswgFolderTextField.setEffect(redGlow);
-
-	}
-	
-	public void setupDone()
-	{
-		ProjectSWG.log("SetupComponent::updateRequired");
-		
-		swgFolderTextField.setEffect(greenGlow);
-		swgFolderButton.setDisable(false);
-		
-		pswgFolderButton.setDisable(false);
-		pswgFolderTextField.setEffect(greenGlow);
-
-		setupDisplay.queueNode(setupCompleteButton);
 	}
 }

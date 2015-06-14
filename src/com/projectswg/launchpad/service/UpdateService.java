@@ -26,13 +26,12 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Files;
 import java.util.ArrayList;
-
+import java.util.Arrays;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
-
 import javax.xml.bind.DatatypeConverter;
-
 import com.projectswg.launchpad.ProjectSWG;
 import com.projectswg.launchpad.model.Resource;
 
@@ -50,6 +49,9 @@ public class UpdateService extends Service<Boolean>
 	{
 		return new Task<Boolean>() {
 
+			private String swgFolder = manager.getSwgFolder().getValue();
+			private String pswgFolder = manager.getPswgFolder().getValue();
+			
 			@Override
 			protected Boolean call() throws Exception
 			{
@@ -62,12 +64,24 @@ public class UpdateService extends Service<Boolean>
 					if (resource.getDlFlag())
 						downloadList.add(resource);
 				
+				String resourceName;
+				File copyFrom, copyTo;
 				for (int i = 0; i < downloadList.size(); i++) {
-					updateProgress(-1, 0);
-					updateMessage(String.format("Downloading resources: %s / %s", i + 1, downloadList.size()));
-					if (!downloadResource(downloadList.get(i))) {
-						ProjectSWG.log(downloadList.get(i).getName() + " did not download successfully");
-						return false;
+					updateMessage(String.format("Installing resource: %s / %s", i + 1, downloadList.size()));
+					resourceName = downloadList.get(i).getName();
+					// check if swg file
+					if (Arrays.asList(SwgScanService.FILES).contains(resourceName)) {
+						copyFrom = new File(swgFolder + "/" + resourceName);
+						copyTo = new File(pswgFolder + "/" + resourceName);
+						if (copyTo.isFile())
+							Files.delete(copyTo.toPath());
+						Files.copy(copyFrom.toPath(), copyTo.toPath());
+						ProjectSWG.log("Copied file: " + resourceName);
+					} else {
+						if (!downloadResource(downloadList.get(i))) {
+							ProjectSWG.log(resourceName + " did not download successfully");
+							return false;
+						}
 					}
 				}
 
@@ -121,7 +135,7 @@ public class UpdateService extends Service<Boolean>
 							fos.flush();
 						}
 					}
-					
+					updateProgress(-1, 0);
 					fos.close();
 					resource.setDlFlag(false);
 					return true;

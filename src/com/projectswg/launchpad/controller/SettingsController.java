@@ -148,7 +148,7 @@ public class SettingsController implements ModalComponent
 		if (ProjectSWG.isWindows())
 			// remove wine pane
 		initWinePane();
-		initInfoPane();
+		initAboutPane();
 		
 		animationSlider.setValue(ProjectSWG.PREFS.getInt("animation", 2));
 		
@@ -202,8 +202,7 @@ public class SettingsController implements ModalComponent
 			if (oldValue == null)
 				return;
 			
-			ProjectSWG.PREFS.put("theme", newValue);
-			mainController.getPswg().loadFxmls();
+			mainController.getPswg().loadTheme(newValue);
 			Platform.runLater(() -> {
 				ModalController modal = (ModalController)mainController.getPswg().getControllers().get("modal");
 				modal.loadComponent((SettingsController)mainController.getPswg().getControllers().get("settings"));
@@ -387,6 +386,8 @@ public class SettingsController implements ModalComponent
 		});
 		
 		mainController.getManager().getPswgFolder().addListener((observable, oldValue, newValue) -> {
+			//if (newValue == null)
+			//	return;
 			if (!newValue.equals(""))
 				pswgFolderDisplay.queueString(MainController.CHECKMARK);
 			else
@@ -435,6 +436,8 @@ public class SettingsController implements ModalComponent
 		});
 		
 		mainController.getManager().getPswgFolder().addListener((observable, oldValue, newValue) -> {
+			if (newValue == null)
+				return;
 			if (newValue.equals(""))
 				deleteGameProfilesButton.setDisable(true);
 			else
@@ -488,7 +491,7 @@ public class SettingsController implements ModalComponent
 		});
 	}
 	
-	public void initInfoPane()
+	public void initAboutPane()
 	{
 		pswgHyperlink.setOnAction((e) -> {
 			try {

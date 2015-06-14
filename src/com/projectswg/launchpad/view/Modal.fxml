@@ -20,7 +20,7 @@
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </HBox.margin></Label>
             <Region maxWidth="Infinity" HBox.hgrow="ALWAYS" />
-            <Button fx:id="closeButton" mnemonicParsing="false" text="✕" />
+            <Button fx:id="closeButton" focusTraversable="false" mnemonicParsing="false" text="✕" />
          </children>
       </HBox>
       <StackPane fx:id="modalStackPane" VBox.vgrow="ALWAYS" />

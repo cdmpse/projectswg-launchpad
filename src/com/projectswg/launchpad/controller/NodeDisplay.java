@@ -75,8 +75,6 @@ public class NodeDisplay
 		TextFlow textFlow = new TextFlow();
 		Text text = new Text(s);
 		
-		ProjectSWG.log("string queued: " + s);
-		
 		textFlow.getChildren().add(text);
 		queueNode(textFlow);
 	}

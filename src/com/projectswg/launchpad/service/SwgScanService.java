@@ -30,7 +30,7 @@ public class SwgScanService extends Service<Boolean>
 {
 	public static final String[] FILES = {
 
-		"SwgClientSetup_r.exe",
+		//"SwgClientSetup_r.exe",
 		"BugTool.exe",
 
 		"bottom.tre",
@@ -54,11 +54,11 @@ public class SwgScanService extends Service<Boolean>
 		"data_texture_05.tre",
 		"data_texture_06.tre",
 		"data_texture_07.tre",
-		"default_patch.tre",
+		//"default_patch.tre",
 
 		"dbghelp.dll",
-		"dpvs.dll",
-		"Mss32.dll",
+		//"dpvs.dll",
+		//"Mss32.dll",
 		"qt-mt305.dll"
 	};
 	

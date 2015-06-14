@@ -92,12 +92,16 @@ public class GameController implements FxmlController
 	{
 		this.stage.show();
 
-		TextFlow tf = new TextFlow(new Text(MainController.WHITE_CIRCLE));
+		final TextFlow tf = new TextFlow();
+		if (gameService.isRunning()) {
+			tf.getChildren().add(new Text(MainController.WHITE_CIRCLE));
+			tf.setEffect(new DropShadow(5, Color.BLUE));
+		} else {
+			tf.getChildren().add(new Text(MainController.BLACK_CIRCLE));
+			tf.setEffect(new DropShadow(5, Color.GRAY));
+		}
+		
 		Platform.runLater(() -> {
-			if (gameService.isRunning())
-				tf.setEffect(new DropShadow(5, Color.BLUE));
-			else
-				tf.setEffect(new DropShadow(5, Color.GRAY));
 			gameStatusDisplay.queueNode(tf);
 		});
 	}

@@ -73,8 +73,8 @@ public class ProjectSWG extends Application
 		manager = new Manager();
 		controllers = new HashMap<>();
 		gameControllers = new ArrayList<>();
-		
-		loadFxmls();
+
+		loadTheme(PREFS.get("theme", "Default"));
 
 		primaryStage.setResizable(false);
 		primaryStage.show();
@@ -82,10 +82,44 @@ public class ProjectSWG extends Application
 		manager.loadPrefs();
 	}
 	
-	public void loadCss()
+	public void loadTheme(String theme)
+	{
+		PREFS.put("theme", theme);
+		
+		loadFxmls(theme);
+		loadCss(theme);
+	}
+	
+	public void loadFxmls(String theme)
+	{
+		controllers.clear();
+		 
+		for (Map.Entry<String, String> entry : FXML_SCREENS.entrySet())
+			controllers.put(entry.getKey(), loadFxml(theme, entry.getValue()));
+		
+		Scene scene = new Scene(controllers.get("main").getRoot());
+		primaryStage.setScene(scene);
+		primaryStage.setTitle("ProjectSWG");
+		Image icon = new Image("/resources/pswg_icon.png");
+		if (icon.isError())
+			ProjectSWG.log("Error loading application icon");
+		else
+			primaryStage.getIcons().add(icon);
+		
+		((MainController)controllers.get("main")).init(this);
+		
+		// games
+		gameControllers.clear();
+		for (Instance swg : manager.getInstances()) {
+			GameController gameController = (GameController)loadFxml(theme, FXML_GAME);
+			swg.setGameController(gameController);
+			gameControllers.add(gameController);
+		}
+	}
+	
+	public void loadCss(String theme)
 	{
 		String cssPath = CSS_DEFAULT;
-		String theme = PREFS.get("theme", "Default");
 		
 		if (!theme.equals("Default")) {
 			try {
@@ -116,35 +150,6 @@ public class ProjectSWG extends Application
 		}
 	}
 	
-	public void loadFxmls()
-	{
-		controllers.clear();
-		 
-		for (Map.Entry<String, String> entry : FXML_SCREENS.entrySet())
-			controllers.put(entry.getKey(), loadFxml(entry.getValue()));
-		
-		Scene scene = new Scene(controllers.get("main").getRoot());
-		primaryStage.setScene(scene);
-		primaryStage.setTitle("ProjectSWG");
-		Image icon = new Image("/resources/pswg_icon.png");
-		if (icon.isError())
-			ProjectSWG.log("Error loading application icon");
-		else
-			primaryStage.getIcons().add(icon);
-		
-		((MainController)controllers.get("main")).init(this);
-		
-		// games
-		gameControllers.clear();
-		for (Instance swg : manager.getInstances()) {
-			GameController gameController = (GameController)loadFxml(FXML_GAME);
-			swg.setGameController(gameController);
-			gameControllers.add(gameController);
-		}
-
-		loadCss();
-	}
-	
 	public HashMap<String, FxmlController> getControllers()
 	{
 		return controllers;
@@ -171,7 +176,7 @@ public class ProjectSWG extends Application
 			System.out.println("[ PSWGLog ] " + text);
 	}
 
-	public static FxmlController loadFxml(String fxml)
+	public static FxmlController loadFxml(String theme, String fxml)
 	{
 		ProjectSWG.log("loadFxml: " + fxml);
 		
@@ -184,7 +189,6 @@ public class ProjectSWG extends Application
 		}
 		
 		FXMLLoader fxmlLoader = null;
-		String theme = PREFS.get("theme", "Default");
 		
 		if (!theme.equals("Default")) {
 			File file = new File(codeSource + "/" + THEMES_FOLDER + "/" + theme + "/" + fxml);

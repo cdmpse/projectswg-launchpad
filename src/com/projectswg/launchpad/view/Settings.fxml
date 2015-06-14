@@ -205,7 +205,7 @@
             </GridPane>
          </content>
       </TitledPane>
-      <TitledPane text="Info">
+      <TitledPane text="About">
          <content>
             <VBox spacing="10.0">
                <children>

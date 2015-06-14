@@ -14,54 +14,34 @@
 			classpathref="fxant"/>
 	</target>
 	
-	<target name="setup-staging-area">
-		<delete dir="externalLibs" />
-		<delete dir="project" />
-		<delete dir="projectRefs" />
-	
-		<mkdir dir="externalLibs" />
-	
-		<copy todir="externalLibs">
-			<fileset dir="C:\Users\user\git\ProjectSWG Launchpad\lib">
-				<filename name="bcprov-jdk15on-152.jar"/>
-			</fileset>
-		</copy>
-	
-		<mkdir dir="project" />
-		<copy todir="project">
-			<fileset dir="C:\Users\user\git\ProjectSWG Launchpad">
-				<include name="src/**" />
-			</fileset>
-			<fileset dir="C:\Users\user\git\ProjectSWG Launchpad">
-				<include name="themes/**" />
-			</fileset>
-		</copy>
-	
-		<mkdir dir="projectRefs" />
-	</target>
-	
 	<target name='do-compile'>
-		<delete dir="build" />
+		<delete file="build"/>
+			
 		<mkdir dir="build/src" />
 		<mkdir dir="build/libs" />
 		<mkdir dir="build/classes" />
 	
-		<!-- Copy project-libs references -->
-		<copy todir="build/libs">
-			<fileset dir="externalLibs">
-				<include name="bcprov-jdk15on-152.jar"/>
-			</fileset>
-		</copy>
-	
-		<!-- Copy project references -->
-	
 		<!-- Copy project sources itself -->
 		<copy todir="build/src">
-			<fileset dir="project/src">
+			<fileset dir="src">
 				<include name="**/*"/>
 			</fileset>
 		</copy>
-	
+		
+		<!-- Copy project-libs references -->
+		<copy todir="build/libs">
+			<fileset dir="lib">
+				<include name="bcprov-jdk15on-152.jar"/>
+			</fileset>
+		</copy>
+		
+		<!-- Copy over none Java-Files -->
+		<copy todir="build/classes">
+			<fileset dir="src">
+				<exclude name="**/*.java"/>
+			</fileset>
+		</copy>
+
 		<javac includeantruntime="false" source="1.8" target="1.8" srcdir="build/src" destdir="build/classes" encoding="Cp1252">
 			<classpath>
 				<fileset dir="build/libs">
@@ -69,22 +49,10 @@
 				</fileset>
 			</classpath>
 		</javac>
-	
-		<!-- Copy over none Java-Files -->
-		<copy todir="build/classes">
-			<fileset dir="project/src">
-				<exclude name="**/*.java"/>
-			</fileset>
-		</copy>
-		<copy todir="build/themes">
-			<fileset dir="project/themes">
-				<exclude name="**/*.java"/>
-			</fileset>
-		</copy>
-		
 	</target>
 		
-	<target name="do-deploy" depends="setup-staging-area, do-compile, init-fx-tasks">
+	<target name="do-deploy" depends="do-compile, init-fx-tasks">
+		
 		<delete file="dist"/>
 		<delete file="deploy" />
 	
@@ -92,15 +60,17 @@
 		<mkdir dir="dist/libs" />
 	
 		<copy todir="dist/libs">
-			<fileset dir="externalLibs">
+			<fileset dir="build/libs">
 				<include name="*" />
 			</fileset>
 		</copy>
 	
-	
 		<fx:resources id="appRes">
 			<fx:fileset dir="dist" includes="ProjectSWG.jar"/>
 			<fx:fileset dir="dist" includes="libs/*"/>
+			<fx:fileset dir="${basedir}" includes="LICENSE.txt" type="license"/>
+			<fx:fileset dir="${basedir}" includes="themes/**"/>
+			<fx:fileset dir="${basedir}" includes="ProjectSWG.exe.manifest"/>
 		</fx:resources>
 	
 		<fx:application id="fxApplication"
@@ -111,8 +81,6 @@
 	
 		<mkdir dir="build/classes/META-INF" />
 	
-	
-	
 		<fx:jar destfile="dist/ProjectSWG.jar">
 			<fx:application refid="fxApplication"/>
 			<fileset dir="build/classes">
@@ -122,12 +90,11 @@
 			<manifest>
 				<attribute name="Implementation-Vendor" value="projectswg.com"/>
 				<attribute name="Implementation-Title" value="ProjectSWG"/>
-				<attribute name="Implementation-Version" value="1.0"/>
+				<attribute name="Implementation-Version" value="0.2"/>
 				<attribute name="JavaFX-Feature-Proxy" value="None"/>
 			</manifest>
 		</fx:jar>
-	
-	
+
 		<mkdir dir="deploy" />
 		<!-- Need to use ${basedir} because somehow the ant task is calculating the directory differently -->
 		<fx:deploy
@@ -145,9 +112,7 @@
 	
 			<fx:application refId="fxApplication"/>
 			<fx:resources refid="appRes"/>
-			
 		</fx:deploy>
-	
 	
 	</target>
 </project>
