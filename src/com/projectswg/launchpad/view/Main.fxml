@@ -51,7 +51,7 @@
                   <TilePane alignment="CENTER" hgap="10.0" prefTileHeight="40.0" vgap="10.0" VBox.vgrow="ALWAYS">
                      <children>
                         <Button fx:id="launcherSettingsButton" focusTraversable="false" maxHeight="Infinity" maxWidth="Infinity" mnemonicParsing="false" text="Settings" />
-                        <Button fx:id="gameSettingsButton" focusTraversable="false" maxHeight="Infinity" maxWidth="Infinity" mnemonicParsing="false" text="Game Settings" />
+                        <Button fx:id="gameSettingsButton" focusTraversable="false" maxHeight="Infinity" maxWidth="Infinity" mnemonicParsing="false" text="Options" />
                         <Button fx:id="extrasButton" focusTraversable="false" maxHeight="Infinity" maxWidth="Infinity" mnemonicParsing="false" text="Extras" />
                      </children>
                      <padding>
