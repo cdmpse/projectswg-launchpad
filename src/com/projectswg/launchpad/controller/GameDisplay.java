@@ -20,10 +20,7 @@
 package com.projectswg.launchpad.controller;
 
 import java.util.ArrayList;
-import java.util.prefs.Preferences;
-
 import com.projectswg.launchpad.ProjectSWG;
-
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -32,19 +29,17 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Side;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tooltip;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
 import com.projectswg.launchpad.model.Instance;
 import com.projectswg.launchpad.service.GameService;
 
@@ -53,7 +48,7 @@ public class GameDisplay
 	private static final int SLIDE_DURATION = 500;
 	
 	private Pane root;
-	private ArrayList<Instance> display;
+	private volatile ArrayList<Instance> display;
 	private MainController mainController;
 
 	
@@ -64,19 +59,15 @@ public class GameDisplay
 		display = new ArrayList<>();
 		
 		mainController.getManager().getInstances().addListener((ListChangeListener.Change<? extends Instance> e) -> {
-			while (e.next()) {
+			while (e.next())
 				if (e.wasAdded()) {
 					if (ProjectSWG.PREFS.getBoolean("close_after_launch", false))
 						Platform.exit();
-					for (Instance swg : e.getAddedSubList()) {
+					for (Instance swg : e.getAddedSubList())
 						addGame(swg);
-					}
-				} else if (e.wasRemoved()) {
-					for (Instance swg : e.getRemoved()) {
+				} else if (e.wasRemoved())
+					for (Instance swg : e.getRemoved())
 						removeGame(swg);
-					}
-				}
-			};
 		});
 	}
 	
@@ -88,8 +79,18 @@ public class GameDisplay
 	public void removeGame(Instance swg)
 	{
 		if (display.contains(swg)) {
-			root.getChildren().remove(display.indexOf(swg));
-			display.remove(swg);
+			Group gameButtonGroup = swg.getGameButtonGroup();
+			ParallelTransition removeGameAnimationHigh = new ParallelTransition();
+			final Timeline slideLeft = new Timeline();
+			final KeyValue removeGameAnimationHighKV = new KeyValue(gameButtonGroup.layoutYProperty(), root.getHeight(), Interpolator.EASE_OUT);
+			final KeyFrame removeGameAnimationHighKF = new KeyFrame(Duration.millis(SLIDE_DURATION), removeGameAnimationHighKV);
+			slideLeft.getKeyFrames().add(removeGameAnimationHighKF);
+			removeGameAnimationHigh.getChildren().addAll(slideLeft);
+			removeGameAnimationHigh.setOnFinished((e) -> {
+				root.getChildren().remove(display.indexOf(swg));
+				display.remove(swg);
+			});
+			removeGameAnimationHigh.play();
 		}
 	}
 	
@@ -109,15 +110,18 @@ public class GameDisplay
 		Scene scene = new Scene(gameController.getRoot());
 		stage.setScene(scene);
 		stage.setResizable(true);
-		gameController.init();
-		gameController.setStage(stage);
 		swg.setStage(stage);
 		
-		Button gameButton = new Button(MainController.WHITE_CIRCLE);
-		swg.setGameButton(gameButton);
+		Button gameButton = new Button(ProjectSWG.WHITE_CIRCLE);
+		gameButton.setTooltip(new Tooltip("Game process: " + display.size()));
+		gameButton.setOpacity(0);
+		Group gameButtonGroup = new Group(gameButton);
+		
+		swg.setGameButtonGroup(gameButtonGroup);
 		swg.setGameController(gameController);
-		GameService gameService = swg.getGameService();
 		display.add(swg);
+		GameService gameService = swg.getGameService();
+		gameController.init(gameService, stage);
 		
 		// menu
 		ContextMenu contextMenu = new ContextMenu();
@@ -140,7 +144,6 @@ public class GameDisplay
 		});
 		
 		contextMenu.getItems().addAll(cm1Remove, cm2Stop, cm3Show);
-		gameButton.setMaxSize(50, 100);
 		gameButton.setBackground(Background.EMPTY);
 		gameButton.setContextMenu(contextMenu);
 		gameButton.setOnAction((e) -> {
@@ -151,17 +154,12 @@ public class GameDisplay
 		
 		gameService.runningProperty().addListener((observable, oldValue, newValue) -> {
 			if (!newValue) {
-				gameButton.setEffect(new DropShadow(5, Color.GRAY));
-				gameButton.setText(MainController.BLACK_CIRCLE);
+				gameButton.setText(ProjectSWG.BLACK_CIRCLE);
 				cm2Stop.setDisable(true);
 			}
 		});
 		
-		Tooltip tt = new Tooltip("Game process: " + display.size());
-		gameButton.setTooltip(tt);
-		gameButton.setEffect(new DropShadow(5, Color.BLUE));
-		gameButton.setOpacity(0);
-		root.getChildren().add(gameButton);
+		root.getChildren().add(gameButtonGroup);
 		
 		Platform.runLater(() -> {
 			displayGames();
@@ -173,48 +171,43 @@ public class GameDisplay
 	
 	public void displayGames()
 	{
-		ProjectSWG.log("Displaying games");
-		
-		Preferences prefs = Preferences.userNodeForPackage(ProjectSWG.class);
-		double rootHeight = root.boundsInParentProperty().get().getHeight();
-		double rootWidth = root.boundsInParentProperty().get().getWidth();
-		ProjectSWG.log("display.size: " + display.size());
-		double notch = rootWidth / (1 + display.size());
+		double notch = root.getWidth() / (1 + display.size());
 
 		for (int i = 0; i < display.size(); i++) {
 			
 			Instance swg = display.get(i);
-			Button gameButton = swg.getGameButton();
-			double buttonHeight = gameButton.boundsInParentProperty().get().getHeight();
-			double buttonWidth = gameButton.boundsInParentProperty().get().getWidth();
-			gameButton.setLayoutY(rootHeight / 2 - buttonHeight /2);
-			gameButton.setLayoutX(notch * (i + 1) - buttonWidth / 2);
-			
-			switch (prefs.getInt("animation", 2)) {
-			case MainController.ANIMATION_NONE:
-				gameButton.setOpacity(1);
-				break;
-				
-			case MainController.ANIMATION_LOW:
-				gameButton.setOpacity(1);
-				break;
-				
-			case MainController.ANIMATION_HIGH:
-				gameButton.setTranslateX(rootWidth);
-				gameButton.setOpacity(1);
-				ParallelTransition parallelTransition = new ParallelTransition();
-				final Timeline slideLeft = new Timeline();
-				final KeyValue newMsgKV = new KeyValue(gameButton.translateXProperty(), 0, Interpolator.EASE_OUT);
-				final KeyFrame newMsgKF = new KeyFrame(Duration.millis(SLIDE_DURATION), newMsgKV);
-				slideLeft.getKeyFrames().add(newMsgKF);
-				slideLeft.setOnFinished((e) -> {
-					ProjectSWG.log("after anim x: " + gameButton.getLayoutX());
-				});
-				
-				parallelTransition.getChildren().addAll(slideLeft);
-				parallelTransition.play();
-				break;
+			Group gameButtonGroup = swg.getGameButtonGroup();
+			Button gameButton = (Button)gameButtonGroup.getChildren().get(0);
+		
+			if (gameButton.getLayoutX() == 0) {
+				gameButton.setLayoutX(root.getWidth());
+				gameButton.setLayoutY(root.getHeight() / 2 - gameButtonGroup.layoutBoundsProperty().getValue().getHeight() / 2);
 			}
+			
+			double destX = notch * (i + 1) - gameButtonGroup.layoutBoundsProperty().getValue().getWidth() / 2;
+
+			Platform.runLater(() -> {
+				switch (ProjectSWG.PREFS.getInt("animation", ProjectSWG.ANIMATION_HIGH)) {
+				case ProjectSWG.ANIMATION_NONE:
+					gameButton.setOpacity(1);
+					break;
+					
+				case ProjectSWG.ANIMATION_LOW:
+					gameButton.setOpacity(1);
+					break;
+					
+				case ProjectSWG.ANIMATION_HIGH:
+					gameButton.setOpacity(1);
+					ParallelTransition showGameAnimationHigh = new ParallelTransition();
+					final Timeline slideLeft = new Timeline();
+					final KeyValue showGameAnimationHighKV = new KeyValue(gameButton.layoutXProperty(), destX, Interpolator.EASE_OUT);
+					final KeyFrame showGameAnimationHighKF = new KeyFrame(Duration.millis(SLIDE_DURATION), showGameAnimationHighKV);
+					slideLeft.getKeyFrames().add(showGameAnimationHighKF);
+					showGameAnimationHigh.getChildren().addAll(slideLeft);
+					showGameAnimationHigh.play();
+					break;
+				}
+			});
 		}
 	}
 }

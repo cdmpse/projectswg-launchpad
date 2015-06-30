@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ResourceBundle;
+
 import com.projectswg.launchpad.ProjectSWG;
 
 
@@ -44,8 +45,6 @@ import javafx.scene.effect.InnerShadow;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -70,7 +69,6 @@ public class GameController implements FxmlController
 	private NodeDisplay gameStatusDisplay;
 	private GameService gameService;
 	private Stage stage;
-	private Button gameButton;
 	private Blend redGlow;
 	
 	
@@ -91,25 +89,14 @@ public class GameController implements FxmlController
 	public void show()
 	{
 		this.stage.show();
-
-		final TextFlow tf = new TextFlow();
-		if (gameService.isRunning()) {
-			tf.getChildren().add(new Text(MainController.WHITE_CIRCLE));
-			tf.setEffect(new DropShadow(5, Color.BLUE));
-		} else {
-			tf.getChildren().add(new Text(MainController.BLACK_CIRCLE));
-			tf.setEffect(new DropShadow(5, Color.GRAY));
-		}
-		
-		Platform.runLater(() -> {
-			gameStatusDisplay.queueNode(tf);
-		});
 	}
 	
-	public void init()
+	public void init(GameService gameService, Stage stage)
 	{
+		this.gameService = gameService;
+		this.stage = stage;
 		gameStatusDisplay = new NodeDisplay(gameStatusPane);
-		
+	
 		clearButton.setOnAction((e) -> {
 			outputTextArea.clear();
 		});
@@ -142,14 +129,11 @@ public class GameController implements FxmlController
 		});
 		
 		stopButton.setOnAction((e) -> {
-			if (gameService.isRunning())
+			if (gameService.isRunning()) {
 				gameService.cancel();
-		});
-	}
-	
-	public void setGameService(GameService gameService)
-	{
-		this.gameService = gameService;
+			};
+		});	
+
 		if (ProjectSWG.PREFS.getBoolean("debug", false)) {
 			gameService.messageProperty().addListener((observable, oldValue, newValue) -> {
 				outputTextArea.appendText(newValue + "\n");
@@ -160,32 +144,41 @@ public class GameController implements FxmlController
 		
 		gameService.runningProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue)
-				return;
-			stopButton.setDisable(true);
-			
-			TextFlow tf = new TextFlow(new Text(MainController.BLACK_CIRCLE));
-			tf.setEffect(new DropShadow(5, Color.GRAY));
-			Platform.runLater(() -> {
-				gameStatusDisplay.queueNode(tf);
-			});
+				Platform.runLater(() -> {
+					gameStatusDisplay.queueString(ProjectSWG.WHITE_CIRCLE);
+				});
+			else
+				Platform.runLater(() -> {
+					gameStatusDisplay.queueString(ProjectSWG.BLACK_CIRCLE);
+					stopButton.setDisable(true);
+				});
+		});
+		
+		stage.setOnShown((e) -> {
+			if (gameService.isRunning()) {
+				gameStatusDisplay.queueString(ProjectSWG.WHITE_CIRCLE);
+			} else {
+				gameStatusDisplay.queueString(ProjectSWG.BLACK_CIRCLE);
+			}
 		});
 	}
 	
-	public void findFunc(String s)
+	public void findFunc(String searchText)
 	{
-		if (s.equals(""))
+		if (searchText.equals(""))
 			return;
-		lastFind = outputTextArea.getText().indexOf(s, lastFind);
+		lastFind = outputTextArea.getText().toLowerCase().indexOf(searchText.toLowerCase(), lastFind);
 		if (lastFind == -1) {
 			lastFind = 0;
-
 			findTextField.setEffect(redGlow);
 			return;
+		} else {
+			findTextField.setEffect(null);
 		}
 		
 		Platform.runLater(() -> {
-			outputTextArea.selectRange(lastFind, lastFind + s.length());
-			lastFind += s.length();
+			outputTextArea.selectRange(lastFind, lastFind + searchText.length());
+			lastFind += searchText.length();
 		});
 	}
 	
@@ -195,19 +188,9 @@ public class GameController implements FxmlController
 		return gameRoot;
 	}
 	
-	public void setStage(Stage stage)
-	{
-		this.stage = stage;
-	}
-	
 	public Stage getStage()
 	{
 		return stage;
-	}
-	
-	public void setGameButton(Button gameButton)
-	{
-		this.gameButton = gameButton;
 	}
 	
 	public Button getStopButton()
@@ -218,10 +201,5 @@ public class GameController implements FxmlController
 	public GameService getGameService()
 	{
 		return gameService;
-	}
-	
-	public Button getGameButton()
-	{
-		return gameButton;
 	}
 }

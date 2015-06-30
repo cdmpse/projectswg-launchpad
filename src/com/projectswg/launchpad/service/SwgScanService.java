@@ -93,11 +93,11 @@ public class SwgScanService extends Service<Boolean>
 					file = new File(manager.getSwgFolder().getValue() + "/" + fileName);
 					if (!file.isFile()) {
 						ProjectSWG.log("SWG file not found: " + manager.getSwgFolder().getValue() + "/" + fileName);
-						updateMessage("SWG scan failed");
+						updateMessage("SWG Scan Failed");
 						return false;
 					}
 				}
-				updateMessage("SWG scan passed");
+				updateMessage("SWG Scan Passed");
 				return true;
 			}
 		};

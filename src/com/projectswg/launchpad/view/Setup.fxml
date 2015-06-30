@@ -21,7 +21,7 @@
       <TextField fx:id="swgFolderTextField" disable="true" editable="false" />
       <HBox alignment="CENTER">
          <children>
-            <Pane fx:id="setupDisplayPane" prefHeight="50.0" HBox.hgrow="ALWAYS" />
+            <Pane fx:id="setupDisplayPane" maxWidth="1.7976931348623157E308" prefHeight="50.0" HBox.hgrow="ALWAYS" />
          </children>
       </HBox>
       <Button fx:id="pswgFolderButton" maxHeight="Infinity" maxWidth="Infinity" mnemonicParsing="false" text="Select ProjectSWG Folder" VBox.vgrow="ALWAYS">

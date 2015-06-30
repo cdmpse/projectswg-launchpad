@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>LSMinimumSystemVersion</key>
+	<string>10.7.4</string>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleAllowMixedLocalizations</key>
+	<true/>
+	<key>CFBundleExecutable</key>
+	<string>ProjectSWG</string>
+	<key>CFBundleIconFile</key>
+	<string>ProjectSWG.icns</string>
+	<key>CFBundleIdentifier</key>
+	<string>fxApplication</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>ProjectSWG</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string></string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.games</string>
+	<key>CFBundleVersion</key>
+	<string>0.2</string>
+	<key>NSHumanReadableCopyright</key>
+	<string>Copyright (C) 2015</string>
+	<key>JVMRuntime</key>
+	<string>$APPDIR/PlugIns/Java.runtime</string>
+	<key>JVMMainClassName</key>
+	<string>com.projectswg.launchpad.ProjectSWG</string>
+	<key>JVMAppClasspath</key>
+	<string>ProjectSWG.jar:libs/bcprov-jdk15on-152.jar:LICENSE.txt:themes/Test/Main.fxml:themes/Test/gear.png:themes/Test/style.css:ProjectSWG.exe.manifest</string>
+	<key>JVMMainJarName</key>
+	<string>ProjectSWG.jar</string>
+	<key>JVMPreferencesID</key>
+	<string>fxapplication</string>
+	<key>JVMOptions</key>
+	<array/>
+	<key>JVMUserOptions</key>
+	<dict/>
+	<key>ArgOptions</key>
+	<array/>
+	<key>NSHighResolutionCapable</key>
+	<string>true</string>
+</dict>
+</plist>

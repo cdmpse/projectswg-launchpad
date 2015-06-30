@@ -5,13 +5,6 @@
 
 .root {
 	-fx-background-color: white;
-	
-	/*
-	 * Border
-	-fx-border-color: grey;
-	-fx-border-style: solid;
-	-fx-border-width: 1.0;
-	*/
 }
 
 #modalRoot {
@@ -39,6 +32,8 @@
     -fx-background-color: transparent;
 }
 
+/*
 #outputTextArea {
 	-fx-highlight-text-fill: firebrick;
 }
+*/

@@ -32,17 +32,17 @@ public class TREFix implements ExtraModule
 	public static final String LABEL = "TREFix";
 	public static final String TREFIX_LOCATION = "/TREFix.exe";
 
-	private MainController main;
+	private MainController mainController;
 	
 	
-	public TREFix(MainController main)
+	public TREFix(MainController mainController)
 	{
-		this.main = main;
+		this.mainController = mainController;
 	}
 	
 	public void launch()
 	{
-		String pswgFolder = main.getManager().getPswgFolder().getValue();
+		String pswgFolder = mainController.getManager().getPswgFolder().getValue();
 		
 		if (pswgFolder == null || pswgFolder.equals("")) {
 			ProjectSWG.log("pswgFolder not set");
@@ -55,8 +55,24 @@ public class TREFix implements ExtraModule
 			return;
 		}
 		
+		String[] processString = null;
+		if (ProjectSWG.isWindows()) {
+			processString = new String[] {
+					pswgFolder + TREFIX_LOCATION
+			};
+		} else {
+			if (mainController.getManager().getWineBinary().getValue().equals("")) {
+				ProjectSWG.log("wine binary not set");
+				return;
+			}
+			processString = new String[] {
+					mainController.getManager().getWineBinary().getValue(),
+					pswgFolder + TREFIX_LOCATION
+			};
+		}
+		
 		try {
-			ProcessBuilder pb = new ProcessBuilder(pswgFolder + TREFIX_LOCATION);
+			ProcessBuilder pb = new ProcessBuilder(processString);
 			pb.directory(dir);
 			pb.start();
 		} catch(IOException e) {

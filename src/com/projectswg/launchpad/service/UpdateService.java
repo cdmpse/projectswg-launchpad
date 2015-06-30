@@ -29,9 +29,12 @@ import java.net.URLConnection;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
+
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
+
 import javax.xml.bind.DatatypeConverter;
+
 import com.projectswg.launchpad.ProjectSWG;
 import com.projectswg.launchpad.model.Resource;
 
@@ -55,8 +58,6 @@ public class UpdateService extends Service<Boolean>
 			@Override
 			protected Boolean call() throws Exception
 			{
-				ProjectSWG.log("UpdateService: start");
-				
 		    	ArrayList<Resource> resources = manager.getResources();
 				ArrayList<Resource> downloadList = new ArrayList<Resource>();
 				
@@ -67,10 +68,12 @@ public class UpdateService extends Service<Boolean>
 				String resourceName;
 				File copyFrom, copyTo;
 				for (int i = 0; i < downloadList.size(); i++) {
-					updateMessage(String.format("Installing resource: %s / %s", i + 1, downloadList.size()));
 					resourceName = downloadList.get(i).getName();
 					// check if swg file
 					if (Arrays.asList(SwgScanService.FILES).contains(resourceName)) {
+						updateMessage(String.format("Copying Resource %s of %s", i + 1, downloadList.size()));
+						if (manager.getSwgFolder().getValue().equals(manager.getPswgFolder().getValue()))
+							continue;
 						copyFrom = new File(swgFolder + "/" + resourceName);
 						copyTo = new File(pswgFolder + "/" + resourceName);
 						if (copyTo.isFile())
@@ -78,65 +81,78 @@ public class UpdateService extends Service<Boolean>
 						Files.copy(copyFrom.toPath(), copyTo.toPath());
 						ProjectSWG.log("Copied file: " + resourceName);
 					} else {
+						updateMessage(String.format("Downloading Resource %s of %s", i + 1, downloadList.size()));
 						if (!downloadResource(downloadList.get(i))) {
 							ProjectSWG.log(resourceName + " did not download successfully");
 							return false;
 						}
 					}
 				}
-
 				ProjectSWG.log("UpdateService: end");
 				return true;
 			}
 			
 			private boolean downloadResource(Resource resource)
 			{
-				// set resource in prefs for resume
 				String name = resource.getName();
 				String path = manager.getPswgFolder().getValue() + "/" + name;
 				File file = Manager.getLocalResource(path);
 				if (file == null)
 					return false;
 				
-				InputStream is = null;
-				FileOutputStream fos = null;
-				URL url;
-
+				if (file.length() >= resource.getSize())
+					file.delete();
+				
+				long downloaded = file.length();
+				String basicAuth = "Basic " + DatatypeConverter.printBase64Binary(Manager.HTTP_AUTH.getBytes());
+				
 				try {
-					int total = resource.getSize();
-
-					url = new URL(Manager.PATCH_SERVER_FILES + name);
+					long total = resource.getSize();
+					
+					URL url = new URL(Manager.PATCH_SERVER_FILES + name);
 					URLConnection urlConnection = url.openConnection();
-					String basicAuth = "Basic " + DatatypeConverter.printBase64Binary(Manager.HTTP_AUTH.getBytes());
 					urlConnection.setRequestProperty("Authorization", basicAuth);
 					
-					is = urlConnection.getInputStream();
-					fos = new FileOutputStream(file);
+					String resumeDownlaoad = ProjectSWG.PREFS.get("resume_download", "");
+					String[] resumeDownlaoadArray = resumeDownlaoad.split("::");
 
+					if (resumeDownlaoadArray.length == 2)
+						if (resumeDownlaoadArray[0].equals(name)) {
+							ProjectSWG.log("Resuming download: " + name);
+							String lastModified = resumeDownlaoadArray[1];
+							urlConnection.setRequestProperty("If-Range", lastModified);
+							urlConnection.setRequestProperty("Range", "bytes=" + downloaded + "-");
+						};
+					
+					// resume
+					String lastModified = urlConnection.getHeaderField("Last-Modified");
+					ProjectSWG.PREFS.put("resume_download", name + "::" + lastModified);
+					
+					InputStream is = urlConnection.getInputStream();
+					FileOutputStream fos = new FileOutputStream(file, true);
+					
 					byte[] buffer = new byte[Manager.MAX_BUFFER_SIZE];
 					int bytesRead = 0, bytesBuffered = 0;
-					int runningTotal = 0;
-					
+	
+					ProjectSWG.log(String.format("Resuming file from: %s -> %s", name, downloaded));
 					while ((bytesRead = is.read(buffer)) > -1) {
-						
 						if (isCancelled()) {
 							updateProgress(-1, 0);
 							fos.close();
 							return false;
 						}
-						
 						fos.write(buffer, 0, bytesRead);
 						bytesBuffered += bytesRead;
-						runningTotal += bytesRead;
-						updateProgress(runningTotal, total);
-						
+						downloaded += bytesRead;
+						updateProgress(downloaded, total);
 						if (bytesBuffered > 1024 * 1024) {
 							bytesBuffered = 0;
 							fos.flush();
 						}
 					}
-					updateProgress(-1, 0);
+					
 					fos.close();
+					is.close();
 					resource.setDlFlag(false);
 					return true;
 				} catch (MalformedURLException e) {
@@ -145,6 +161,8 @@ public class UpdateService extends Service<Boolean>
 				} catch (IOException e) {
 					e.printStackTrace();
 					return false;
+				} finally {
+					updateProgress(-1, 0);
 				}
 			}
 		};

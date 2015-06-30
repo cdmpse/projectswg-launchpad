@@ -1,0 +1,9 @@
+Package: projectswg
+Version: 0.3
+Section: unknown
+Maintainer: projectswg.com <Unknown>
+Priority: optional
+Architecture: i386
+Provides: projectswg
+Description: ProjectSWG
+Installed-Size: 169013

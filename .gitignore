@@ -1,7 +1,10 @@
 /bin/
 
-/build/
-/dist/
-/deploy/
+/build/build/
+/build/classes/
+/build/dist/
+/build/deploy/
+/build/libs/
 
 Thumbs.db
+.DS_Store

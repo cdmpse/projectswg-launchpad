@@ -36,11 +36,9 @@ import java.security.Security;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.util.Pair;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -48,9 +46,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
-
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-
 import com.projectswg.launchpad.ProjectSWG;
 import com.projectswg.launchpad.model.Resource;
 
@@ -146,8 +142,9 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 				double total = 0;
 				
 				for (int i = 0; i < resources.size(); i++) {
+					
 					if (isCancelled()) {
-						updateMessage("Scan cancelled");
+						updateMessage("PSWG Scan Cancelled");
 						return -1;
 					}
 					
@@ -156,9 +153,8 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 					resource = resources.get(i);
 					resourceName = resource.getName();
 					
-					ProjectSWG.log(String.format("Scanning %s [ %s / %s ]", resourceName, i + 1, resources.size()));
 					if (scanType == Manager.CHECK_HASH_PSWG)
-						updateMessage(String.format("Scanning %s [ %s / %s ]", resourceName, i + 1, resources.size()));
+						updateMessage(String.format("Scanning Resource %s of %s", i + 1, resources.size()));
 
 					boolean scanResult = false;
 					if (resource.getStrictness() == Resource.DONT_SCAN) {
@@ -185,9 +181,6 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 							scanResult = checkResourceHash(file, resource);
 						}
 					}
-					
-					ProjectSWG.log("Scan result: " + scanResult);
-
 					resource.setDlFlag(!scanResult);
 					if (!scanResult)
 						total += resource.getSize();
@@ -196,6 +189,7 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 			}
 			
 			/*
+			 * update server files first
 			private ArrayList<String> readPlainTextResourceListFromLocal(String filePath)
 			{
 				ArrayList<String> list = new ArrayList<String>();
@@ -306,8 +300,7 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 					return null;
 				}
 			
-				int timestamp = Integer.parseInt(resourceList.get(TIMESTAMP_LINE));
-				// check if already have this and check that isnt newer
+				//int timestamp = Integer.parseInt(resourceList.get(TIMESTAMP_LINE));
 				
 				String line;
 				for (int i = BEGIN_LINE + 1; i < resourceList.size() - 1; i++) {
@@ -376,6 +369,7 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 			}
 			
 			/*
+			 * update server files first
 			private boolean writePlainTextResourceList(ArrayList<String> resourceList)
 			{
 				PSWG.log("Writting resource list as plain text");

@@ -20,6 +20,7 @@
 package com.projectswg.launchpad.controller;
 
 import java.util.ArrayList;
+
 import com.projectswg.launchpad.ProjectSWG;
 
 import javafx.animation.Interpolator;
@@ -28,6 +29,7 @@ import javafx.animation.KeyValue;
 import javafx.animation.ParallelTransition;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
@@ -42,11 +44,11 @@ public class NodeDisplay
 	private static final int SLIDE_DURATION = 100;
 	private static final int FADE_DURATION = 100;
 
-	private volatile ArrayList<Parent> queue;
-	private volatile boolean busy;
+	private ArrayList<Parent> queue;
+	private boolean busy;
 	
 	private Pane root;
-	
+
 	
 	public NodeDisplay(Pane root)
 	{
@@ -60,6 +62,13 @@ public class NodeDisplay
 		return root;
 	}
 	
+	public void queueString(String s)
+	{
+		if (s == null)
+			return;
+		queueNode(new TextFlow(new Text(s)));
+	}
+	
 	public void queueNode(Parent node)
 	{
 		queue.add(node);
@@ -67,124 +76,108 @@ public class NodeDisplay
 			processNextFromQueue();
 	}
 
-	public void queueString(String s)
-	{
-		if (s == null)
-			return;
-
-		TextFlow textFlow = new TextFlow();
-		Text text = new Text(s);
-		
-		textFlow.getChildren().add(text);
-		queueNode(textFlow);
-	}
-	
 	private void processNextFromQueue()
 	{
+		busy = true;
+		
 		if (root == null) {
-			ProjectSWG.log("NodeDisplay root was null");
+			busy = false;
 			return;
 		}
-		
+	
 		if (queue.size() == 0) {
 			busy = false;
 			return;
 		} else if (queue.size() > 2)
 			queue.subList(0, queue.size() - 2).clear();
-
-		final Parent prevNode = (root.getChildren().size() > 0) ? (Parent)root.getChildren().get(0) : null;
+	
+		final Group prevGroup = (root.getChildren().size() > 0) ? (Group)root.getChildren().get(0) : null;
 		final Parent queuedNode = queue.remove(0);
-		
-		if (queuedNode == null) {
-			ProjectSWG.log("NodeDisplay::displayNextFromQueue : queuedNode = null");
-			return;
-		}
-		
-		if (queuedNode == prevNode) {
-			ProjectSWG.log("NodeDisplay::displayNextFromQueue : queuedNode = prevNode");
-			return;
-		}
-		
-		busy = true;
+		final Group nextGroup = new Group(queuedNode);
 		queuedNode.setOpacity(0);
+		root.getChildren().add(nextGroup);
+		queuedNode.setLayoutX(root.getWidth() / 2 - nextGroup.layoutBoundsProperty().getValue().getWidth() / 2);
+		
+		if (ProjectSWG.PREFS.getInt("animation", ProjectSWG.ANIMATION_HIGH) == ProjectSWG.ANIMATION_HIGH)
+			queuedNode.setLayoutY(root.getHeight());
+		else
+			queuedNode.setLayoutY(root.getHeight() / 2 - nextGroup.layoutBoundsProperty().getValue().getHeight() / 2);
 		
 		Platform.runLater(() -> {
-			root.getChildren().add(queuedNode);
-		});
-
-		Platform.runLater(() -> {
-			queuedNode.setLayoutX(root.getBoundsInParent().getWidth() / 2 - queuedNode.boundsInParentProperty().get().getWidth() / 2);
-			queuedNode.setLayoutY(root.getBoundsInParent().getHeight() / 2 - queuedNode.boundsInParentProperty().get().getHeight() / 2);
-		});
-		
-		//PSWG.log("x mid: " + (root.getBoundsInParent().getWidth() / 2 - queuedNode.boundsInParentProperty().get().getWidth() / 2));
-		//PSWG.log("y mid: " + (root.getBoundsInParent().getHeight() / 2 - queuedNode.boundsInParentProperty().get().getHeight() / 2));
-		
-		Platform.runLater(() -> {
-			displayNode(prevNode, queuedNode);
+			displayGroup(prevGroup, nextGroup);
 		});
 	}
 	
-	public void displayNode(Parent prevNode, Parent queuedNode)
+	public void displayGroup(Group prevGroup, Group nextGroup)
 	{
-		switch (ProjectSWG.PREFS.getInt("animation", 2)) {
+		final Parent prevNode = ((prevGroup != null) && prevGroup.getChildren().size() > 0) ? (Parent)prevGroup.getChildren().get(0) : null;
 		
-		case MainController.ANIMATION_NONE:
-			if (prevNode != null)
+		if (nextGroup.getChildren().size() == 0)
+			return;
+
+		final Parent nextNode = (Parent)nextGroup.getChildren().get(0);
+		
+		switch (ProjectSWG.PREFS.getInt("animation", ProjectSWG.ANIMATION_HIGH)) {
+		
+		case ProjectSWG.ANIMATION_NONE:
+			if (root.getChildren().size() > 1)
 				root.getChildren().remove(0);
-			queuedNode.setOpacity(1);
+			nextNode.setOpacity(1);
 			processNextFromQueue();
 			break;
 		
-		case MainController.ANIMATION_LOW:
+		case ProjectSWG.ANIMATION_LOW:
 			final Timeline fade = new Timeline();
 			if (prevNode != null) {
 				final KeyValue fadeOutKV = new KeyValue(prevNode.opacityProperty(), 0, Interpolator.EASE_BOTH);
 				final KeyFrame fadeOutKF = new KeyFrame(Duration.millis(FADE_DURATION), fadeOutKV);
 				fade.getKeyFrames().add(fadeOutKF);
 			}
-			final KeyValue fadeInKV = new KeyValue(queuedNode.opacityProperty(), 1, Interpolator.EASE_BOTH);
+			final KeyValue fadeInKV = new KeyValue(nextNode.opacityProperty(), 1, Interpolator.EASE_BOTH);
 			final KeyFrame fadeInKF = new KeyFrame(Duration.millis(FADE_DURATION), fadeInKV);
 			fade.getKeyFrames().add(fadeInKF);
 			
 			fade.setOnFinished((e) -> {
-				if (prevNode != null)
+				if (root.getChildren().size() > 1)
 					root.getChildren().remove(0);
 				processNextFromQueue();
 			});
 			fade.play();
 			break;
 			
-		case MainController.ANIMATION_HIGH:
+		case ProjectSWG.ANIMATION_HIGH:
 			ParallelTransition parallelTransition = new ParallelTransition();
 			final Timeline slideAndFadeIn = new Timeline();
 			
 			if (prevNode != null) {
-				final Timeline delayedFadeOut = new Timeline();
-				
+				final Timeline slideAndFadeOut = new Timeline();
 				final KeyValue delayedFadeOutKV = new KeyValue(prevNode.opacityProperty(), 0, Interpolator.EASE_BOTH);
 				final KeyFrame delayedFadeOutKF = new KeyFrame(Duration.millis(FADE_DURATION), delayedFadeOutKV);
-				delayedFadeOut.getKeyFrames().add(delayedFadeOutKF);
-				delayedFadeOut.setDelay(Duration.millis(SLIDE_DURATION - FADE_DURATION));
-				parallelTransition.getChildren().add(delayedFadeOut);
+				slideAndFadeOut.getKeyFrames().add(delayedFadeOutKF);
+				slideAndFadeOut.setDelay(Duration.millis(SLIDE_DURATION - FADE_DURATION));
 				
-				final KeyValue oldSlideUpKV = new KeyValue(prevNode.translateYProperty(), -root.boundsInParentProperty().get().getHeight(), Interpolator.EASE_OUT);
+				final KeyValue oldSlideUpKV = new KeyValue(prevNode.layoutYProperty(), 0, Interpolator.EASE_OUT);
 				final KeyFrame oldSlideUpKF = new KeyFrame(Duration.millis(SLIDE_DURATION), oldSlideUpKV);
-				slideAndFadeIn.getKeyFrames().add(oldSlideUpKF);
+				slideAndFadeOut.getKeyFrames().add(oldSlideUpKF);
+				
+				parallelTransition.getChildren().add(slideAndFadeOut);
 			}
 			
-			final KeyValue shortFadeInKV = new KeyValue(queuedNode.opacityProperty(), 1, Interpolator.EASE_BOTH);
+			final KeyValue shortFadeInKV = new KeyValue(nextNode.opacityProperty(), 1, Interpolator.EASE_BOTH);
 			final KeyFrame shortFadeInKF = new KeyFrame(Duration.millis(FADE_DURATION), shortFadeInKV);
 			slideAndFadeIn.getKeyFrames().add(shortFadeInKF);
-			queuedNode.setTranslateY(root.boundsInParentProperty().get().getHeight());
-			final KeyValue newSlideUpKV = new KeyValue(queuedNode.translateYProperty(), 0, Interpolator.EASE_OUT);
+
+			final double midY = root.getHeight() / 2 - nextGroup.layoutBoundsProperty().getValue().getHeight() / 2;
+			final KeyValue newSlideUpKV = new KeyValue(nextNode.layoutYProperty(), midY, Interpolator.EASE_OUT);
 			final KeyFrame newSlideUpKF = new KeyFrame(Duration.millis(SLIDE_DURATION), newSlideUpKV);
 			slideAndFadeIn.getKeyFrames().add(newSlideUpKF);
+
 			parallelTransition.setOnFinished((e) -> {
-				if (prevNode != null)
+				if (root.getChildren().size() > 1)
 					root.getChildren().remove(0);
 				processNextFromQueue();
 			});
+			
 			parallelTransition.getChildren().addAll(slideAndFadeIn);
 			parallelTransition.play();
 			break;

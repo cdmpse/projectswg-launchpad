@@ -30,10 +30,10 @@ public class Resource
 	private String name;
 	private String checksum;
 	private int strictness;
-	private int size;
+	private long size;
 	private boolean dlFlag;
 	
-	public Resource(String name, int size, String checksum, int strictness)
+	public Resource(String name, long size, String checksum, int strictness)
 	{
 		this.name = name;
 		this.size = size;
@@ -58,7 +58,7 @@ public class Resource
 		return checksum;
 	}
 	
-	public int getSize()
+	public long getSize()
 	{
 		return size;
 	}

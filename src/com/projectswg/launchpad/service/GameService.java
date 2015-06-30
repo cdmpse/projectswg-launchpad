@@ -24,7 +24,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Date;
+
 import com.projectswg.launchpad.ProjectSWG;
+
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 
@@ -46,6 +48,7 @@ public class GameService extends Service<Void>
 			@Override
 			protected void cancelled()
 			{
+				ProjectSWG.log("Destroying process");
 				process.destroy();
 			}
 			
@@ -56,22 +59,48 @@ public class GameService extends Service<Void>
 				String host = manager.getLoginServerHost().getValue();
 				String port = manager.getLoginServerPlayPort().getValue();
 				
-				String[] processString = {
-					pswgFolder + "\\SwgClient_r.exe",
-					"--",
-					"-s",
-					"Station",
-					"subscriptionFeatures=1",
-					"gameFeatures=34374193",
-					"-s",
-					"ClientGame",
-					"loginServerPort0=" + port,
-					"loginServerAddress0=" + (ProjectSWG.PREFS.getBoolean("localhost", false) ? Manager.LOCALHOST : host)
+				String[] processString = new String[] {
+						pswgFolder + "/SwgClient_r.exe",
+						"--",
+						"-s",
+						"Station",
+						"subscriptionFeatures=1",
+						"gameFeatures=34374193",
+						"-s",
+						"ClientGame",
+						"loginServerPort0=" + port,
+						"loginServerAddress0=" + (ProjectSWG.PREFS.getBoolean("localhost", false) ? Manager.LOCALHOST : host)
 				};
-			
-				for (String s : processString)
-					ProjectSWG.log("Starting SWG: " + s);
+				
+				if (!ProjectSWG.isWindows())
+					if (manager.getWineBinary().getValue().equals("")) {
+						ProjectSWG.log("wine binary not set");
+						return null;
+						
+					} else {
 
+						int argLen = processString.length + 1;
+						String[] wineArgs = manager.getWineArguments().getValue().split(" ");
+						if (wineArgs.length > 0 && wineArgs[0].equals(""))
+							wineArgs = new String[0];
+						argLen += wineArgs.length;
+						String[] wineProcessString = new String[argLen];
+						System.arraycopy(processString, 0, wineProcessString, 1, processString.length);
+						if (wineArgs.length > 0) {
+							try {
+								System.arraycopy(wineArgs, 0, wineProcessString, processString.length + 1, wineArgs.length);
+							} catch (Exception e) {
+								e.printStackTrace();
+								return null;
+							}
+						}
+						wineProcessString[0] = manager.getWineBinary().getValue();
+						processString = wineProcessString;
+					}
+
+				for (String s : processString)
+					ProjectSWG.log("Exec: " + s);
+				
 				try {
 					final ProcessBuilder processBuilder = new ProcessBuilder(processString);
 				

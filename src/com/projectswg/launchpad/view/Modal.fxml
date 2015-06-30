@@ -11,7 +11,7 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.layout.ColumnConstraints?>
 
-<VBox fx:id="modalRoot" prefHeight="400.0" prefWidth="370.0" spacing="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.projectswg.launchpad.controller.ModalController">
+<VBox fx:id="modalRoot" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="10.0" style="-fx-border-width: 0;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.projectswg.launchpad.controller.ModalController">
    <children>
       <HBox>
          <children>

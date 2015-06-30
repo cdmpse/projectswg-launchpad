@@ -9,9 +9,9 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<StackPane fx:id="root" prefHeight="600.0" prefWidth="380.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.projectswg.launchpad.controller.MainController">
+<StackPane fx:id="root" maxHeight="600.0" maxWidth="380.0" minHeight="600.0" minWidth="380.0" prefHeight="600.0" prefWidth="380.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.projectswg.launchpad.controller.MainController">
    <children>
-      <VBox fx:id="mainRoot" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" spacing="10.0">
+      <VBox fx:id="mainRoot" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="380.0" minWidth="380.0" prefWidth="380.0" spacing="10.0">
          <children>
             <Region prefHeight="8.0" />
             <ImageView fx:id="mainGraphic" fitHeight="261.0" fitWidth="295.0" pickOnBounds="true" preserveRatio="true" />
@@ -25,14 +25,7 @@
                   <Button fx:id="updateButton" focusTraversable="false" mnemonicParsing="false" prefWidth="80.0" text="Update" visible="false" GridPane.rowIndex="2" />
                   <Button fx:id="cancelButton" focusTraversable="false" mnemonicParsing="false" prefWidth="80.0" text="Cancel" visible="false" />
                   <Button fx:id="setupButton" focusTraversable="false" mnemonicParsing="false" prefWidth="80.0" text="Setup" visible="false" GridPane.rowIndex="2" />
-                  <HBox alignment="CENTER" prefHeight="100.0" GridPane.rowIndex="3">
-                     <children>
-                        <Pane fx:id="mainDisplayPane" maxWidth="Infinity" HBox.hgrow="ALWAYS">
-                           <HBox.margin>
-                              <Insets top="10.0" />
-                           </HBox.margin></Pane>
-                     </children>
-                  </HBox>
+                  <Pane fx:id="mainDisplayPane" maxHeight="40.0" maxWidth="1.7976931348623157E308" minHeight="40.0" prefHeight="40.0" GridPane.rowIndex="3" />
                </children>
                <columnConstraints>
                   <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" />
@@ -40,6 +33,7 @@
                <rowConstraints>
                   <RowConstraints maxHeight="50.0" vgrow="ALWAYS" />
                   <RowConstraints maxHeight="5.0" minHeight="5.0" prefHeight="5.0" vgrow="ALWAYS" />
+                  <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="ALWAYS" />
                   <RowConstraints maxHeight="50.0" vgrow="ALWAYS" />
                   <RowConstraints maxHeight="40.0" vgrow="ALWAYS" />
                   <RowConstraints maxHeight="Infinity" vgrow="ALWAYS" />
@@ -50,20 +44,20 @@
                <children>
                   <TilePane alignment="CENTER" hgap="10.0" prefTileHeight="40.0" vgap="10.0" VBox.vgrow="ALWAYS">
                      <children>
-                        <Button fx:id="launcherSettingsButton" focusTraversable="false" maxHeight="Infinity" maxWidth="Infinity" mnemonicParsing="false" text="Settings" />
-                        <Button fx:id="gameSettingsButton" focusTraversable="false" maxHeight="Infinity" maxWidth="Infinity" mnemonicParsing="false" text="Options" />
+                        <Button fx:id="settingsButton" focusTraversable="false" maxHeight="Infinity" maxWidth="Infinity" mnemonicParsing="false" text="Settings" />
+                        <Button fx:id="optionsButton" focusTraversable="false" maxHeight="Infinity" maxWidth="Infinity" mnemonicParsing="false" text="Options" />
                         <Button fx:id="extrasButton" focusTraversable="false" maxHeight="Infinity" maxWidth="Infinity" mnemonicParsing="false" text="Extras" />
                      </children>
                      <padding>
                         <Insets left="10.0" right="10.0" />
                      </padding>
                   </TilePane>
-                  <Pane fx:id="gameProcessPane" prefHeight="80.0" VBox.vgrow="ALWAYS" />
+                  <Pane fx:id="gameProcessPane" maxHeight="80.0" maxWidth="1.7976931348623157E308" minHeight="80.0" prefHeight="80.0" VBox.vgrow="ALWAYS" />
                </children>
             </VBox>
          </children>
          <opaqueInsets>
-            <Insets top="20.0" />
+            <Insets />
          </opaqueInsets>
       </VBox>
    </children>

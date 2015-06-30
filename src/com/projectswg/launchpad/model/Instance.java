@@ -19,7 +19,7 @@
 
 package com.projectswg.launchpad.model;
 
-import javafx.scene.control.Button;
+import javafx.scene.Group;
 import javafx.stage.Stage;
 
 import com.projectswg.launchpad.controller.GameController;
@@ -30,7 +30,7 @@ public class Instance
 {
 	private GameService gameService;
 	private GameController gameController;
-	private Button gameButton;
+	private Group gameButtonGroup;
 	private Stage stage;
 	
 	public Instance(GameService gameService)
@@ -38,20 +38,19 @@ public class Instance
 		this.gameService = gameService;
 	}
 	
-	public void setGameButton(Button gameButton)
+	public void setGameButtonGroup(Group gameButtonGroup)
 	{
-		this.gameButton = gameButton;
+		this.gameButtonGroup = gameButtonGroup;
 	}
 	
-	public Button getGameButton()
+	public Group getGameButtonGroup()
 	{
-		return gameButton;
+		return gameButtonGroup;
 	}
 	
 	public void setGameController(GameController gameController)
 	{
 		this.gameController = gameController;
-		gameController.setGameService(gameService);
 	}
 	
 	public GameController getGameController()

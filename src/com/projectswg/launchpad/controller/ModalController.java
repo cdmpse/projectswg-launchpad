@@ -143,27 +143,25 @@ public class ModalController implements FxmlController
 		modalLabel.setText(modalComponent.getLabel());
 
 		modalRoot.setOpacity(0);
-		switch (mainController.getAnimationLevel().getValue()) {
-		case MainController.ANIMATION_NONE:
+		switch (ProjectSWG.PREFS.getInt("animation", ProjectSWG.ANIMATION_HIGH)) {
+		case ProjectSWG.ANIMATION_NONE:
 			modalRoot.setOpacity(MODAL_OPACITY);
-			//modalRoot.setOpacity(initialOpacity);
 			modalRoot.setVisible(true);
 			break;
 			
-		case MainController.ANIMATION_LOW:
+		case ProjectSWG.ANIMATION_LOW:
 			modalRoot.setVisible(true);
 			final Timeline longFadeIn = new Timeline();
 			final KeyValue longFadeInKV = new KeyValue(modalRoot.opacityProperty(), MODAL_OPACITY, Interpolator.EASE_BOTH);
-			//final KeyValue longFadeInKV = new KeyValue(modalRoot.opacityProperty(), initialOpacity, Interpolator.EASE_BOTH);
-			final KeyFrame longFadeInKF = new KeyFrame(Duration.millis(MainController.FADE_DURATION), longFadeInKV);
+			final KeyFrame longFadeInKF = new KeyFrame(Duration.millis(ProjectSWG.FADE_DURATION), longFadeInKV);
 			longFadeIn.getKeyFrames().add(longFadeInKF);
 			longFadeIn.play();
 			break;
 			
-		case MainController.ANIMATION_HIGH:
+		case ProjectSWG.ANIMATION_HIGH:
 			modalRoot.setVisible(true);
 			//scale
-			final ScaleTransition scaleUp = new ScaleTransition(Duration.millis(MainController.SLIDE_DURATION), modalRoot);
+			final ScaleTransition scaleUp = new ScaleTransition(Duration.millis(ProjectSWG.SLIDE_DURATION), modalRoot);
 			scaleUp.setFromX(0);
 			scaleUp.setFromY(0);
 			scaleUp.setToX(1);
@@ -171,8 +169,7 @@ public class ModalController implements FxmlController
 			// fade
 			final Timeline shortFadeIn = new Timeline();
 			final KeyValue shortFadeInKV = new KeyValue(modalRoot.opacityProperty(), MODAL_OPACITY, Interpolator.EASE_BOTH);
-			//final KeyValue shortFadeInKV = new KeyValue(modalRoot.opacityProperty(), initialOpacity, Interpolator.EASE_BOTH);
-			final KeyFrame shortFadeInKF = new KeyFrame(Duration.millis(MainController.FADE_DURATION), shortFadeInKV);
+			final KeyFrame shortFadeInKF = new KeyFrame(Duration.millis(ProjectSWG.FADE_DURATION), shortFadeInKV);
 			shortFadeIn.getKeyFrames().add(shortFadeInKF);
 			// combine and play
 			ParallelTransition parallelTransition = new ParallelTransition();
@@ -192,16 +189,16 @@ public class ModalController implements FxmlController
 		//mainRoot.setDisable(false);
 		double initialOpacity = modalRoot.getOpacity();
 		
-		switch (mainController.getAnimationLevel().getValue()) {
-		case MainController.ANIMATION_NONE:
+		switch (ProjectSWG.PREFS.getInt("animation", ProjectSWG.ANIMATION_HIGH)) {
+		case ProjectSWG.ANIMATION_NONE:
 			modalRoot.setVisible(false);
 			modalComponent.getRoot().setVisible(false);
 			break;
 		
-		case MainController.ANIMATION_LOW:
+		case ProjectSWG.ANIMATION_LOW:
 			final Timeline longFadeOut = new Timeline();
 			final KeyValue longFadeOutKV = new KeyValue(modalRoot.opacityProperty(), 0, Interpolator.EASE_BOTH);
-			final KeyFrame longFadeOutKF = new KeyFrame(Duration.millis(MainController.SLIDE_DURATION), longFadeOutKV);
+			final KeyFrame longFadeOutKF = new KeyFrame(Duration.millis(ProjectSWG.SLIDE_DURATION), longFadeOutKV);
 			longFadeOut.getKeyFrames().add(longFadeOutKF);
 			longFadeOut.setOnFinished((e) -> {
 				modalRoot.setVisible(false);
@@ -211,9 +208,9 @@ public class ModalController implements FxmlController
 			longFadeOut.play();
 			break;
 			
-		case MainController.ANIMATION_HIGH:
+		case ProjectSWG.ANIMATION_HIGH:
 			// scale
-			final ScaleTransition scaleDown = new ScaleTransition(Duration.millis(MainController.SLIDE_DURATION), modalRoot);
+			final ScaleTransition scaleDown = new ScaleTransition(Duration.millis(ProjectSWG.SLIDE_DURATION), modalRoot);
 			scaleDown.setFromX(1);
 			scaleDown.setFromY(1);
 			scaleDown.setToX(0);
@@ -221,9 +218,9 @@ public class ModalController implements FxmlController
 			// fade
 			final Timeline fadeOut = new Timeline();
 			final KeyValue kv = new KeyValue(modalRoot.opacityProperty(), 0, Interpolator.EASE_BOTH);
-			final KeyFrame kf = new KeyFrame(Duration.millis(MainController.SLIDE_DURATION), kv);
+			final KeyFrame kf = new KeyFrame(Duration.millis(ProjectSWG.SLIDE_DURATION), kv);
 			fadeOut.getKeyFrames().add(kf);
-			double delay = ((delay = MainController.SLIDE_DURATION - MainController.FADE_DURATION) < 0 ? 0 : delay);
+			double delay = ((delay = ProjectSWG.SLIDE_DURATION - ProjectSWG.FADE_DURATION) < 0 ? 0 : delay);
 			fadeOut.setDelay(Duration.millis(delay));
 			// combine and play
 			ParallelTransition parallelTransition = new ParallelTransition();
@@ -236,5 +233,10 @@ public class ModalController implements FxmlController
 			parallelTransition.play();
 			break;
 		}
+	}
+	
+	public ModalComponent getModalComponent()
+	{
+		return modalComponent;
 	}
 }

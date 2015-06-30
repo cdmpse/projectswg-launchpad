@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 	<project name="ProjectSWG" default="do-deploy" basedir="."  xmlns:fx="javafx:com.sun.javafx.tools.ant">
+	   
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
 	
 	<target name="init-fx-tasks">
-		<path id="fxant">
+        <path id="fxant">
 			<filelist>
-				<file name="${java.home}\lib\ant-javafx.jar"/>
-				<file name="${java.home}\jre\lib\ext\jfxrt.jar"/>
+				<file name="${java.home}/lib/ant-javafx.jar"/>
+				<file name="${java.home}/jre/lib/ext/jfxrt.jar"/>
 			</filelist>
 		</path>
-	
 		<taskdef resource="com/sun/javafx/tools/ant/antlib.xml"
 			uri="javafx:com.sun.javafx.tools.ant"
 			classpathref="fxant"/>
@@ -23,21 +24,21 @@
 	
 		<!-- Copy project sources itself -->
 		<copy todir="build/src">
-			<fileset dir="src">
+			<fileset dir="${basedir}/../src">
 				<include name="**/*"/>
 			</fileset>
 		</copy>
 		
 		<!-- Copy project-libs references -->
 		<copy todir="build/libs">
-			<fileset dir="lib">
+			<fileset dir="${basedir}/../lib">
 				<include name="bcprov-jdk15on-152.jar"/>
 			</fileset>
 		</copy>
 		
 		<!-- Copy over none Java-Files -->
 		<copy todir="build/classes">
-			<fileset dir="src">
+			<fileset dir="${basedir}/../src">
 				<exclude name="**/*.java"/>
 			</fileset>
 		</copy>
@@ -68,8 +69,8 @@
 		<fx:resources id="appRes">
 			<fx:fileset dir="dist" includes="ProjectSWG.jar"/>
 			<fx:fileset dir="dist" includes="libs/*"/>
-			<fx:fileset dir="${basedir}" includes="LICENSE.txt" type="license"/>
-			<fx:fileset dir="${basedir}" includes="themes/**"/>
+			<fx:fileset dir="${basedir}/../" includes="LICENSE.txt" type="license"/>
+			<fx:fileset dir="${basedir}/../" includes="themes/**"/>
 			<fx:fileset dir="${basedir}" includes="ProjectSWG.exe.manifest"/>
 		</fx:resources>
 	
@@ -90,7 +91,7 @@
 			<manifest>
 				<attribute name="Implementation-Vendor" value="projectswg.com"/>
 				<attribute name="Implementation-Title" value="ProjectSWG"/>
-				<attribute name="Implementation-Version" value="0.2"/>
+				<attribute name="Implementation-Version" value="0.3"/>
 				<attribute name="JavaFX-Feature-Proxy" value="None"/>
 			</manifest>
 		</fx:jar>
@@ -104,7 +105,7 @@
 			includeDT="false"
 			offlineAllowed="true"
 			outdir="${basedir}/deploy"
-			outfile="ProjectSWG" nativeBundles="exe"
+			outfile="ProjectSWG" nativeBundles="all"
 			updatemode="background" >
 	
 			<fx:platform basedir="${java.home}"/>

@@ -50,7 +50,7 @@ import com.projectswg.launchpad.model.Resource;
 import com.projectswg.launchpad.model.Instance;
 
 import javafx.application.Platform;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -74,7 +74,6 @@ public class Manager
 	public static final int LOGIN_SERVER_PORT = 1;
 	public static final int LOGIN_SERVER_STATUSPORT = 2;
 
-	//private static final int MAX_BUFFER_SIZE = 8192;
 	public static final int MAX_BUFFER_SIZE = 2048;
 	public static final int RESOURCE_LIST_HASH = 0;
 	
@@ -88,6 +87,17 @@ public class Manager
 	
 	public static final int MAX_INSTANCES = 5;
 	
+	public static final int STATE_INIT = 0;
+	public static final int STATE_SWG_SETUP_REQUIRED = 1;
+	public static final int STATE_SWG_SCANNING = 2;
+	public static final int STATE_PSWG_SETUP_REQUIRED = 3;
+	public static final int STATE_PSWG_SCAN_REQUIRED = 4;
+	public static final int STATE_PSWG_SCANNING = 5;
+	public static final int STATE_UPDATE_REQUIRED = 6;
+	public static final int STATE_UPDATING = 7;
+	public static final int STATE_WINE_REQUIRED = 8;
+	public static final int STATE_PSWG_READY = 9;
+	
 	private volatile ArrayList<Resource> resources;
 	private volatile ObservableList<Instance> instances;
 	
@@ -97,9 +107,8 @@ public class Manager
 	private SimpleStringProperty swgFolder;
 	private SimpleStringProperty pswgFolder;
 	
-	// scan results
-	private SimpleBooleanProperty swgReady;
-	private SimpleBooleanProperty pswgReady;
+	// state
+	private SimpleIntegerProperty state;
 	
 	// current login server
 	private SimpleStringProperty loginServerHost;
@@ -126,15 +135,14 @@ public class Manager
 		loginServerPlayPort = new SimpleStringProperty();
 		loginServerPingPort = new SimpleStringProperty();
 		
-		swgFolder = new SimpleStringProperty("");
-		pswgFolder = new SimpleStringProperty("");
+		swgFolder = new SimpleStringProperty();
+		pswgFolder = new SimpleStringProperty();
 		
-		swgReady = new SimpleBooleanProperty(false);
-		pswgReady = new SimpleBooleanProperty(false);
+		state = new SimpleIntegerProperty(STATE_INIT);
 		
-		wineBinary = new SimpleStringProperty();
-		wineArguments = new SimpleStringProperty();
-		wineEnvironmentVariables = new SimpleStringProperty();
+		wineBinary = new SimpleStringProperty("");
+		wineArguments = new SimpleStringProperty("");
+		wineEnvironmentVariables = new SimpleStringProperty("");
 		
 		swgScanService = new SwgScanService(this);
 		pswgScanService = new PswgScanService(this);
@@ -144,177 +152,57 @@ public class Manager
 		// game instances
 		instances = FXCollections.observableArrayList();
 		
-		swgReady.addListener((observable, oldValue, newValue) -> {
-			if (newValue) {
-				if (!pswgReady.getValue()) {
-					if (!pswgFolder.getValue().equals(""))
-						if (!pswgScanService.isRunning()) {
-							pswgScanService.startScan(CHECK_SIZE_PSWG, NORMAL_SCAN);
-						}
-				}
-			}
-		});
-		
-		swgScanService.setOnRunning((e) -> {
-			ProjectSWG.log("swgScanService onRunning start");
-			mainOut.bind(swgScanService.messageProperty());
-			swgReady.set(false);
-		});
-		
-		swgScanService.setOnCancelled((e) -> {
-			mainOut.unbind();
-			ProjectSWG.log("swgScanService: failed");
-			Platform.runLater(() -> {
-				swgReady.set(false);
-			});
-		});
-		
-		swgScanService.setOnFailed((e) -> {
-			mainOut.unbind();
-			ProjectSWG.log("swgScanService: failed");
-			Platform.runLater(() -> {
-				swgReady.set(false);
-			});
-		});
-		
-		swgScanService.setOnSucceeded((e) -> {
-			mainOut.unbind();
-
-			ProjectSWG.log("swgScanService ended: " + swgScanService.getValue());
-			
-			Platform.runLater(() -> {
-				swgReady.set(swgScanService.getValue());
-			});
-		});
-		
+		addSwgScanServiceListeners();
 		swgFolder.addListener((observable, oldValue, newValue) -> {
-			//if (newValue == null)
-			//	return;
-			
+			if (newValue == null)
+				return;
 			ProjectSWG.log(String.format("swgFolder changed: %s -> %s", oldValue, newValue));
 			ProjectSWG.PREFS.put("swg_folder", newValue);
 			
-			if (newValue.equals("")) {
-				ProjectSWG.log("swgFolder is blank");
-				
+			if (newValue.equals(""))
 				Platform.runLater(() -> {
-					ProjectSWG.log(String.format("setting swgReady: %s -> %s", swgReady.getValue(), false));
-					swgReady.set(false);
+					state.set(STATE_SWG_SETUP_REQUIRED);
 				});
-				
-			} else {
-				ProjectSWG.log("swgFolder not blank, starting swg scan");
-				
+			else
 				if (!swgScanService.isRunning()) {
+					Platform.runLater(() -> {
+						state.set(STATE_SWG_SCANNING);
+					});
+					ProjectSWG.log("starting swg scan");
 					swgScanService.reset();
 					swgScanService.start();
+				} else {
+					ProjectSWG.log("swg scan already running");
 				}
-			}
 		});
 		
 		// pswg
-		
-		pswgScanService.setOnRunning((e) -> {
-			pswgReady.set(false);
-			mainOut.bind(pswgScanService.messageProperty());
-		});
-		
-		pswgScanService.setOnCancelled((e) -> {
-			mainOut.unbind();
-			ProjectSWG.log("pswgScanService cancelled");
-			Platform.runLater(() -> {
-				mainOut.set("Scan cancelled");
-			});
-		});
-		
-		pswgScanService.setOnFailed((e) -> {
-			mainOut.unbind();
-			Platform.runLater(() -> {
-				mainOut.set("Scan failed");
-			});
-			ProjectSWG.log("pswgScanService failed");
-		});
-		
-		pswgScanService.setOnSucceeded((e) -> {
-			mainOut.unbind();
-			ProjectSWG.log("pswgScanService onSucceeded");
-			
-			Pair<Double, ArrayList<Resource>> result = pswgScanService.getValue();
-			
-			if (result == null) {
-				ProjectSWG.log("Scan failed");
-				Platform.runLater(() -> {
-					mainOut.set("Scan failed");
-				});
-				return;
-			}
-			
-			final double dlTotal = result.getKey();
-			resources = result.getValue();
-			
-			if (dlTotal > 0) {
-				Platform.runLater(() -> {
-					mainOut.set(String.format("Update required : %.2f MB", dlTotal / 1024 / 1024));
-				});
-			} else
-				pswgReady.set(true);
-
-			ProjectSWG.log("PSWG scan finished: " + dlTotal);
-		});
-		
+		addPswgScanServiceListeners();
 		pswgFolder.addListener((observable, oldValue, newValue) -> {
-			//if (newValue == null || swgFolder.getValue() == null)
-			//	return;
-			
+			if (swgFolder.getValue().equals(""))
+				return;
 			ProjectSWG.log(String.format("pswgFolder changed: %s -> %s", oldValue, newValue));
 			ProjectSWG.PREFS.put("pswg_folder", newValue);
-			
-			if (newValue.equals("") || swgFolder.getValue().equals("")) {
-				
+			if (newValue.equals(""))
 				Platform.runLater(() -> {
-					pswgReady.set(false);
+					state.set(STATE_PSWG_SETUP_REQUIRED);
 				});
-				
-			} else {
-				
-				if (!pswgScanService.isRunning()) {
-					pswgScanService.startScan(CHECK_SIZE_PSWG, NORMAL_SCAN);
-				}
-			}
+			else
+				quickScan();
 		});
 		
-		updateService.setOnRunning((e) -> {
-			mainOut.bind(updateService.messageProperty());
-		});
-		
-		updateService.setOnCancelled((e) -> {
-			mainOut.unbind();
-			Platform.runLater(() -> {
-				mainOut.set("Update cancelled");
-			});
-		});
-		
-		updateService.setOnFailed((e) -> {
-			mainOut.unbind();
-			ProjectSWG.log("Update failed: " + updateService.getException());
-			Platform.runLater(() -> {
-				mainOut.set("Update failed");
-			});
-		});
-		
-		updateService.setOnSucceeded((e) -> {
-			mainOut.unbind();
-			Platform.runLater(() -> {
-				if (updateService.getValue())
-					mainOut.set("Ready");
-				else
-					mainOut.set("Update failed");
-			});
-		});
+		// update service
+		addUpdateServiceListeners();
 		
 		// wine
 		wineBinary.addListener((observable, oldValue, newValue) -> {
 			ProjectSWG.PREFS.put("wine_binary", newValue);
+			if (!newValue.equals(""))
+				if (state.intValue() == STATE_WINE_REQUIRED)
+					Platform.runLater(() -> {
+						state.set(STATE_PSWG_READY);
+						mainOut.set("Ready");
+					});
 		});
 		
 		wineArguments.addListener((observable, oldValue, newValue) -> {
@@ -325,7 +213,7 @@ public class Manager
 			ProjectSWG.PREFS.put("wine_environment_variables", newValue);
 		});
 		
-		// Login server	
+		// Login server
 		Preferences loginServersNode = ProjectSWG.PREFS.node("login_servers");
 		if (loginServersNode.get(PSWG_LOGIN_SERVER_NAME, "").equals(""))
 			loginServersNode.put(PSWG_LOGIN_SERVER_NAME, PSWG_LOGIN_SERVER_STRING);
@@ -333,33 +221,188 @@ public class Manager
 		String loginServer = ProjectSWG.PREFS.get("login_server", "");
 		if (loginServer.equals(""))
 			ProjectSWG.PREFS.put("login_server", PSWG_LOGIN_SERVER_NAME);
+		
+		
+		Platform.runLater(() -> {
+			// wine
+			wineBinary.set(ProjectSWG.PREFS.get("wine_binary",  ""));
+			wineArguments.set(ProjectSWG.PREFS.get("wine_arguments", ""));
+			wineEnvironmentVariables.set(ProjectSWG.PREFS.get("wine_environment_variables", ""));
+			// folders
+			swgFolder.set(ProjectSWG.PREFS.get("swg_folder", ""));
+			pswgFolder.set(ProjectSWG.PREFS.get("pswg_folder", ""));
+		});
 	}
 
-	public void loadPrefs()
+	public void addSwgScanServiceListeners()
 	{
-		//swgFolder.set(null);
-		//pswgFolder.set(null);
+		swgScanService.setOnRunning((e) -> {
+			ProjectSWG.log("swgScanService onRunning start");
+			mainOut.bind(swgScanService.messageProperty());
+			Platform.runLater(() -> {
+				state.set(STATE_SWG_SCANNING);
+			});
+		});
 		
-		// paths
-		pswgFolder.set(ProjectSWG.PREFS.get("pswg_folder", ""));
-		swgFolder.set(ProjectSWG.PREFS.get("swg_folder", ""));
+		swgScanService.setOnCancelled((e) -> {
+			mainOut.unbind();
+			ProjectSWG.log("swgScanService: failed");
+			Platform.runLater(() -> {
+				state.set(STATE_SWG_SETUP_REQUIRED);
+			});
+		});
 		
-		// wine
-		wineBinary.set(ProjectSWG.PREFS.get("wine_binary",  ""));
-		wineArguments.set(ProjectSWG.PREFS.get("wine_arguments", ""));
-		wineEnvironmentVariables.set(ProjectSWG.PREFS.get("wine_environment_variables", ""));
+		swgScanService.setOnFailed((e) -> {
+			mainOut.unbind();
+			ProjectSWG.log("swgScanService: failed");
+			Platform.runLater(() -> {
+				state.set(STATE_SWG_SETUP_REQUIRED);
+			});
+		});
+		
+		swgScanService.setOnSucceeded((e) -> {
+			mainOut.unbind();
+			ProjectSWG.log("swgScanService ended: " + swgScanService.getValue());
+			Platform.runLater(() -> {
+				if (swgScanService.getValue())
+					if (pswgFolder.getValue().equals(""))
+						state.set(STATE_PSWG_SETUP_REQUIRED);
+					else
+						quickScan();
+				else
+					state.set(STATE_SWG_SETUP_REQUIRED);
+			});
+		});
 	}
-
-	public void fullScan()
+	
+	public void addPswgScanServiceListeners()
 	{
+		pswgScanService.setOnRunning((e) -> {
+			Platform.runLater(() -> {
+				state.set(STATE_PSWG_SCANNING);
+			});
+			mainOut.bind(pswgScanService.messageProperty());
+		});
+		
+		pswgScanService.setOnCancelled((e) -> {
+			mainOut.unbind();
+			Platform.runLater(() -> {
+				mainOut.set("PSWG Scan Cancelled");
+				state.set(STATE_PSWG_SCAN_REQUIRED);
+			});
+			ProjectSWG.log("PSWG Scan Cancelled");
+		});
+		
+		pswgScanService.setOnFailed((e) -> {
+			mainOut.unbind();
+			Platform.runLater(() -> {
+				mainOut.set("PSWG Scan Failed");
+				state.set(STATE_PSWG_SCAN_REQUIRED);
+			});
+		});
+		
+		pswgScanService.setOnSucceeded((e) -> {
+			mainOut.unbind();
+			ProjectSWG.log("pswgScanService onSucceeded");
+			
+			Pair<Double, ArrayList<Resource>> result = pswgScanService.getValue();
+			
+			if (result == null) {
+				Platform.runLater(() -> {
+					mainOut.set("PSWG Scan Failed");
+					state.set(STATE_PSWG_SCAN_REQUIRED);
+				});
+				return;
+			}
+			
+			final double dlTotal = result.getKey();
+			resources = result.getValue();
+			
+			Platform.runLater(() -> {
+				if (dlTotal > 0) {
+					state.set(STATE_UPDATE_REQUIRED);
+					mainOut.set(String.format("%.2f MB Required", dlTotal / 1024 / 1024));
+				} else {
+					if (!ProjectSWG.isWindows())
+						if (wineBinary.getValue().equals("")) {
+							state.set(STATE_WINE_REQUIRED);
+							mainOut.set("Wine Setup Required");
+							return;
+						}
+					state.set(STATE_PSWG_READY);
+					mainOut.set("Ready");
+				}
+			});
+		});
+	}
+	
+	public void addUpdateServiceListeners()
+	{
+		updateService.setOnRunning((e) -> {
+			mainOut.bind(updateService.messageProperty());
+			Platform.runLater(() -> {
+				state.set(STATE_UPDATING);
+			});
+		});
+		
+		updateService.setOnCancelled((e) -> {
+			mainOut.unbind();
+			Platform.runLater(() -> {
+				state.set(STATE_PSWG_SCAN_REQUIRED);
+				mainOut.set("Update Cancelled");
+			});
+		});
+		
+		updateService.setOnFailed((e) -> {
+			mainOut.unbind();
+			ProjectSWG.log("Update failed: " + updateService.getException());
+			Platform.runLater(() -> {
+				state.set(STATE_PSWG_SCAN_REQUIRED);
+				mainOut.set("Update Failed");
+			});
+		});
+		
+		updateService.setOnSucceeded((e) -> {
+			mainOut.unbind();
+			Platform.runLater(() -> {
+				if (updateService.getValue()) {
+					if (!ProjectSWG.isWindows())
+						if (wineBinary.getValue().equals("")) {
+							state.set(STATE_WINE_REQUIRED);
+							mainOut.set("Wine Binary Not Set");
+							return;
+						}
+					fullScan();
+				} else {
+					state.set(STATE_PSWG_SCAN_REQUIRED);
+					mainOut.set("Update Failed");
+				}
+			});
+		});
+	}
+	
+	public void quickScan()
+	{
+		if (state.get() < STATE_SWG_SCANNING)
+			return;
 		if (pswgScanService.isRunning())
 			return;
+		pswgScanService.startScan(CHECK_SIZE_PSWG, NORMAL_SCAN);
+	}
 	
+	public void fullScan()
+	{
+		if (state.get() < STATE_SWG_SCANNING)
+			return;
+		if (pswgScanService.isRunning())
+			return;
 		pswgScanService.startScan(CHECK_HASH_PSWG, NORMAL_SCAN);
 	}
 	
 	public void updatePswg()
 	{
+		if (updateService.isRunning())
+			return;
 		updateService.reset();
 		updateService.start();
 	}
@@ -383,15 +426,11 @@ public class Manager
 	
 	public void startSWG()
 	{
-		if (instances.size() > MAX_INSTANCES) {
-			ProjectSWG.log("Too many games running");
+		if (instances.size() > MAX_INSTANCES)
 			return;
-		}
 		String pswgFolder = ProjectSWG.PREFS.get("pswg_folder", "");
-		if (pswgFolder.equals("")) {
-			ProjectSWG.log("pswgFolder was empty");
+		if (pswgFolder.equals(""))
 			return;
-		}
 		
 		ProjectSWG.log(String.format("Launching game: Folder: %s, Host: %s, Port: %s",
 				pswgFolder,
@@ -407,24 +446,29 @@ public class Manager
 	
 	public void launchGameSettings()
 	{
-		ProjectSWG.log("Launching game settings...");
-		
 		String pswgFolder = ProjectSWG.PREFS.get("pswg_folder", "");
-		if (pswgFolder.equals("")) {
-			ProjectSWG.log("pswg_folder not set");
+		if (pswgFolder.equals(""))
 			return;
-		}
-		
 		File dir = new File(pswgFolder);
-		if (!dir.exists()) {
-			ProjectSWG.log("pswg_folder not found");
+		if (!dir.exists())
 			return;
+		
+		String[] processString = null;
+		if (ProjectSWG.isWindows())
+			processString = new String[] { pswgFolder + "/SwgClientSetup_r.exe" };
+		else {
+			if (wineBinary.getValue().equals(""))
+				return;
+			processString = new String[] {
+					wineBinary.getValue(),
+					pswgFolder + "/SwgClientSetup_r.exe"
+			};
 		}
 		
 		try {
-			ProcessBuilder pb = new ProcessBuilder(pswgFolder + "/SwgClientSetup_r.exe");
+			ProcessBuilder pb = new ProcessBuilder(processString);
 			pb.directory(dir);
-			Process p = pb.start();
+			pb.start();
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
@@ -441,7 +485,6 @@ public class Manager
 				ProjectSWG.log("Error getting local resource: " + path);
 				return null;
 			}
-		
 		return file;
 	}
 	
@@ -467,10 +510,8 @@ public class Manager
 		
 		byte[] hash = md.digest();
 		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < hash.length; i++) {
-			//sb.append(Integer.toString((hash[i] & 0xff) + 0x100, 16).substring(1));
+		for (int i = 0; i < hash.length; i++)
 	        sb.append(Integer.toHexString((hash[i] & 0xff) | 0x100).substring(1, 3));
-	    }
 
 		return sb.toString();
 	}
@@ -479,12 +520,8 @@ public class Manager
 	{
 		try {
 			Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-			//Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding", "SunJCE");
-			//SecretKeySpec sks = new SecretKeySpec(Manager.AES_SESSION_KEY.getBytes("UTF-8"), "AES");
 			SecretKeySpec sks = new SecretKeySpec(Manager.AES_SESSION_KEY.getBytes(), "AES");
-			//cipher.init(Cipher.ENCRYPT_MODE, sks, new IvParameterSpec(Manager.AES_SESSION_KEY.getBytes("UTF-8")));
 			cipher.init(Cipher.ENCRYPT_MODE, sks, new IvParameterSpec(Manager.AES_SESSION_KEY.getBytes()));
-			//return cipher.doFinal(text.getBytes("UTF-8"));
 			return cipher.doFinal(text.getBytes());
 		} catch (NoSuchAlgorithmException | NoSuchPaddingException e1) {
 			e1.printStackTrace();
@@ -501,7 +538,6 @@ public class Manager
 		Cipher cipher;
 		try {
 			cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-			//cipher = Cipher.getInstance("AES/CBC/NoPadding", "SunJCE");
 			SecretKeySpec sks = new SecretKeySpec(key.getBytes(), "AES");
 			cipher.init(Cipher.DECRYPT_MODE, sks, new IvParameterSpec(key.getBytes()));
 			return new String(cipher.doFinal(data));
@@ -528,15 +564,11 @@ public class Manager
 		
 		if (serverString.equals("")) {
 			ProjectSWG.log("Login server doesn't exist: " + loginServerName);
-			if (loginServerName.equals(PSWG_LOGIN_SERVER_NAME)) {
-
-			} else {
-				return null;
-			}
+			return null;
 		}
-		//("^([0-9]+)\\s+([0-9a-fA-F]{32})\\s+([0-9]+)\\s+(\\S+)$");
 		
 		Pattern pattern;
+		// fix
 		pattern = Pattern.compile("^([a-zA-Z0-9\\.-]*),([0-9]*),([0-9]*)$");
 		Matcher matcher;
 
@@ -720,19 +752,9 @@ public class Manager
 		return wineBinary;
 	}
 
-	public void setWineBinary(SimpleStringProperty wineBinary)
+	public SimpleIntegerProperty getState()
 	{
-		this.wineBinary = wineBinary;
-	}
-	
-	public SimpleBooleanProperty getSwgReady()
-	{
-		return swgReady;
-	}
-	
-	public SimpleBooleanProperty getPswgReady()
-	{
-		return pswgReady;
+		return state;
 	}
 
 	public SwgScanService getSwgScanService()
@@ -748,5 +770,15 @@ public class Manager
 	public ArrayList<Resource> getResources()
 	{
 		return resources;
+	}
+	
+	public SimpleStringProperty getWineArguments()
+	{
+		return wineArguments;
+	}
+	
+	public SimpleStringProperty getWineEnvironmentVariables()
+	{
+		return wineEnvironmentVariables;
 	}
 }

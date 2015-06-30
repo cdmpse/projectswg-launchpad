@@ -21,13 +21,9 @@ package com.projectswg.launchpad.controller;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.ArrayList;
-
 import com.projectswg.launchpad.ProjectSWG;
 import com.projectswg.launchpad.extras.TREFix;
 import com.projectswg.launchpad.service.Manager;
-import com.projectswg.launchpad.model.Resource;
-
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -35,7 +31,6 @@ import javafx.animation.ParallelTransition;
 import javafx.animation.ScaleTransition;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -49,12 +44,11 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import javafx.util.Pair;
 
 public class MainController implements FxmlController
 {
 	@FXML
-	private Button launcherSettingsButton, extrasButton, gameSettingsButton;
+	private Button settingsButton, extrasButton, optionsButton;
 	
 	@FXML
 	private Button updateButton, setupButton, cancelButton, playButton, scanButton;
@@ -77,30 +71,8 @@ public class MainController implements FxmlController
 	@FXML
 	private ImageView mainGraphic;
 	
-	public static final double SLIDE_DURATION = 300;
-	public static final double FADE_DURATION = 250;
-	
-	public static final int ANIMATION_NONE = 0;
-	public static final int ANIMATION_LOW = 1;
-	public static final int ANIMATION_HIGH = 2;
-	
-	public static final String CHECKMARK = "\u2713";
-	public static final String XMARK = "\u2717";
-	public static final String PENCIL_ICON = "\u270e";
-	public static final String MAGNIFYING_GLASS = "\ud83d\udd0d";
-	public static final String UP_ARROW = "\u21e1";
-	public static final String DOWN_ARROW = "\u21e3";
-	public static final String WHITE_CIRCLE = "\u25cb";
-	public static final String BLACK_CIRCLE = "\u25cf";
-	public static final String SPEAKER = "\ud83d\udd0a";
-	
-	// observables
-	private SimpleIntegerProperty animationLevel;
 	private ObservableList<GameController> games;
-	
-	// animation
 	private GaussianBlur blur;
-	
 	private ProjectSWG pswg;
 	private Stage stage;
 	private Manager manager;
@@ -116,14 +88,12 @@ public class MainController implements FxmlController
 	
 	public MainController()
 	{
-		animationLevel = new SimpleIntegerProperty();
 		blur = new GaussianBlur();
 	}
 	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1)
 	{
-		
 	}
 	
 	public void init(ProjectSWG pswg)
@@ -132,7 +102,7 @@ public class MainController implements FxmlController
 		
 		manager = pswg.getManager();
 		
-		// move to css
+		// move to css?
 		progressIndicator.setMaxSize(36, 36);
 		
 		// Game process display
@@ -161,186 +131,140 @@ public class MainController implements FxmlController
 		setupComponent.init(this);
 		extrasComponent.init(this);
 		
-		animationLevel.set(ProjectSWG.PREFS.getInt("animation", 2));
-		
-		// add listeners
-		
-		animationLevel.addListener((observable, oldValue, newValue) -> {
-			ProjectSWG.PREFS.putInt("animation", newValue.intValue());
-		});
-		
 		addButtonListeners();
-		
+
 		manager.getMainOut().addListener((observable, oldValue, newValue) -> {
 			mainDisplay.queueString(newValue);
 		});
 		
-		manager.getSwgReady().addListener((observable, oldValue, newValue) -> {
-			
-			ProjectSWG.log(String.format("swgReady changed: %s -> %s", oldValue, newValue));
-			if (manager.getPswgReady().getValue()) {
-				playButton.setVisible(true);
-				updateButton.setVisible(false);
-				setupButton.setVisible(false);
-				
-				gameSettingsButton.setDisable(false);
-				extrasButton.setDisable(false);
-			}
-		});
-		
-		manager.getSwgScanService().runningProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue) {
-				ProjectSWG.log("SWG scan started");
-				
-				launcherSettingsButton.setDisable(true);
-				gameSettingsButton.setDisable(true);
-				extrasButton.setDisable(true);
-		
-				setupButton.setVisible(false);
-				progressIndicator.setVisible(true);
-				
-			} else {
-				launcherSettingsButton.setDisable(false);
-				gameSettingsButton.setDisable(false);
-				extrasButton.setDisable(false);
-				
-				boolean result = manager.getSwgScanService().getValue();
+		manager.getState().addListener((observable, oldValue, newValue) -> {
+			switch (newValue.intValue()) {
+			case Manager.STATE_SWG_SETUP_REQUIRED:
+				playButton.setVisible(false);
+				scanButton.setVisible(false);
+				setupButton.setVisible(true);
 				cancelButton.setVisible(false);
 				progressIndicator.setVisible(false);
-				
-				if (result) {
-				
-				} else {
-					setupButton.setVisible(true);
-					playButton.setDisable(true);
-				}
-			}
-		});
-		
-		manager.getPswgScanService().runningProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue) {
-				ProjectSWG.log("PSWG scan started");
-				
-				launcherSettingsButton.setDisable(true);
-				gameSettingsButton.setDisable(true);
+				settingsButton.setDisable(false);
+				optionsButton.setDisable(true);
 				extrasButton.setDisable(true);
+				break;
+			
+			case Manager.STATE_SWG_SCANNING:
+				setupButton.setVisible(false);
+				cancelButton.setVisible(true);
+				progressIndicator.setVisible(true);
+				settingsButton.setDisable(true);
+				optionsButton.setDisable(true);
+				extrasButton.setDisable(true);
+				break;
+			
+			case Manager.STATE_PSWG_SETUP_REQUIRED:
+				playButton.setVisible(false);
+				scanButton.setVisible(false);
+				setupButton.setVisible(true);
+				cancelButton.setVisible(false);
+				progressIndicator.setVisible(false);
+				settingsButton.setDisable(false);
+				optionsButton.setDisable(true);
+				extrasButton.setDisable(true);
+				break;
 				
+			case Manager.STATE_PSWG_SCAN_REQUIRED:
+				playButton.setVisible(true);
+				scanButton.setVisible(true);
+				setupButton.setVisible(false);
+				cancelButton.setVisible(false);
+				progressIndicator.setVisible(false);
 				playButton.setDisable(true);
+				settingsButton.setDisable(false);
+				optionsButton.setDisable(true);
+				extrasButton.setDisable(true);
+				break;
+				
+			case Manager.STATE_PSWG_SCANNING:
 				scanButton.setVisible(false);
 				setupButton.setVisible(false);
 				cancelButton.setVisible(true);
 				progressIndicator.setVisible(true);
-				
-			} else {
-				launcherSettingsButton.setDisable(false);
+				settingsButton.setDisable(true);
+				optionsButton.setDisable(true);
+				extrasButton.setDisable(true);
+				playButton.setDisable(true);
+				break;
+			
+			case Manager.STATE_UPDATE_REQUIRED:
 				cancelButton.setVisible(false);
+				updateButton.setVisible(true);
+				setupButton.setVisible(false);
 				progressIndicator.setVisible(false);
+				settingsButton.setDisable(false);
+				optionsButton.setDisable(true);
+				extrasButton.setDisable(true);
+				break;
 				
-				switch (manager.getPswgScanService().getState()) {
-				case CANCELLED:
-					ProjectSWG.log("PSWG scan cancelled");
-					scanButton.setVisible(true);
-					break;
-					
-				case SUCCEEDED:
-					ProjectSWG.log("PSWG scan succeeded");
-					Pair<Double, ArrayList<Resource>> result = manager.getPswgScanService().getValue();
-					if (result == null) {
-						scanButton.setVisible(true);
-						return;
-					}
-					
-					final double dlTotal = manager.getPswgScanService().getValue().getKey();
-					if (dlTotal > 0) {
-						updateButton.setVisible(true);
-					} else {
-						gameSettingsButton.setDisable(false);
-						extrasButton.setDisable(false);
-
-						playButton.setDisable(false);
-						scanButton.setVisible(true);
-						mainDisplay.queueString("Ready");
-					}
-					break;
-				default:
-				}
-			}
-		});
-		
-		manager.getUpdateService().runningProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue) {
-				launcherSettingsButton.setDisable(true);
+			case Manager.STATE_UPDATING:
+				setupButton.setVisible(false);
 				updateButton.setVisible(false);
 				cancelButton.setVisible(true);
 				progressIndicator.setVisible(true);
-			} else {
-				launcherSettingsButton.setDisable(false);
-				switch (manager.getUpdateService().getState()) {
-				case FAILED:
-					cancelButton.setVisible(false);
-					progressIndicator.setVisible(false);
-					scanButton.setVisible(true);
-					break;
+				if (manager.getUpdateService().getProgress() != -1)
+					showProgressBar();
+				optionsButton.setDisable(true);
+				extrasButton.setDisable(true);
+				break;
+			
+			case Manager.STATE_WINE_REQUIRED:
+				playButton.setVisible(true);
+				scanButton.setVisible(true);
+				setupButton.setVisible(false);
+				cancelButton.setVisible(false);
+				progressIndicator.setVisible(false);
+				playButton.setDisable(true);
+				settingsButton.setDisable(false);
+				optionsButton.setDisable(true);
+				extrasButton.setDisable(true);
+				break;
 				
-				case CANCELLED:
-					cancelButton.setVisible(false);
-					progressIndicator.setVisible(false);
-					scanButton.setVisible(true);
-					break;
-					
-				case SUCCEEDED:
-					gameSettingsButton.setDisable(false);
-					extrasButton.setDisable(false);
-					cancelButton.setVisible(false);
-					progressIndicator.setVisible(false);
-					scanButton.setVisible(true);
-					if (manager.getUpdateService().getValue()) {
-						playButton.setDisable(false);
-						playButton.setVisible(true);
-					}
-					break;
-				default:
-				}
+			case Manager.STATE_PSWG_READY:
+				updateButton.setVisible(false);
+				setupButton.setVisible(false);
+				playButton.setVisible(true);
+				scanButton.setVisible(true);
+				cancelButton.setVisible(false);
+				progressIndicator.setVisible(false);
+				settingsButton.setDisable(false);
+				optionsButton.setDisable(false);
+				extrasButton.setDisable(false);
+				playButton.setDisable(false);
+				break;
+				
+			default:
+				
 			}
 		});
 		
 		manager.getUpdateService().progressProperty().addListener((observable, oldValue, newValue) -> {
-			if (oldValue.intValue() == -1)
-				Platform.runLater(() -> {
+			Platform.runLater(() -> {
+				if (oldValue.intValue() == -1)
 					showProgressBar();
-				});
-			progressBar.setProgress(newValue.doubleValue());
-			if (newValue.intValue() == -1)
-				Platform.runLater(() -> {
+				progressBar.setProgress(newValue.doubleValue());
+				if (newValue.intValue() == -1)
 					hideProgressBar();
-				});
+			});
 		});
-		
-		// initial setup
-		if (manager.getSwgReady().getValue() && manager.getPswgReady().getValue()) {
-			playButton.setVisible(true);
-			playButton.setDisable(false);
-			setupButton.setVisible(false);
-			scanButton.setVisible(true);
-		} else {
-			mainDisplay.queueString("Setup required");
-			setupButton.setVisible(true);
-			gameSettingsButton.setDisable(true);
-			extrasButton.setDisable(true);
-		}
 
 		// animation
-		
 		// show low anim
 		// fade
 		showDownloadLow = new Timeline();
 		final KeyValue showDownloadLowKV = new KeyValue(progressBar.opacityProperty(), 1, Interpolator.EASE_BOTH);
-		final KeyFrame showDownloadLowKF = new KeyFrame(Duration.millis(FADE_DURATION), showDownloadLowKV);
+		final KeyFrame showDownloadLowKF = new KeyFrame(Duration.millis(ProjectSWG.FADE_DURATION), showDownloadLowKV);
 		showDownloadLow.getKeyFrames().add(showDownloadLowKF);
 		
 		// show full anim
 		// scale
-		final ScaleTransition showDownloadHighScale = new ScaleTransition(Duration.millis(SLIDE_DURATION), progressBar);
+		final ScaleTransition showDownloadHighScale = new ScaleTransition(Duration.millis(ProjectSWG.SLIDE_DURATION), progressBar);
 		showDownloadHighScale.setFromX(0);
 		showDownloadHighScale.setFromY(0);
 		showDownloadHighScale.setToX(1);
@@ -348,7 +272,7 @@ public class MainController implements FxmlController
 		// fade
 		final Timeline showDownloadHighFade = new Timeline();
 		final KeyValue showDownloadHighFadeKV = new KeyValue(progressBar.opacityProperty(), 1, Interpolator.EASE_BOTH);
-		final KeyFrame showDownloadHighFadeKF = new KeyFrame(Duration.millis(FADE_DURATION), showDownloadHighFadeKV);
+		final KeyFrame showDownloadHighFadeKF = new KeyFrame(Duration.millis(ProjectSWG.FADE_DURATION), showDownloadHighFadeKV);
 		showDownloadHighFade.getKeyFrames().add(showDownloadHighFadeKF);
 		// combine and play
 		showDownloadHigh = new ParallelTransition();
@@ -358,7 +282,7 @@ public class MainController implements FxmlController
 		// long fade
 		hideDownloadLow = new Timeline();
 		final KeyValue hideDownloadLowKV = new KeyValue(progressBar.opacityProperty(), 0, Interpolator.EASE_BOTH);
-		final KeyFrame hideDownloadLowKF = new KeyFrame(Duration.millis(SLIDE_DURATION), hideDownloadLowKV);
+		final KeyFrame hideDownloadLowKF = new KeyFrame(Duration.millis(ProjectSWG.SLIDE_DURATION), hideDownloadLowKV);
 		hideDownloadLow.getKeyFrames().add(hideDownloadLowKF);
 		hideDownloadLow.setOnFinished((event) -> {
 			progressBar.setOpacity(1);
@@ -367,7 +291,7 @@ public class MainController implements FxmlController
 		
 		// hide full anim
 		// scale
-		final ScaleTransition hideDownloadHighScale = new ScaleTransition(Duration.millis(SLIDE_DURATION), progressBar);
+		final ScaleTransition hideDownloadHighScale = new ScaleTransition(Duration.millis(ProjectSWG.SLIDE_DURATION), progressBar);
 		hideDownloadHighScale.setFromX(1);
 		hideDownloadHighScale.setFromY(1);
 		hideDownloadHighScale.setToX(0);
@@ -375,7 +299,7 @@ public class MainController implements FxmlController
 		// short fade
 		final Timeline highDownloadHighFade = new Timeline();
 		final KeyValue highDownloadHighFadeKV = new KeyValue(progressBar.opacityProperty(), 0, Interpolator.EASE_BOTH);
-		final KeyFrame highDownloadHighFadeKF = new KeyFrame(Duration.millis(FADE_DURATION), highDownloadHighFadeKV);
+		final KeyFrame highDownloadHighFadeKF = new KeyFrame(Duration.millis(ProjectSWG.FADE_DURATION), highDownloadHighFadeKV);
 		highDownloadHighFade.getKeyFrames().add(highDownloadHighFadeKF);
 		// combine and play
 		hideDownloadHigh = new ParallelTransition();
@@ -410,11 +334,11 @@ public class MainController implements FxmlController
 			manager.fullScan();
 		});
 		
-		launcherSettingsButton.setOnAction((e) -> {
+		settingsButton.setOnAction((e) -> {
 			modalController.showWithComponent(settingsComponent);
 		});
 		
-		gameSettingsButton.setOnAction((e) -> {
+		optionsButton.setOnAction((e) -> {
 			manager.launchGameSettings();
 		});
 		
@@ -447,20 +371,30 @@ public class MainController implements FxmlController
 		return modalController;
 	}
 	
+	public void stopDownloadAnimation()
+	{
+		showDownloadLow.stop();
+		showDownloadHigh.stop();
+		hideDownloadLow.stop();
+		hideDownloadHigh.stop();
+	}
+	
 	public void showProgressBar()
 	{
-		switch (ProjectSWG.PREFS.getInt("animation", 2)) {
-		case ANIMATION_NONE:
+		switch (ProjectSWG.PREFS.getInt("animation", ProjectSWG.ANIMATION_HIGH)) {
+		case ProjectSWG.ANIMATION_NONE:
 			progressBar.setVisible(true);
 			break;
-		case ANIMATION_LOW:
+		case ProjectSWG.ANIMATION_LOW:
 			progressBar.setOpacity(0);
 			progressBar.setVisible(true);
+			stopDownloadAnimation();
 			showDownloadLow.play();
 			break;
-		case ANIMATION_HIGH:
+		case ProjectSWG.ANIMATION_HIGH:
 			progressBar.setOpacity(0);
 			progressBar.setVisible(true);
+			stopDownloadAnimation();
 			showDownloadHigh.play();
 			break;
 		}
@@ -468,14 +402,16 @@ public class MainController implements FxmlController
 	
 	public void hideProgressBar()
 	{
-		switch (ProjectSWG.PREFS.getInt("animation", 2)) {
-		case ANIMATION_NONE:
-			progressBar.setVisible(false);;
+		switch (ProjectSWG.PREFS.getInt("animation", ProjectSWG.ANIMATION_HIGH)) {
+		case ProjectSWG.ANIMATION_NONE:
+			progressBar.setVisible(false);
 			break;
-		case ANIMATION_LOW:
+		case ProjectSWG.ANIMATION_LOW:
+			stopDownloadAnimation();
 			hideDownloadLow.play();
 			break;
-		case ANIMATION_HIGH:
+		case ProjectSWG.ANIMATION_HIGH:
+			stopDownloadAnimation();
 			hideDownloadHigh.play();
 			break;
 		}
@@ -497,10 +433,7 @@ public class MainController implements FxmlController
 		return manager;
 	}
 	
-	public SimpleIntegerProperty getAnimationLevel()
-	{
-		return animationLevel;
-	}
+
 
 	public ObservableList<GameController> getGames()
 	{

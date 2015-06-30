@@ -24,7 +24,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.prefs.Preferences;
@@ -42,7 +41,7 @@ import javafx.scene.image.Image;
 import javafx.fxml.FXMLLoader;
 
 public class ProjectSWG extends Application
-{
+{	
 	public static final String PSWG_URL = "http://www.projectswg.com";
 	public static final Map<String, String> FXML_SCREENS;
 	static {
@@ -53,17 +52,37 @@ public class ProjectSWG extends Application
 		FXML_SCREENS.put("modal", "Modal.fxml");
 		FXML_SCREENS.put("extras", "Extras.fxml");
 	}
+	public static final Preferences PREFS = Preferences.userNodeForPackage(ProjectSWG.class);
+	
 	public static final String FXML_GAME = "Game.fxml";
 	public static final String CSS_NAME = "style.css";
 	public static final String CSS_DEFAULT = "/resources/style.css";
 	public static final String THEMES_FOLDER = "themes";
-	public static final Preferences PREFS = Preferences.userNodeForPackage(ProjectSWG.class);
+
+	public static final String CHECKMARK = "\u2713";
+	public static final String XMARK = "\u2717";
+	public static final String PENCIL_ICON = "\u270e";
+	public static final String MAGNIFYING_GLASS = "\ud83d\udd0d";
+	public static final String UP_ARROW = "\u21e1";
+	public static final String DOWN_ARROW = "\u21e3";
+	public static final String WHITE_CIRCLE = "\u25cb";
+	public static final String BLACK_CIRCLE = "\u25cf";
+	public static final String SPEAKER = "\ud83d\udd0a";
+	public static final String SPEAKER_MUTE = "\ud83d\udd07";
+	public static final String LOCK = "\ud83d\udd12";
+	public static final String OPEN_LOCK = "\ud83d\udd13";
+	
+	public static final int ANIMATION_NONE = 0;
+	public static final int ANIMATION_LOW = 1;
+	public static final int ANIMATION_HIGH = 2;
+	
+	public static final double SLIDE_DURATION = 300;
+	public static final double FADE_DURATION = 250;
 	
 	private HashMap<String, FxmlController> controllers;
-	private ArrayList<GameController> gameControllers;
 	private Stage primaryStage;
 	private Manager manager;
-	
+
 	
 	@Override
 	public void start(Stage primaryStage)
@@ -71,15 +90,12 @@ public class ProjectSWG extends Application
 		this.primaryStage = primaryStage;
 
 		manager = new Manager();
+		
 		controllers = new HashMap<>();
-		gameControllers = new ArrayList<>();
-
 		loadTheme(PREFS.get("theme", "Default"));
-
+		
 		primaryStage.setResizable(false);
 		primaryStage.show();
-		
-		manager.loadPrefs();
 	}
 	
 	public void loadTheme(String theme)
@@ -88,6 +104,10 @@ public class ProjectSWG extends Application
 		
 		loadFxmls(theme);
 		loadCss(theme);
+		
+		int state = manager.getState().getValue();
+		manager.getState().set(Manager.STATE_INIT);
+		manager.getState().set(state);
 	}
 	
 	public void loadFxmls(String theme)
@@ -109,11 +129,9 @@ public class ProjectSWG extends Application
 		((MainController)controllers.get("main")).init(this);
 		
 		// games
-		gameControllers.clear();
 		for (Instance swg : manager.getInstances()) {
 			GameController gameController = (GameController)loadFxml(theme, FXML_GAME);
 			swg.setGameController(gameController);
-			gameControllers.add(gameController);
 		}
 	}
 	
@@ -172,8 +190,7 @@ public class ProjectSWG extends Application
 	
 	public static void log(String text)
 	{
-		if (true)
-			System.out.println("[ PSWGLog ] " + text);
+		System.out.println("[ PSWGLog ] " + text);
 	}
 
 	public static FxmlController loadFxml(String theme, String fxml)

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=ProjectSWG
+Comment=ProjectSWG
+Exec=/opt/ProjectSWG/ProjectSWG
+Icon=/opt/ProjectSWG/ProjectSWG.png
+Terminal=false
+Type=Application
+Categories=Unknown
+

@@ -82,19 +82,19 @@ public class SettingsController implements ModalComponent
 	private CheckBox closeAfterLaunchCheckBox, debugCheckBox, localhostCheckBox;
 	
 	@FXML
-	private CheckBox loginServerLockedCheckBox, openOnLaunchButton;
+	private CheckBox loginServerLockedCheckBox, openOnLaunchCheckBox, soundCheckBox;
 	
 	@FXML
 	private ComboBox<String> loginServerComboBox, themeComboBox;
 	
 	@FXML
-	private Pane pingDisplayPane, themeDisplayPane, swgFolderDisplayPane, pswgFolderDisplayPane;
+	private Pane pingDisplayPane, swgFolderDisplayPane, pswgFolderDisplayPane;
 	
 	@FXML
 	private TextField hostnameTextField, portTextField, statusPortTextField;
 	
 	@FXML
-	private Tooltip settingsSwgFolderTooltip, settingsPswgFolderTooltip;
+	private Tooltip settingsSwgFolderTooltip, settingsPswgFolderTooltip, wineBinaryTooltip;
 	
 	@FXML
 	private Hyperlink pswgHyperlink;
@@ -108,8 +108,10 @@ public class SettingsController implements ModalComponent
 	
 	private MainController mainController;
 	private ModalController modalController;
-	private NodeDisplay pingDisplay, themeDisplay;
+	private NodeDisplay pingDisplay;
 	private NodeDisplay swgFolderDisplay, pswgFolderDisplay;
+	private Manager manager;
+	private ProgressIndicator progressIndicator;
 	
 	
 	public SettingsController()
@@ -130,14 +132,19 @@ public class SettingsController implements ModalComponent
 		});
 		
 		settingsRoot.setExpandedPane(settingsRoot.getPanes().get(0));
+		
+		progressIndicator = new ProgressIndicator();
+		progressIndicator.setMaxSize(15, 15);
+		progressIndicator.setPrefSize(15, 15);
+		progressIndicator.setMinSize(15, 15);
 	}
 	
 	@Override
 	public void init(MainController mainController)
 	{
 		this.mainController = mainController;
+		this.manager = mainController.getManager();
 		
-		themeDisplay = new NodeDisplay(themeDisplayPane);
 		pingDisplay = new NodeDisplay(pingDisplayPane);
 		swgFolderDisplay = new NodeDisplay(swgFolderDisplayPane);
 		pswgFolderDisplay = new NodeDisplay(pswgFolderDisplayPane);
@@ -146,25 +153,12 @@ public class SettingsController implements ModalComponent
 		initSetupPane();
 		initDeveloperPane();
 		if (ProjectSWG.isWindows())
-			// remove wine pane
-		initWinePane();
+			settingsRoot.getPanes().remove(WINE_PANE_INDEX);
+		else
+			initWinePane();
 		initAboutPane();
 		
-		animationSlider.setValue(ProjectSWG.PREFS.getInt("animation", 2));
-		
-		// initial setup
-		
-		if (mainController.getManager().getSwgReady().getValue())
-			swgFolderDisplay.queueString(MainController.CHECKMARK);
-		else {
-			settingsPswgFolderButton.setDisable(true);
-			swgFolderDisplay.queueString(MainController.XMARK);
-		}
-		
-		if (mainController.getManager().getPswgFolder().getValue().equals(""))
-			pswgFolderDisplay.queueString(MainController.XMARK);
-		else
-			pswgFolderDisplay.queueString(MainController.CHECKMARK);
+		animationSlider.setValue(ProjectSWG.PREFS.getInt("animation", ProjectSWG.ANIMATION_HIGH));
 	}
 	
 	@Override
@@ -175,40 +169,40 @@ public class SettingsController implements ModalComponent
 	
 	public void initGeneralPane()
 	{
-		// animation preference
-		animationSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-			if (!animationSlider.valueChangingProperty().getValue())
-				mainController.getAnimationLevel().setValue(newValue);;
+		// sound
+		soundCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+			ProjectSWG.PREFS.putBoolean("sound", newValue);
+			soundCheckBox.setText(newValue ? ProjectSWG.SPEAKER : ProjectSWG.SPEAKER_MUTE);
 		});
+		soundCheckBox.setText(ProjectSWG.PREFS.getBoolean("sound", false) ? ProjectSWG.SPEAKER : ProjectSWG.SPEAKER_MUTE);
+		soundCheckBox.setSelected(ProjectSWG.PREFS.getBoolean("sound", false));
 		
+		// close on launch
 		closeAfterLaunchCheckBox.setSelected(ProjectSWG.PREFS.getBoolean("close_after_launch", false));
 		closeAfterLaunchCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
 			ProjectSWG.PREFS.putBoolean("close_after_launch", newValue);
 		});
 		
-		// Themes
+		// theme
 		refreshThemesButton.setOnAction((e) -> {
 			refreshThemeList();
-			themeDisplay.queueString("Theme list refreshed.");
 		});
 		refreshThemeList();
-
 		themeComboBox.setValue(ProjectSWG.PREFS.get("theme", "Default"));
 		themeComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue == null) {
-				ProjectSWG.log("themeComboBox: newValue -> null");
+			if (oldValue == null || newValue == null)
 				return;
-			}
-			if (oldValue == null)
-				return;
-			
 			mainController.getPswg().loadTheme(newValue);
 			Platform.runLater(() -> {
 				ModalController modal = (ModalController)mainController.getPswg().getControllers().get("modal");
 				modal.loadComponent((SettingsController)mainController.getPswg().getControllers().get("settings"));
-				// fix
-				//themeDisplay.queueString("Theme set");
 			});
+		});
+		
+		// animation
+		animationSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+			if (!animationSlider.valueChangingProperty().getValue())
+				ProjectSWG.PREFS.putInt("animation", newValue.intValue());
 		});
 	}
 	
@@ -245,7 +239,7 @@ public class SettingsController implements ModalComponent
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 				if (Pattern.matches(hostnamePattern, newValue)) {
-					mainController.getManager().setLoginServerHostname(loginServerComboBox.getValue(), newValue);
+					manager.setLoginServerHostname(loginServerComboBox.getValue(), newValue);
 				} else {
 					hostnameTextField.setText(oldValue);
 				}
@@ -256,7 +250,7 @@ public class SettingsController implements ModalComponent
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 				if (Pattern.matches(portPattern, newValue))
-					mainController.getManager().setLoginServerPort(loginServerComboBox.getValue(), newValue);
+					manager.setLoginServerPort(loginServerComboBox.getValue(), newValue);
 				else
 					portTextField.setText(oldValue);
 			}
@@ -266,30 +260,33 @@ public class SettingsController implements ModalComponent
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 				if (Pattern.matches(portPattern, newValue))
-					mainController.getManager().setLoginServerStatusPort(loginServerComboBox.getValue(), newValue);
+					manager.setLoginServerStatusPort(loginServerComboBox.getValue(), newValue);
 				else
 					statusPortTextField.setText(oldValue);
 			}
 		};
 		
 		// hostnameTextField.setTextFormatter(textFormatter);
+		loginServerLockedCheckBox.setText(loginServerLockedCheckBox.isSelected() ? ProjectSWG.LOCK : ProjectSWG.OPEN_LOCK);
 		loginServerLockedCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue) {
-
+				loginServerLockedCheckBox.setText(ProjectSWG.LOCK);
+				
 				hostnameTextField.setDisable(true);
 				hostnameTextField.textProperty().removeListener(hostnameTextChangeListener);
-				hostnameTextField.textProperty().bind(mainController.getManager().getLoginServerHost());
+				hostnameTextField.textProperty().bind(manager.getLoginServerHost());
 
 				portTextField.setDisable(true);
 				portTextField.textProperty().removeListener(portTextChangeListener);
-				portTextField.textProperty().bind(mainController.getManager().getLoginServerPlayPort());
+				portTextField.textProperty().bind(manager.getLoginServerPlayPort());
 
 				statusPortTextField.setDisable(true);
 				statusPortTextField.textProperty().removeListener(statusPortTextChangeListener);
-				statusPortTextField.textProperty().bind(mainController.getManager().getLoginServerPingPort());
+				statusPortTextField.textProperty().bind(manager.getLoginServerPingPort());
 				
 			} else {
-
+				loginServerLockedCheckBox.setText(ProjectSWG.OPEN_LOCK);
+				
 				hostnameTextField.setDisable(false);
 				hostnameTextField.textProperty().unbind();
 				hostnameTextField.textProperty().addListener(hostnameTextChangeListener);
@@ -319,24 +316,21 @@ public class SettingsController implements ModalComponent
 				removeLoginServerButton.setDisable(false);
 			}
 			
-			mainController.getManager().setLoginServerByName(newValue);
+			manager.setLoginServerByName(newValue);
 		});
 		refreshLoginServerComboBox();
 		
 		pingButton.setOnAction((e) -> {
-			mainController.getManager().pingLoginServer();
+			manager.pingLoginServer();
 		});
 		
-		mainController.getManager().getPingService().setOnSucceeded((e) -> {
+		manager.getPingService().setOnSucceeded((e) -> {
 			String result = (String)e.getSource().getValue();
 			ProjectSWG.log("pingerOut: " + result);
 			pingDisplay.queueString("" + result);
 		});
 
-		mainController.getManager().getPingService().setOnRunning((e) -> {
-			ProgressIndicator progressIndicator = new ProgressIndicator();
-			progressIndicator.setManaged(false);
-			progressIndicator.resize(15, 15);
+		manager.getPingService().setOnRunning((e) -> {
 			pingDisplay.queueNode(progressIndicator);
 		});
 		
@@ -347,7 +341,7 @@ public class SettingsController implements ModalComponent
 			dialog.setContentText("Server name: ");
 			Optional<String> result = dialog.showAndWait();
 			result.ifPresent(name -> {
-				mainController.getManager().addLoginServer(name);
+				manager.addLoginServer(name);
 				refreshLoginServerComboBox();
 				loginServerComboBox.setValue(name);
 				loginServerLockedCheckBox.setSelected(false);
@@ -362,7 +356,7 @@ public class SettingsController implements ModalComponent
 			if (result.get() == ButtonType.OK) {
 				String val = loginServerComboBox.getValue();
 				loginServerComboBox.getSelectionModel().select(0);
-				mainController.getManager().removeLoginServer(val);
+				manager.removeLoginServer(val);
 				refreshLoginServerComboBox();
 			}
 		});
@@ -370,28 +364,47 @@ public class SettingsController implements ModalComponent
 	
 	public void initSetupFolderSettings()
 	{
-		settingsSwgFolderButton.textProperty().bind(mainController.getManager().getSwgFolder());
-		settingsSwgFolderTooltip.textProperty().bind(mainController.getManager().getSwgFolder());
-		settingsPswgFolderButton.textProperty().bind(mainController.getManager().getPswgFolder());
-		settingsPswgFolderTooltip.textProperty().bind(mainController.getManager().getPswgFolder());
+		settingsSwgFolderButton.textProperty().bind(manager.getSwgFolder());
+		settingsSwgFolderTooltip.textProperty().bind(manager.getSwgFolder());
+		settingsPswgFolderButton.textProperty().bind(manager.getPswgFolder());
+		settingsPswgFolderTooltip.textProperty().bind(manager.getPswgFolder());
 		
-		mainController.getManager().getSwgReady().addListener((observable, oldValue, newValue) -> {
-			if (newValue) {
-				swgFolderDisplay.queueString(MainController.CHECKMARK);
-				settingsPswgFolderButton.setDisable(false);
-			} else {
-				swgFolderDisplay.queueString(MainController.XMARK);
+		manager.getState().addListener((observable, oldValue, newValue) -> {
+			switch (newValue.intValue()) {
+			case Manager.STATE_INIT:
+				swgFolderDisplay.queueString(ProjectSWG.XMARK);
+				pswgFolderDisplay.queueString(ProjectSWG.XMARK);
 				settingsPswgFolderButton.setDisable(true);
+				break;
+			
+			case Manager.STATE_SWG_SETUP_REQUIRED:
+				swgFolderDisplay.queueString(ProjectSWG.XMARK);
+				if (manager.getPswgFolder().equals(""))
+					pswgFolderDisplay.queueString(ProjectSWG.XMARK);
+				else
+					pswgFolderDisplay.queueString(ProjectSWG.CHECKMARK);
+				settingsPswgFolderButton.setDisable(true);
+				break;
+				
+			case Manager.STATE_SWG_SCANNING:
+				swgFolderDisplay.queueNode(progressIndicator);
+				break;
+				
+			case Manager.STATE_PSWG_SCAN_REQUIRED:
+				swgFolderDisplay.queueString(ProjectSWG.CHECKMARK);
+				pswgFolderDisplay.queueString(ProjectSWG.XMARK);
+				settingsPswgFolderButton.setDisable(false);
+				break;
+				
+			case Manager.STATE_PSWG_SCANNING:
+				pswgFolderDisplay.queueNode(progressIndicator);
+				break;
+			
+			default:
+				swgFolderDisplay.queueString(ProjectSWG.CHECKMARK);
+				pswgFolderDisplay.queueString(ProjectSWG.CHECKMARK);
+				settingsPswgFolderButton.setDisable(false);
 			}
-		});
-		
-		mainController.getManager().getPswgFolder().addListener((observable, oldValue, newValue) -> {
-			//if (newValue == null)
-			//	return;
-			if (!newValue.equals(""))
-				pswgFolderDisplay.queueString(MainController.CHECKMARK);
-			else
-				pswgFolderDisplay.queueString(MainController.XMARK);
 		});
 		
 		settingsSwgFolderButton.setOnAction((e) -> {
@@ -402,7 +415,7 @@ public class SettingsController implements ModalComponent
 				return;
 			
 			String swgPath =  file.getAbsolutePath();
-			mainController.getManager().getSwgFolder().set(swgPath);
+			manager.getSwgFolder().set(swgPath);
 		});
 		
 		settingsPswgFolderButton.setOnAction((e) -> {
@@ -413,7 +426,7 @@ public class SettingsController implements ModalComponent
 				return;
 
 			String pswgPath = file.getAbsolutePath();
-			mainController.getManager().getPswgFolder().set(pswgPath);
+			manager.getPswgFolder().set(pswgPath);
 		});
 	}
 	
@@ -424,18 +437,18 @@ public class SettingsController implements ModalComponent
 			ProjectSWG.PREFS.putBoolean("localhost", newValue);
 		});
 		
-		debugCheckBox.setSelected(ProjectSWG.PREFS.getBoolean("debug", false));
 		debugCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
 			ProjectSWG.PREFS.putBoolean("debug", newValue);
-			openOnLaunchButton.setDisable(!newValue);
+			openOnLaunchCheckBox.setDisable(!newValue);
 		});
+		debugCheckBox.setSelected(ProjectSWG.PREFS.getBoolean("debug", false));
 		
-		openOnLaunchButton.setSelected(ProjectSWG.PREFS.getBoolean("open_on_launch", false));
-		openOnLaunchButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
+		openOnLaunchCheckBox.setSelected(ProjectSWG.PREFS.getBoolean("open_on_launch", false));
+		openOnLaunchCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
 			ProjectSWG.PREFS.putBoolean("open_on_launch", newValue);
 		});
 		
-		mainController.getManager().getPswgFolder().addListener((observable, oldValue, newValue) -> {
+		manager.getPswgFolder().addListener((observable, oldValue, newValue) -> {
 			if (newValue == null)
 				return;
 			if (newValue.equals(""))
@@ -445,16 +458,16 @@ public class SettingsController implements ModalComponent
 		});
 		
 		deleteGameProfilesButton.setOnAction((e) -> {
-			String pswgFolder = mainController.getManager().getPswgFolder().getValue();
+			String pswgFolder = manager.getPswgFolder().getValue();
 			if (pswgFolder.equals(""))
 				return;
 			Alert alert = new Alert(AlertType.CONFIRMATION);
 			alert.setTitle("Delete game profiles");
-			alert.setHeaderText(String.format("This will remove the %s\\profiles' folder.", pswgFolder));
+			alert.setHeaderText(String.format("This will remove the %s/profiles' folder.", pswgFolder));
 			Optional<ButtonType> result = alert.showAndWait();
 			if (result.get() == ButtonType.OK)
 				try {
-					Manager.removeRecursive(Paths.get(pswgFolder + "\\profiles"));
+					Manager.removeRecursive(Paths.get(pswgFolder + "/profiles"));
 				} catch (IOException e1) {
 					e1.printStackTrace();
 					alert = new Alert(AlertType.ERROR);
@@ -467,27 +480,28 @@ public class SettingsController implements ModalComponent
 	
 	public void initWinePane()
 	{
-		wineBinaryButton.textProperty().bind(mainController.getManager().getWineBinary());
+		wineBinaryButton.textProperty().bind(manager.getWineBinary());
+		wineBinaryTooltip.textProperty().bind(manager.getWineBinary());
 		
 		wineBinaryButton.setOnAction((e) -> {
 			FileChooser fileChooser = new FileChooser();
-			fileChooser.setTitle("Select SWG folder");
+			fileChooser.setTitle("Set Wine Location");
 			File file = fileChooser.showOpenDialog(mainController.getStage());
 			if (file == null || !file.isFile())
 				return;
 			
-			String swgPath =  file.getAbsolutePath();
-			ProjectSWG.PREFS.put("wine_bin", swgPath);
+			String wineBin =  file.getAbsolutePath();
+			manager.getWineBinary().set(wineBin);
 		});
 		
 		wineArgumentsTextField.setText(ProjectSWG.PREFS.get("wine_arguments", ""));
 		wineArgumentsTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-			ProjectSWG.PREFS.put("wine_arguments", newValue);
+			manager.getWineArguments().set(newValue);
 		});
 		
 		wineEnvironmentVariablesTextField.setText(ProjectSWG.PREFS.get("wine_environment_variables", ""));
 		wineEnvironmentVariablesTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-			ProjectSWG.PREFS.put("wine_environment_variables", newValue);
+			manager.getWineEnvironmentVariables().set(newValue);
 		});
 	}
 	
