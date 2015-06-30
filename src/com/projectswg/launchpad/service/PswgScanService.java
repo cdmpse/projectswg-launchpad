@@ -266,8 +266,7 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 
 			private ArrayList<Resource> parseResourceList(ArrayList<String> resourceList)
 			{
-				ProjectSWG.log("Parsing resource list");
-				updateMessage("Parsing resource list");
+				updateMessage("Parsing Resource List");
 				
 				ArrayList<Resource> resources = new ArrayList<Resource>();
 				Pattern pattern = Pattern.compile("^([0-9]+)\\s+([0-9a-fA-F]{32})\\s+([0-9]+)\\s+(\\S+)$");

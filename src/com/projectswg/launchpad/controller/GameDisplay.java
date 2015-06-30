@@ -189,10 +189,12 @@ public class GameDisplay
 			Platform.runLater(() -> {
 				switch (ProjectSWG.PREFS.getInt("animation", ProjectSWG.ANIMATION_HIGH)) {
 				case ProjectSWG.ANIMATION_NONE:
+					gameButton.setLayoutX(destX);
 					gameButton.setOpacity(1);
 					break;
 					
 				case ProjectSWG.ANIMATION_LOW:
+					gameButton.setLayoutX(destX);
 					gameButton.setOpacity(1);
 					break;
 					

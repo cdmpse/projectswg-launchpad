@@ -28,8 +28,8 @@ import javafx.concurrent.Task;
 
 public class SwgScanService extends Service<Boolean>
 {
+	// add sizes
 	public static final String[] FILES = {
-
 		//"SwgClientSetup_r.exe",
 		"BugTool.exe",
 
@@ -88,7 +88,7 @@ public class SwgScanService extends Service<Boolean>
 					String fileName = FILES[i];
 					
 					updateProgress(i, FILES.length * 100);
-					updateMessage("Scanning: " + fileName);
+					updateMessage("Scanning " + fileName);
 					
 					file = new File(manager.getSwgFolder().getValue() + "/" + fileName);
 					if (!file.isFile()) {
