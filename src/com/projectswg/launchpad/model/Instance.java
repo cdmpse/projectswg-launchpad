@@ -32,6 +32,8 @@ public class Instance
 	private GameController gameController;
 	private Group gameButtonGroup;
 	private Stage stage;
+	private String label;
+	
 	
 	public Instance(GameService gameService)
 	{
@@ -71,5 +73,15 @@ public class Instance
 	public void setStage(Stage stage)
 	{
 		this.stage = stage;
+	}
+	
+	public void setLabel(String label)
+	{
+		this.label = label;
+	}
+	
+	public String getLabel()
+	{
+		return label;
 	}
 }

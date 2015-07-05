@@ -56,13 +56,14 @@ public class PingService extends Service<String>
 				String port = manager.getLoginServerPingPort().getValue();
 				
 				if (host == null || port == null) {
-					ProjectSWG.log("Pinger: host or port null");
+					ProjectSWG.log("PingService: host or port null");
 					return "ERR";
 				}
 				if (host.equals("") || port.equals("")) {
-					ProjectSWG.log("Pinger: host or port blank");
+					ProjectSWG.log(String.format("PingService: host or port was blank ... host = %s, port = %s", host, port));
 					return "ERR";
 				}
+				ProjectSWG.log(String.format("Pinging: host = %s, port = %s", host, port));
 				try {
 					String msg = "ping";
 					long startTime = System.currentTimeMillis();
@@ -78,11 +79,14 @@ public class PingService extends Service<String>
 					String responseText = new String(response.getData());
 					ProjectSWG.log("Ping response: " + responseText + " -> " + (endTime - startTime));
 					return "" + (endTime - startTime);
-				} catch (UnknownHostException e) {
+				} catch (UnknownHostException e1) {
+					ProjectSWG.log(e1.toString());
 					return "UNK";
-				} catch (SocketTimeoutException e) {
+				} catch (SocketTimeoutException e2) {
+					ProjectSWG.log(e2.toString());
 					return "TO";
-				} catch (IOException e) {
+				} catch (IOException e3) {
+					ProjectSWG.log(e3.toString());
 					return "?";
 				}
 			}

@@ -21,9 +21,12 @@ package com.projectswg.launchpad.controller;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+
 import com.projectswg.launchpad.ProjectSWG;
 import com.projectswg.launchpad.extras.TREFix;
+import com.projectswg.launchpad.model.Instance;
 import com.projectswg.launchpad.service.Manager;
+
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -31,6 +34,7 @@ import javafx.animation.ParallelTransition;
 import javafx.animation.ScaleTransition;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -84,13 +88,9 @@ public class MainController implements FxmlController
 	private GameDisplay gameDisplay;
 	private Timeline showDownloadLow, hideDownloadLow;
 	private ParallelTransition showDownloadHigh, hideDownloadHigh;
+	private InstanceListener instanceListener;
 	
-	
-	public MainController()
-	{
-		blur = new GaussianBlur();
-	}
-	
+
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1)
 	{
@@ -100,17 +100,17 @@ public class MainController implements FxmlController
 	{
 		this.pswg = pswg;
 		
+		instanceListener = new InstanceListener();
 		manager = pswg.getManager();
+		blur = new GaussianBlur();
 		
+		// Displays
+		gameDisplay = new GameDisplay(this);
+		mainDisplay = new NodeDisplay(mainDisplayPane);
+
 		// move to css?
 		progressIndicator.setMaxSize(36, 36);
 		
-		// Game process display
-		gameDisplay = new GameDisplay(this);
-		
-		// main text display
-		mainDisplay = new NodeDisplay(mainDisplayPane);
-
 		modalController = (ModalController)pswg.getControllers().get("modal");
 		settingsComponent = (SettingsController)pswg.getControllers().get("settings");
 		setupComponent = (SetupController)pswg.getControllers().get("setup");
@@ -254,6 +254,8 @@ public class MainController implements FxmlController
 			});
 		});
 
+		pswg.getInstances().addListener(instanceListener);
+		
 		// animation
 		// show low anim
 		// fade
@@ -308,6 +310,9 @@ public class MainController implements FxmlController
 			progressBar.setOpacity(1);
 			progressBar.setVisible(false);;
 		});
+		
+		// game output
+		gameDisplay.displayGames();
 		
 		/*
 		 * Extras
@@ -433,8 +438,6 @@ public class MainController implements FxmlController
 		return manager;
 	}
 	
-
-
 	public ObservableList<GameController> getGames()
 	{
 		return games;
@@ -443,5 +446,31 @@ public class MainController implements FxmlController
 	public Pane getGameProcessPane()
 	{
 		return gameProcessPane;
+	}
+	
+	public void removeInstanceListener()
+	{
+		pswg.getInstances().removeListener(instanceListener);
+	}
+	
+	private class InstanceListener implements ListChangeListener<Instance>
+	{
+		@Override
+		public void onChanged(Change<? extends Instance> change) {
+			while (change.next())
+				if (change.wasAdded()) {
+					if (ProjectSWG.PREFS.getBoolean("close_after_launch", false))
+						Platform.exit();
+					for (Instance instance : change.getAddedSubList()) {
+						ProjectSWG.log("instanceListener: " + instance.getLabel());
+						gameDisplay.addGame(instance);
+						if (ProjectSWG.PREFS.getBoolean("open_on_launch", false))
+							instance.getGameController().show();
+					}
+				} else if (change.wasRemoved()) {
+					for (Instance instance : change.getRemoved())
+						gameDisplay.removeGame(instance);
+				}
+			}
 	}
 }

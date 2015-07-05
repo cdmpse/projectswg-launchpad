@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
@@ -70,7 +69,7 @@ public class UpdateService extends Service<Boolean>
 				for (int i = 0; i < downloadList.size(); i++) {
 					resourceName = downloadList.get(i).getName();
 					// check if swg file
-					if (Arrays.asList(SwgScanService.FILES).contains(resourceName)) {
+					if (Arrays.asList(SwgScanService.SWG_FILES.keySet()).contains(resourceName)) {
 						updateMessage(String.format("Copying Resource %s of %s", i + 1, downloadList.size()));
 						if (manager.getSwgFolder().getValue().equals(manager.getPswgFolder().getValue()))
 							continue;
@@ -155,12 +154,11 @@ public class UpdateService extends Service<Boolean>
 					is.close();
 					resource.setDlFlag(false);
 					return true;
-				} catch (MalformedURLException e) {
-					e.printStackTrace();
+					
+				} catch (IOException e1) {
+					ProjectSWG.log("Update Error: " + e1.toString());
 					return false;
-				} catch (IOException e) {
-					e.printStackTrace();
-					return false;
+					
 				} finally {
 					updateProgress(-1, 0);
 				}

@@ -91,7 +91,7 @@
 			<manifest>
 				<attribute name="Implementation-Vendor" value="projectswg.com"/>
 				<attribute name="Implementation-Title" value="ProjectSWG"/>
-				<attribute name="Implementation-Version" value="0.3"/>
+				<attribute name="Implementation-Version" value="0.4"/>
 				<attribute name="JavaFX-Feature-Proxy" value="None"/>
 			</manifest>
 		</fx:jar>

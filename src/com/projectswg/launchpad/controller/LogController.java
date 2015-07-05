@@ -30,9 +30,13 @@ import com.projectswg.launchpad.ProjectSWG;
 
 
 
-import com.projectswg.launchpad.service.GameService;
+
+
+
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -42,19 +46,18 @@ import javafx.scene.effect.Blend;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.InnerShadow;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-public class GameController implements FxmlController
+public class LogController implements FxmlController
 {
 	@FXML
-	private VBox gameRoot;
+	private VBox logRoot;
 	
 	@FXML
-	private Button clearButton, saveAsButton, findButton, stopButton;
+	private Button clearButton, saveAsButton, findButton;
 	
 	@FXML
 	private TextArea outputTextArea;
@@ -62,20 +65,17 @@ public class GameController implements FxmlController
 	@FXML
 	private TextField findTextField;
 	
-	@FXML
-	private Pane gameStatusPane;
-	
 	private int lastFind;
-	private NodeDisplay gameStatusDisplay;
-	private GameService gameService;
 	private Stage stage;
 	private Blend redGlow;
+	private DebugListener debugListener;
 	
 	
-	public GameController()
+	public LogController()
 	{
+		debugListener = new DebugListener();
 		lastFind = 0;
-		
+
 		redGlow = new Blend(BlendMode.MULTIPLY);
 		redGlow.setBottomInput(new DropShadow(5, Color.RED));
 		redGlow.setTopInput(new InnerShadow(8, Color.WHITE));
@@ -91,20 +91,18 @@ public class GameController implements FxmlController
 		this.stage.show();
 	}
 	
-	public void init(GameService gameService, Stage stage)
+	public void init(Stage stage)
 	{
-		this.gameService = gameService;
 		this.stage = stage;
-		gameStatusDisplay = new NodeDisplay(gameStatusPane);
-	
+		
 		clearButton.setOnAction((e) -> {
 			outputTextArea.clear();
 		});
 		
 		saveAsButton.setOnAction((e) -> {
 			FileChooser fileChooser = new FileChooser();
-			fileChooser.setTitle("Save output...");
-			fileChooser.setInitialFileName("log.txt");
+			fileChooser.setTitle("Save debug...");
+			fileChooser.setInitialFileName("debug.txt");
 			File file = fileChooser.showSaveDialog(stage);
 			if (file == null)
 				return;
@@ -128,39 +126,18 @@ public class GameController implements FxmlController
 			findFunc(findTextField.getText());
 		});
 		
-		stopButton.setOnAction((e) -> {
-			if (gameService.isRunning()) {
-				gameService.cancel();
-			};
-		});	
-
-		if (ProjectSWG.PREFS.getBoolean("capture", false)) {
-			gameService.messageProperty().addListener((observable, oldValue, newValue) -> {
-				outputTextArea.appendText(newValue + "\n");
-			});
-		} else {
-			outputTextArea.setText("capture not set");
-		}
-		
-		gameService.runningProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue)
-				Platform.runLater(() -> {
-					gameStatusDisplay.queueString(ProjectSWG.CIRCLE);
-				});
-			else
-				Platform.runLater(() -> {
-					gameStatusDisplay.queueString(ProjectSWG.DOT);
-					stopButton.setDisable(true);
-				});
-		});
-		
-		stage.setOnShown((e) -> {
-			if (gameService.isRunning()) {
-				gameStatusDisplay.queueString(ProjectSWG.CIRCLE);
-			} else {
-				gameStatusDisplay.queueString(ProjectSWG.DOT);
-			}
-		});
+		if (ProjectSWG.PREFS.getBoolean("debug", false))
+			addDebugListener();
+	}
+	
+	public void removeDebugListener()
+	{
+		ProjectSWG.DEBUG.removeListener(debugListener);
+	}
+	
+	public void addDebugListener()
+	{
+		ProjectSWG.DEBUG.addListener(debugListener);
 	}
 	
 	public void findFunc(String searchText)
@@ -184,7 +161,7 @@ public class GameController implements FxmlController
 	@Override
 	public Parent getRoot()
 	{
-		return gameRoot;
+		return logRoot;
 	}
 	
 	public Stage getStage()
@@ -192,13 +169,11 @@ public class GameController implements FxmlController
 		return stage;
 	}
 	
-	public Button getStopButton()
+	private class DebugListener implements ChangeListener<String>
 	{
-		return stopButton;
-	}
-	
-	public GameService getGameService()
-	{
-		return gameService;
+		@Override
+		public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+			outputTextArea.appendText(newValue + "\n");
+		}
 	}
 }

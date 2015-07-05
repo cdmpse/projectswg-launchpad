@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<installer-gui-script minSpecVersion="1">
+<title>ProjectSWG</title>
+<background file="ProjectSWG-dmg-background.png" mime-type="image/png" alignment="bottomleft"  scaling="none"/>
+<license file="/Users/user/git/test/build/deploy/LICENSE.txt" mime-type="text/rtf"/>
+<pkg-ref id="fxApplication"/>
+<options customize="never" require-scripts="false"/>
+<choices-outline>
+    <line choice="default">
+        <line choice="fxApplication"/>
+    </line>
+</choices-outline>
+<choice id="default"/>
+<choice id="fxApplication" visible="false">
+    <pkg-ref id="fxApplication"/>
+</choice>
+<pkg-ref id="fxApplication" version="1.0" onConclusion="none">ProjectSWG-app.pkg</pkg-ref>
+</installer-gui-script>

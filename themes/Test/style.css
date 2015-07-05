@@ -3,12 +3,12 @@
  */
 
 .root {
-	-fx-background-color: grey;
+    -fx-background-color: grey;
 }
 
 #modalRoot {
-	-fx-background-color: white;
-	-fx-border-color: rgb(49, 89, 23);
+    -fx-background-color: white;
+    -fx-border-color: rgb(49, 89, 23);
 }
 
 #progressIndicator {
@@ -19,19 +19,20 @@
     -fx-background-color: transparent;
 }
 
-#gameSettingsButton {
-	-fx-graphic: url("gear.png");
+#optionsButton {
+    -fx-graphic: url("gear.png");
     -fx-content-display: graphic-only;
     -fx-background-color: transparent;
 }
 
-/*
- * 
- * -fx-graphic: url("gear.png");
- *
- * 
- * 
- * 
- * 
- * 
- */
+#gameProcessPane .button {
+	-fx-graphic: url("circle_dashboard_meter_fuel_gauge_glyph.png");
+}
+
+#gameProcessPane .button.stopped {
+	-fx-graphic: url("circle_close_delete_glyph.png");
+}
+
+#mainGraphic {
+	-fx-image: url("pswg-logo.png");
+}

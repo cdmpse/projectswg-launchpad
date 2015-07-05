@@ -96,29 +96,29 @@ public class NodeDisplay
 		final Group nextGroup = new Group(queuedNode);
 		queuedNode.setOpacity(0);
 		root.getChildren().add(nextGroup);
-		queuedNode.setLayoutX(root.getWidth() / 2 - nextGroup.layoutBoundsProperty().getValue().getWidth() / 2);
-		
-		if (ProjectSWG.PREFS.getInt("animation", ProjectSWG.ANIMATION_HIGH) == ProjectSWG.ANIMATION_HIGH)
-			queuedNode.setLayoutY(root.getHeight());
-		else
-			queuedNode.setLayoutY(root.getHeight() / 2 - nextGroup.layoutBoundsProperty().getValue().getHeight() / 2);
 		
 		Platform.runLater(() -> {
-			displayGroup(prevGroup, nextGroup);
+			// otherwise buttonGroup width is sometimes 0
+			Platform.runLater(() -> {
+				displayGroup(prevGroup, nextGroup);
+			});
 		});
 	}
 	
 	public void displayGroup(Group prevGroup, Group nextGroup)
 	{
 		final Parent prevNode = ((prevGroup != null) && prevGroup.getChildren().size() > 0) ? (Parent)prevGroup.getChildren().get(0) : null;
-		
 		if (nextGroup.getChildren().size() == 0)
 			return;
 
 		final Parent nextNode = (Parent)nextGroup.getChildren().get(0);
-		
+		nextNode.setLayoutX(root.getWidth() / 2 - nextGroup.layoutBoundsProperty().getValue().getWidth() / 2);
+		if (ProjectSWG.PREFS.getInt("animation", ProjectSWG.ANIMATION_HIGH) == ProjectSWG.ANIMATION_HIGH)
+			nextNode.setLayoutY(root.getHeight());
+		else
+			nextNode.setLayoutY(root.getHeight() / 2 - nextGroup.layoutBoundsProperty().getValue().getHeight() / 2);
+
 		switch (ProjectSWG.PREFS.getInt("animation", ProjectSWG.ANIMATION_HIGH)) {
-		
 		case ProjectSWG.ANIMATION_NONE:
 			if (root.getChildren().size() > 1)
 				root.getChildren().remove(0);

@@ -53,10 +53,14 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Tooltip;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+
 
 public class SettingsController implements ModalComponent
 {
@@ -79,7 +83,7 @@ public class SettingsController implements ModalComponent
 	private TextField wineArgumentsTextField, wineEnvironmentVariablesTextField;
 	
 	@FXML
-	private CheckBox closeAfterLaunchCheckBox, debugCheckBox, localhostCheckBox;
+	private CheckBox closeAfterLaunchCheckBox, captureCheckBox, localhostCheckBox, debugCheckBox;
 	
 	@FXML
 	private CheckBox loginServerLockedCheckBox, openOnLaunchCheckBox, soundCheckBox;
@@ -97,11 +101,13 @@ public class SettingsController implements ModalComponent
 	private Tooltip settingsSwgFolderTooltip, settingsPswgFolderTooltip, wineBinaryTooltip;
 	
 	@FXML
-	private Hyperlink pswgHyperlink;
+	private Hyperlink pswgHyperlink, showHyperlink;
 	
 	@FXML
 	private Text licenseText;
 	
+	@FXML
+	private TextFlow thanksTextFlow;
 	
 	private static final String LABEL = "Settings";
 	private static final int WINE_PANE_INDEX = 3;
@@ -169,12 +175,14 @@ public class SettingsController implements ModalComponent
 	
 	public void initGeneralPane()
 	{
+		final ImageView speakerOn = new ImageView(new Image("/resources/speaker_on.png"));
+		final ImageView speakerOff = new ImageView(new Image("/resources/speaker_off.png"));
 		// sound
 		soundCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
 			ProjectSWG.PREFS.putBoolean("sound", newValue);
-			soundCheckBox.setText(newValue ? ProjectSWG.SPEAKER : ProjectSWG.SPEAKER_MUTE);
+			soundCheckBox.setGraphic(newValue ? speakerOn : speakerOff);
 		});
-		soundCheckBox.setText(ProjectSWG.PREFS.getBoolean("sound", false) ? ProjectSWG.SPEAKER : ProjectSWG.SPEAKER_MUTE);
+		soundCheckBox.setGraphic(ProjectSWG.PREFS.getBoolean("sound", false) ? speakerOn : speakerOff);
 		soundCheckBox.setSelected(ProjectSWG.PREFS.getBoolean("sound", false));
 		
 		// close on launch
@@ -188,10 +196,13 @@ public class SettingsController implements ModalComponent
 			refreshThemeList();
 		});
 		refreshThemeList();
+		
 		themeComboBox.setValue(ProjectSWG.PREFS.get("theme", "Default"));
 		themeComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
 			if (oldValue == null || newValue == null)
 				return;
+			mainController.removeInstanceListener();
+			((LogController)mainController.getPswg().getControllers().get("log")).removeDebugListener();
 			mainController.getPswg().loadTheme(newValue);
 			Platform.runLater(() -> {
 				ModalController modal = (ModalController)mainController.getPswg().getControllers().get("modal");
@@ -221,9 +232,8 @@ public class SettingsController implements ModalComponent
 		try {
 			for (String server : loginServersNode.keys())
 				loginServerComboBox.getItems().add(server);
-		} catch (BackingStoreException e) {
-			ProjectSWG.log("Error loading loginServers from prefs");
-			e.printStackTrace();
+		} catch (BackingStoreException e1) {
+			ProjectSWG.log("Refresh Login Servers Error: " + e1.toString());
 		}
 		
 		loginServerComboBox.setValue(ProjectSWG.PREFS.get("login_server", Manager.PSWG_LOGIN_SERVER_NAME));
@@ -267,10 +277,14 @@ public class SettingsController implements ModalComponent
 		};
 		
 		// hostnameTextField.setTextFormatter(textFormatter);
-		loginServerLockedCheckBox.setText(loginServerLockedCheckBox.isSelected() ? ProjectSWG.LOCK : ProjectSWG.OPEN_LOCK);
+		final ImageView lockOpen = new ImageView(new Image("/resources/lock_open.png"));
+		final ImageView lockClosed = new ImageView(new Image("/resources/lock_closed.png"));
+		
+		loginServerLockedCheckBox.setGraphic(loginServerLockedCheckBox.isSelected() ? lockOpen : lockClosed);
 		loginServerLockedCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue) {
-				loginServerLockedCheckBox.setText(ProjectSWG.LOCK);
+				
+				loginServerLockedCheckBox.setGraphic(lockClosed);
 				
 				hostnameTextField.setDisable(true);
 				hostnameTextField.textProperty().removeListener(hostnameTextChangeListener);
@@ -285,7 +299,8 @@ public class SettingsController implements ModalComponent
 				statusPortTextField.textProperty().bind(manager.getLoginServerPingPort());
 				
 			} else {
-				loginServerLockedCheckBox.setText(ProjectSWG.OPEN_LOCK);
+				
+				loginServerLockedCheckBox.setGraphic(lockOpen);
 				
 				hostnameTextField.setDisable(false);
 				hostnameTextField.textProperty().unbind();
@@ -306,7 +321,6 @@ public class SettingsController implements ModalComponent
 				return;
 			
 			ProjectSWG.log("Setting server: " + newValue);
-			
 			loginServerLockedCheckBox.setSelected(true);
 			if (newValue.equals(Manager.PSWG_LOGIN_SERVER_NAME)) {
 				loginServerLockedCheckBox.setDisable(true);
@@ -379,7 +393,7 @@ public class SettingsController implements ModalComponent
 			
 			case Manager.STATE_SWG_SETUP_REQUIRED:
 				swgFolderDisplay.queueString(ProjectSWG.XMARK);
-				if (manager.getPswgFolder().equals(""))
+				if (manager.getPswgFolder().getValue().equals(""))
 					pswgFolderDisplay.queueString(ProjectSWG.XMARK);
 				else
 					pswgFolderDisplay.queueString(ProjectSWG.CHECKMARK);
@@ -437,11 +451,11 @@ public class SettingsController implements ModalComponent
 			ProjectSWG.PREFS.putBoolean("localhost", newValue);
 		});
 		
-		debugCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
-			ProjectSWG.PREFS.putBoolean("debug", newValue);
+		captureCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+			ProjectSWG.PREFS.putBoolean("capture", newValue);
 			openOnLaunchCheckBox.setDisable(!newValue);
 		});
-		debugCheckBox.setSelected(ProjectSWG.PREFS.getBoolean("debug", false));
+		captureCheckBox.setSelected(ProjectSWG.PREFS.getBoolean("capture", false));
 		
 		openOnLaunchCheckBox.setSelected(ProjectSWG.PREFS.getBoolean("open_on_launch", false));
 		openOnLaunchCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
@@ -476,6 +490,23 @@ public class SettingsController implements ModalComponent
 					alert.showAndWait();
 				}
 		});
+		
+		if (ProjectSWG.PREFS.getBoolean("debug", false))
+			debugCheckBox.setSelected(true);
+		else
+			showHyperlink.setDisable(true);
+		
+		debugCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+			ProjectSWG.PREFS.putBoolean("debug", newValue);
+			showHyperlink.setDisable(!newValue);
+			((LogController)mainController.getPswg().getControllers().get("log")).removeDebugListener();
+			if (newValue)
+				((LogController)mainController.getPswg().getControllers().get("log")).addDebugListener();
+		});
+		
+		showHyperlink.setOnAction((e) -> {
+			((LogController)mainController.getPswg().getControllers().get("log")).show();
+		});
 	}
 	
 	public void initWinePane()
@@ -507,16 +538,52 @@ public class SettingsController implements ModalComponent
 	
 	public void initAboutPane()
 	{
+		pswgHyperlink.setText("www.projectswg.com");
 		pswgHyperlink.setOnAction((e) -> {
 			try {
 				java.awt.Desktop.getDesktop().browse(new URI(ProjectSWG.PSWG_URL));
 			} catch (Exception e1) {
-				e1.printStackTrace();
+				ProjectSWG.log(e1.toString());
 			}
 		});
 	
+		// Logo - Skorpios PSWG
+		Text logoText = new Text("\n\nLogo - ");
+		Hyperlink logoHyperlink = new Hyperlink("Skorpios PSWG");
+		logoHyperlink.setOnAction((e) -> {
+			try {
+				java.awt.Desktop.getDesktop().browse(new URI("http://www.projectswg.com/topic/34330-project-swg-logos/"));
+			} catch (Exception e1) {
+				ProjectSWG.log(e1.toString());
+			}
+		});
+
+		// Icons -  - Linh Pham Thi Dieu
+		Text iconsText = new Text("\nIcons - ");
+        Hyperlink iconsHyperlink = new Hyperlink("Linh Pham Thi Dieu");
+        iconsHyperlink.setOnAction((e) -> {
+	 		try {
+				java.awt.Desktop.getDesktop().browse(new URI("http://linhpham.me/#works"));
+			} catch (Exception e1) {
+				ProjectSWG.log(e1.toString());
+			}
+        });
+
+		// SWG Icon -  - Linh Pham Thi Dieu
+		Text swgIconText = new Text("\nSWG Icon - ");
+        Hyperlink swgIconHyperlink = new Hyperlink("InterestingJohn");
+        swgIconHyperlink.setOnAction((e) -> {
+	 		try {
+				java.awt.Desktop.getDesktop().browse(new URI("http://interestingjohn.deviantart.com/art/SWG-Icon-68116934"));
+			} catch (Exception e1) {
+				ProjectSWG.log(e1.toString());
+			}
+        });
+        
+        thanksTextFlow.getChildren().addAll(logoText, logoHyperlink, iconsText, iconsHyperlink, swgIconText, swgIconHyperlink);
+	 
 		licenseText.setText(
-			"This file is part of ProjectSWG Launchpad.\n" +
+			"\n\nThis file is part of ProjectSWG Launchpad.\n" +
 			"ProjectSWG Launchpad is free software: you can redistribute " + 
           	"it and/or modify it under the terms of the GNU Affero General Public License " +
           	"as published by the Free Software Foundation, either version 3 of " +
@@ -545,6 +612,7 @@ public class SettingsController implements ModalComponent
 		themeList.add("Default");
 
 		for (String dir : subdirs) {
+			ProjectSWG.log("folder: " + ProjectSWG.THEMES_FOLDER + "/" + dir + "/" + ProjectSWG.CSS_NAME);
 			file = new File(ProjectSWG.THEMES_FOLDER + "/" + dir + "/" + ProjectSWG.CSS_NAME);
 			if (file.isFile())
 				themeList.add(dir);
@@ -557,6 +625,7 @@ public class SettingsController implements ModalComponent
 			themeComboBox.getSelectionModel().select(0);
 		else
 			themeComboBox.setValue(currentSelection);
+		ProjectSWG.log("Theme list refreshed");
 	}
 	
 	@Override

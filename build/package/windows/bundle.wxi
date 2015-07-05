@@ -1,0 +1,506 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Include>
+ <Directory Id="TARGETDIR" Name="SourceDir">
+  <Directory Id="ProgramFilesFolder" Name="PFiles">
+   <Directory Id="APPLICATIONFOLDER" Name="ProjectSWG">
+     <Component Id="comp0" DiskId="1" Guid="23cede05-7167-4639-ab91-e40d711d10ab">
+      <CreateFolder/>
+      <RemoveFolder Id="RemoveDir0" On="uninstall" />
+        <RegistryKey Root="HKCU"  Key="Software\projectswg.com\ProjectSWG">
+         <RegistryValue Name="Version" Value="0.4" Type="string" KeyPath="yes"/>
+       </RegistryKey>
+       <File Id="FileId1" Name="msvcp100.dll"  Source="msvcp100.dll">
+       </File>
+       <File Id="FileId2" Name="msvcr100.dll"  Source="msvcr100.dll">
+       </File>
+       <File Id="FileId3" Name="packager.dll"  Source="packager.dll">
+       </File>
+       <File Id="LauncherId" Name="ProjectSWG.exe"  Source="ProjectSWG.exe">
+         <Shortcut Id="ExeShortcut" Directory="ProgramMenuDir" Name="ProjectSWG" Advertise="no" Icon="StartMenuIcon.exe" IconIndex="0" />
+       </File>
+       <File Id="FileId4" Name="ProjectSWG.ico"  Source="ProjectSWG.ico">
+       </File>
+     </Component>
+     <Directory Id="dirid5" Name="app">
+      <Component Id="comp1" DiskId="1" Guid="9ca14851-7f8e-482f-985a-7889bf9fe559">
+       <CreateFolder/>
+       <RemoveFolder Id="RemoveDir6" On="uninstall" />
+        <File Id="FileId7" Name="LICENSE.txt"  Source="app\LICENSE.txt">
+        </File>
+        <File Id="FileId8" Name="ProjectSWG.cfg"  Source="app\ProjectSWG.cfg">
+        </File>
+        <File Id="FileId9" Name="ProjectSWG.exe.manifest"  Source="app\ProjectSWG.exe.manifest">
+        </File>
+        <File Id="FileId10" Name="ProjectSWG.jar"  Source="app\ProjectSWG.jar">
+        </File>
+      </Component>
+      <Directory Id="dirid11" Name="libs">
+       <Component Id="comp2" DiskId="1" Guid="499231e9-648a-43ed-a755-9d877b429276">
+        <CreateFolder/>
+        <RemoveFolder Id="RemoveDir12" On="uninstall" />
+         <File Id="FileId13" Name="bcprov-jdk15on-152.jar"  Source="app\libs\bcprov-jdk15on-152.jar">
+         </File>
+       </Component>
+      </Directory>
+      <Directory Id="dirid14" Name="themes">
+       <Component Id="comp3" DiskId="1" Guid="63184dca-2564-4386-be2d-3427b970cab1">
+        <CreateFolder/>
+        <RemoveFolder Id="RemoveDir15" On="uninstall" />
+       </Component>
+       <Directory Id="dirid16" Name="Test">
+        <Component Id="comp4" DiskId="1" Guid="24ed80c5-7763-47e1-ad45-c23b57d257c0">
+         <CreateFolder/>
+         <RemoveFolder Id="RemoveDir17" On="uninstall" />
+          <File Id="FileId18" Name="circle_close_delete_glyph.png"  Source="app\themes\Test\circle_close_delete_glyph.png">
+          </File>
+          <File Id="FileId19" Name="circle_dashboard_meter_fuel_gauge_glyph.png"  Source="app\themes\Test\circle_dashboard_meter_fuel_gauge_glyph.png">
+          </File>
+          <File Id="FileId20" Name="gear.png"  Source="app\themes\Test\gear.png">
+          </File>
+          <File Id="FileId21" Name="Main.fxml"  Source="app\themes\Test\Main.fxml">
+          </File>
+          <File Id="FileId22" Name="style.css"  Source="app\themes\Test\style.css">
+          </File>
+        </Component>
+       </Directory>
+       <Directory Id="dirid23" Name="Test - Copy">
+        <Component Id="comp5" DiskId="1" Guid="c5bfe92a-9f9b-447f-8a67-7162df63ea3b">
+         <CreateFolder/>
+         <RemoveFolder Id="RemoveDir24" On="uninstall" />
+          <File Id="FileId25" Name="gear.png"  Source="app\themes\Test - Copy\gear.png">
+          </File>
+          <File Id="FileId26" Name="Main.fxml"  Source="app\themes\Test - Copy\Main.fxml">
+          </File>
+          <File Id="FileId27" Name="style.css"  Source="app\themes\Test - Copy\style.css">
+          </File>
+        </Component>
+       </Directory>
+      </Directory>
+     </Directory>
+     <Directory Id="dirid28" Name="runtime">
+      <Component Id="comp6" DiskId="1" Guid="b3908f00-8610-447d-a82b-21ff315108ea">
+       <CreateFolder/>
+       <RemoveFolder Id="RemoveDir29" On="uninstall" />
+        <File Id="FileId30" Name="COPYRIGHT"  Source="runtime\COPYRIGHT">
+        </File>
+        <File Id="FileId31" Name="LICENSE"  Source="runtime\LICENSE">
+        </File>
+        <File Id="FileId32" Name="README.txt"  Source="runtime\README.txt">
+        </File>
+        <File Id="FileId33" Name="THIRDPARTYLICENSEREADME-JAVAFX.txt"  Source="runtime\THIRDPARTYLICENSEREADME-JAVAFX.txt">
+        </File>
+        <File Id="FileId34" Name="THIRDPARTYLICENSEREADME.txt"  Source="runtime\THIRDPARTYLICENSEREADME.txt">
+        </File>
+        <File Id="FileId35" Name="Welcome.html"  Source="runtime\Welcome.html">
+        </File>
+      </Component>
+      <Directory Id="dirid36" Name="bin">
+       <Component Id="comp7" DiskId="1" Guid="336ca544-4127-4bb9-802e-2282824c10b6">
+        <CreateFolder/>
+        <RemoveFolder Id="RemoveDir37" On="uninstall" />
+         <File Id="FileId38" Name="attach.dll"  Source="runtime\bin\attach.dll">
+         </File>
+         <File Id="FileId39" Name="awt.dll"  Source="runtime\bin\awt.dll">
+         </File>
+         <File Id="FileId40" Name="bci.dll"  Source="runtime\bin\bci.dll">
+         </File>
+         <File Id="FileId41" Name="dcpr.dll"  Source="runtime\bin\dcpr.dll">
+         </File>
+         <File Id="FileId42" Name="decora_sse.dll"  Source="runtime\bin\decora_sse.dll">
+         </File>
+         <File Id="FileId43" Name="deploy.dll"  Source="runtime\bin\deploy.dll">
+         </File>
+         <File Id="FileId44" Name="dt_shmem.dll"  Source="runtime\bin\dt_shmem.dll">
+         </File>
+         <File Id="FileId45" Name="dt_socket.dll"  Source="runtime\bin\dt_socket.dll">
+         </File>
+         <File Id="FileId46" Name="fontmanager.dll"  Source="runtime\bin\fontmanager.dll">
+         </File>
+         <File Id="FileId47" Name="fxplugins.dll"  Source="runtime\bin\fxplugins.dll">
+         </File>
+         <File Id="FileId48" Name="glass.dll"  Source="runtime\bin\glass.dll">
+         </File>
+         <File Id="FileId49" Name="glib-lite.dll"  Source="runtime\bin\glib-lite.dll">
+         </File>
+         <File Id="FileId50" Name="gstreamer-lite.dll"  Source="runtime\bin\gstreamer-lite.dll">
+         </File>
+         <File Id="FileId51" Name="hprof.dll"  Source="runtime\bin\hprof.dll">
+         </File>
+         <File Id="FileId52" Name="instrument.dll"  Source="runtime\bin\instrument.dll">
+         </File>
+         <File Id="FileId53" Name="j2pcsc.dll"  Source="runtime\bin\j2pcsc.dll">
+         </File>
+         <File Id="FileId54" Name="j2pkcs11.dll"  Source="runtime\bin\j2pkcs11.dll">
+         </File>
+         <File Id="FileId55" Name="jaas_nt.dll"  Source="runtime\bin\jaas_nt.dll">
+         </File>
+         <File Id="FileId56" Name="java.dll"  Source="runtime\bin\java.dll">
+         </File>
+         <File Id="FileId57" Name="JavaAccessBridge-32.dll"  Source="runtime\bin\JavaAccessBridge-32.dll">
+         </File>
+         <File Id="FileId58" Name="javafx_font.dll"  Source="runtime\bin\javafx_font.dll">
+         </File>
+         <File Id="FileId59" Name="javafx_font_t2k.dll"  Source="runtime\bin\javafx_font_t2k.dll">
+         </File>
+         <File Id="FileId60" Name="javafx_iio.dll"  Source="runtime\bin\javafx_iio.dll">
+         </File>
+         <File Id="FileId61" Name="java_crw_demo.dll"  Source="runtime\bin\java_crw_demo.dll">
+         </File>
+         <File Id="FileId62" Name="jawt.dll"  Source="runtime\bin\jawt.dll">
+         </File>
+         <File Id="FileId63" Name="JAWTAccessBridge-32.dll"  Source="runtime\bin\JAWTAccessBridge-32.dll">
+         </File>
+         <File Id="FileId64" Name="jdwp.dll"  Source="runtime\bin\jdwp.dll">
+         </File>
+         <File Id="FileId65" Name="jfr.dll"  Source="runtime\bin\jfr.dll">
+         </File>
+         <File Id="FileId66" Name="jfxmedia.dll"  Source="runtime\bin\jfxmedia.dll">
+         </File>
+         <File Id="FileId67" Name="jfxwebkit.dll"  Source="runtime\bin\jfxwebkit.dll">
+         </File>
+         <File Id="FileId68" Name="jli.dll"  Source="runtime\bin\jli.dll">
+         </File>
+         <File Id="FileId69" Name="jpeg.dll"  Source="runtime\bin\jpeg.dll">
+         </File>
+         <File Id="FileId70" Name="jsdt.dll"  Source="runtime\bin\jsdt.dll">
+         </File>
+         <File Id="FileId71" Name="jsound.dll"  Source="runtime\bin\jsound.dll">
+         </File>
+         <File Id="FileId72" Name="jsoundds.dll"  Source="runtime\bin\jsoundds.dll">
+         </File>
+         <File Id="FileId73" Name="kcms.dll"  Source="runtime\bin\kcms.dll">
+         </File>
+         <File Id="FileId74" Name="lcms.dll"  Source="runtime\bin\lcms.dll">
+         </File>
+         <File Id="FileId75" Name="management.dll"  Source="runtime\bin\management.dll">
+         </File>
+         <File Id="FileId76" Name="mlib_image.dll"  Source="runtime\bin\mlib_image.dll">
+         </File>
+         <File Id="FileId77" Name="msvcr100.dll"  Source="runtime\bin\msvcr100.dll">
+         </File>
+         <File Id="FileId78" Name="net.dll"  Source="runtime\bin\net.dll">
+         </File>
+         <File Id="FileId79" Name="nio.dll"  Source="runtime\bin\nio.dll">
+         </File>
+         <File Id="FileId80" Name="npt.dll"  Source="runtime\bin\npt.dll">
+         </File>
+         <File Id="FileId81" Name="prism_common.dll"  Source="runtime\bin\prism_common.dll">
+         </File>
+         <File Id="FileId82" Name="prism_d3d.dll"  Source="runtime\bin\prism_d3d.dll">
+         </File>
+         <File Id="FileId83" Name="prism_es2.dll"  Source="runtime\bin\prism_es2.dll">
+         </File>
+         <File Id="FileId84" Name="prism_sw.dll"  Source="runtime\bin\prism_sw.dll">
+         </File>
+         <File Id="FileId85" Name="resource.dll"  Source="runtime\bin\resource.dll">
+         </File>
+         <File Id="FileId86" Name="sawindbg.dll"  Source="runtime\bin\sawindbg.dll">
+         </File>
+         <File Id="FileId87" Name="splashscreen.dll"  Source="runtime\bin\splashscreen.dll">
+         </File>
+         <File Id="FileId88" Name="sunec.dll"  Source="runtime\bin\sunec.dll">
+         </File>
+         <File Id="FileId89" Name="sunmscapi.dll"  Source="runtime\bin\sunmscapi.dll">
+         </File>
+         <File Id="FileId90" Name="t2k.dll"  Source="runtime\bin\t2k.dll">
+         </File>
+         <File Id="FileId91" Name="unpack.dll"  Source="runtime\bin\unpack.dll">
+         </File>
+         <File Id="FileId92" Name="verify.dll"  Source="runtime\bin\verify.dll">
+         </File>
+         <File Id="FileId93" Name="w2k_lsa_auth.dll"  Source="runtime\bin\w2k_lsa_auth.dll">
+         </File>
+         <File Id="FileId94" Name="WindowsAccessBridge-32.dll"  Source="runtime\bin\WindowsAccessBridge-32.dll">
+         </File>
+         <File Id="FileId95" Name="zip.dll"  Source="runtime\bin\zip.dll">
+         </File>
+       </Component>
+       <Directory Id="dirid96" Name="client">
+        <Component Id="comp8" DiskId="1" Guid="c76c7e18-2bd9-4b83-a600-95d815566a6d">
+         <CreateFolder/>
+         <RemoveFolder Id="RemoveDir97" On="uninstall" />
+          <File Id="FileId98" Name="classes.jsa"  Source="runtime\bin\client\classes.jsa">
+          </File>
+          <File Id="FileId99" Name="jvm.dll"  Source="runtime\bin\client\jvm.dll">
+          </File>
+          <File Id="FileId100" Name="Xusage.txt"  Source="runtime\bin\client\Xusage.txt">
+          </File>
+        </Component>
+       </Directory>
+       <Directory Id="dirid101" Name="plugin2">
+        <Component Id="comp9" DiskId="1" Guid="aa4921c6-aec6-4651-b886-5e197f02fa2e">
+         <CreateFolder/>
+         <RemoveFolder Id="RemoveDir102" On="uninstall" />
+          <File Id="FileId103" Name="msvcr100.dll"  Source="runtime\bin\plugin2\msvcr100.dll">
+          </File>
+          <File Id="FileId104" Name="npjp2.dll"  Source="runtime\bin\plugin2\npjp2.dll">
+          </File>
+        </Component>
+       </Directory>
+       <Directory Id="dirid105" Name="server">
+        <Component Id="comp10" DiskId="1" Guid="4d513a38-e21c-4b29-965e-a0991a9b657f">
+         <CreateFolder/>
+         <RemoveFolder Id="RemoveDir106" On="uninstall" />
+          <File Id="FileId107" Name="jvm.dll"  Source="runtime\bin\server\jvm.dll">
+          </File>
+          <File Id="FileId108" Name="Xusage.txt"  Source="runtime\bin\server\Xusage.txt">
+          </File>
+        </Component>
+       </Directory>
+      </Directory>
+      <Directory Id="dirid109" Name="lib">
+       <Component Id="comp11" DiskId="1" Guid="33a11981-aa9a-4447-bcb7-24f3429e3f5b">
+        <CreateFolder/>
+        <RemoveFolder Id="RemoveDir110" On="uninstall" />
+         <File Id="FileId111" Name="accessibility.properties"  Source="runtime\lib\accessibility.properties">
+         </File>
+         <File Id="FileId112" Name="calendars.properties"  Source="runtime\lib\calendars.properties">
+         </File>
+         <File Id="FileId113" Name="charsets.jar"  Source="runtime\lib\charsets.jar">
+         </File>
+         <File Id="FileId114" Name="classlist"  Source="runtime\lib\classlist">
+         </File>
+         <File Id="FileId115" Name="content-types.properties"  Source="runtime\lib\content-types.properties">
+         </File>
+         <File Id="FileId116" Name="currency.data"  Source="runtime\lib\currency.data">
+         </File>
+         <File Id="FileId117" Name="flavormap.properties"  Source="runtime\lib\flavormap.properties">
+         </File>
+         <File Id="FileId118" Name="fontconfig.bfc"  Source="runtime\lib\fontconfig.bfc">
+         </File>
+         <File Id="FileId119" Name="fontconfig.properties.src"  Source="runtime\lib\fontconfig.properties.src">
+         </File>
+         <File Id="FileId120" Name="hijrah-config-umalqura.properties"  Source="runtime\lib\hijrah-config-umalqura.properties">
+         </File>
+         <File Id="FileId121" Name="javafx.properties"  Source="runtime\lib\javafx.properties">
+         </File>
+         <File Id="FileId122" Name="javaws.jar"  Source="runtime\lib\javaws.jar">
+         </File>
+         <File Id="FileId123" Name="jce.jar"  Source="runtime\lib\jce.jar">
+         </File>
+         <File Id="FileId124" Name="jfr.jar"  Source="runtime\lib\jfr.jar">
+         </File>
+         <File Id="FileId125" Name="jfxswt.jar"  Source="runtime\lib\jfxswt.jar">
+         </File>
+         <File Id="FileId126" Name="jsse.jar"  Source="runtime\lib\jsse.jar">
+         </File>
+         <File Id="FileId127" Name="jvm.hprof.txt"  Source="runtime\lib\jvm.hprof.txt">
+         </File>
+         <File Id="FileId128" Name="logging.properties"  Source="runtime\lib\logging.properties">
+         </File>
+         <File Id="FileId129" Name="management-agent.jar"  Source="runtime\lib\management-agent.jar">
+         </File>
+         <File Id="FileId130" Name="meta-index"  Source="runtime\lib\meta-index">
+         </File>
+         <File Id="FileId131" Name="net.properties"  Source="runtime\lib\net.properties">
+         </File>
+         <File Id="FileId132" Name="plugin.jar"  Source="runtime\lib\plugin.jar">
+         </File>
+         <File Id="FileId133" Name="psfont.properties.ja"  Source="runtime\lib\psfont.properties.ja">
+         </File>
+         <File Id="FileId134" Name="psfontj2d.properties"  Source="runtime\lib\psfontj2d.properties">
+         </File>
+         <File Id="FileId135" Name="resources.jar"  Source="runtime\lib\resources.jar">
+         </File>
+         <File Id="FileId136" Name="rt.jar"  Source="runtime\lib\rt.jar">
+         </File>
+         <File Id="FileId137" Name="sound.properties"  Source="runtime\lib\sound.properties">
+         </File>
+         <File Id="FileId138" Name="tzdb.dat"  Source="runtime\lib\tzdb.dat">
+         </File>
+         <File Id="FileId139" Name="tzmappings"  Source="runtime\lib\tzmappings">
+         </File>
+       </Component>
+       <Directory Id="dirid140" Name="cmm">
+        <Component Id="comp12" DiskId="1" Guid="0d68f994-a45f-4fe9-89c0-933bd96459da">
+         <CreateFolder/>
+         <RemoveFolder Id="RemoveDir141" On="uninstall" />
+          <File Id="FileId142" Name="CIEXYZ.pf"  Source="runtime\lib\cmm\CIEXYZ.pf">
+          </File>
+          <File Id="FileId143" Name="GRAY.pf"  Source="runtime\lib\cmm\GRAY.pf">
+          </File>
+          <File Id="FileId144" Name="LINEAR_RGB.pf"  Source="runtime\lib\cmm\LINEAR_RGB.pf">
+          </File>
+          <File Id="FileId145" Name="PYCC.pf"  Source="runtime\lib\cmm\PYCC.pf">
+          </File>
+          <File Id="FileId146" Name="sRGB.pf"  Source="runtime\lib\cmm\sRGB.pf">
+          </File>
+        </Component>
+       </Directory>
+       <Directory Id="dirid147" Name="ext">
+        <Component Id="comp13" DiskId="1" Guid="60feb79f-08eb-4152-a289-8da335893f96">
+         <CreateFolder/>
+         <RemoveFolder Id="RemoveDir148" On="uninstall" />
+          <File Id="FileId149" Name="access-bridge-32.jar"  Source="runtime\lib\ext\access-bridge-32.jar">
+          </File>
+          <File Id="FileId150" Name="cldrdata.jar"  Source="runtime\lib\ext\cldrdata.jar">
+          </File>
+          <File Id="FileId151" Name="dnsns.jar"  Source="runtime\lib\ext\dnsns.jar">
+          </File>
+          <File Id="FileId152" Name="jaccess.jar"  Source="runtime\lib\ext\jaccess.jar">
+          </File>
+          <File Id="FileId153" Name="jfxrt.jar"  Source="runtime\lib\ext\jfxrt.jar">
+          </File>
+          <File Id="FileId154" Name="localedata.jar"  Source="runtime\lib\ext\localedata.jar">
+          </File>
+          <File Id="FileId155" Name="meta-index"  Source="runtime\lib\ext\meta-index">
+          </File>
+          <File Id="FileId156" Name="nashorn.jar"  Source="runtime\lib\ext\nashorn.jar">
+          </File>
+          <File Id="FileId157" Name="sunec.jar"  Source="runtime\lib\ext\sunec.jar">
+          </File>
+          <File Id="FileId158" Name="sunjce_provider.jar"  Source="runtime\lib\ext\sunjce_provider.jar">
+          </File>
+          <File Id="FileId159" Name="sunmscapi.jar"  Source="runtime\lib\ext\sunmscapi.jar">
+          </File>
+          <File Id="FileId160" Name="sunpkcs11.jar"  Source="runtime\lib\ext\sunpkcs11.jar">
+          </File>
+          <File Id="FileId161" Name="zipfs.jar"  Source="runtime\lib\ext\zipfs.jar">
+          </File>
+        </Component>
+       </Directory>
+       <Directory Id="dirid162" Name="fonts">
+        <Component Id="comp14" DiskId="1" Guid="74d7a2d3-10b3-46d8-a914-c6a4db5974d5">
+         <CreateFolder/>
+         <RemoveFolder Id="RemoveDir163" On="uninstall" />
+          <File Id="FileId164" Name="LucidaBrightDemiBold.ttf"  Source="runtime\lib\fonts\LucidaBrightDemiBold.ttf">
+          </File>
+          <File Id="FileId165" Name="LucidaBrightDemiItalic.ttf"  Source="runtime\lib\fonts\LucidaBrightDemiItalic.ttf">
+          </File>
+          <File Id="FileId166" Name="LucidaBrightItalic.ttf"  Source="runtime\lib\fonts\LucidaBrightItalic.ttf">
+          </File>
+          <File Id="FileId167" Name="LucidaBrightRegular.ttf"  Source="runtime\lib\fonts\LucidaBrightRegular.ttf">
+          </File>
+          <File Id="FileId168" Name="LucidaSansDemiBold.ttf"  Source="runtime\lib\fonts\LucidaSansDemiBold.ttf">
+          </File>
+          <File Id="FileId169" Name="LucidaSansRegular.ttf"  Source="runtime\lib\fonts\LucidaSansRegular.ttf">
+          </File>
+          <File Id="FileId170" Name="LucidaTypewriterBold.ttf"  Source="runtime\lib\fonts\LucidaTypewriterBold.ttf">
+          </File>
+          <File Id="FileId171" Name="LucidaTypewriterRegular.ttf"  Source="runtime\lib\fonts\LucidaTypewriterRegular.ttf">
+          </File>
+        </Component>
+       </Directory>
+       <Directory Id="dirid172" Name="i386">
+        <Component Id="comp15" DiskId="1" Guid="8c972e9a-aa82-4ada-bfd7-16a47c926ddf">
+         <CreateFolder/>
+         <RemoveFolder Id="RemoveDir173" On="uninstall" />
+          <File Id="FileId174" Name="jvm.cfg"  Source="runtime\lib\i386\jvm.cfg">
+          </File>
+        </Component>
+       </Directory>
+       <Directory Id="dirid175" Name="images">
+        <Component Id="comp16" DiskId="1" Guid="b5909a04-47f6-4730-8dd8-df76a8253213">
+         <CreateFolder/>
+         <RemoveFolder Id="RemoveDir176" On="uninstall" />
+        </Component>
+        <Directory Id="dirid177" Name="cursors">
+         <Component Id="comp17" DiskId="1" Guid="693fcbbe-f93e-4065-851a-d7dd96d24ed9">
+          <CreateFolder/>
+          <RemoveFolder Id="RemoveDir178" On="uninstall" />
+           <File Id="FileId179" Name="cursors.properties"  Source="runtime\lib\images\cursors\cursors.properties">
+           </File>
+           <File Id="FileId180" Name="invalid32x32.gif"  Source="runtime\lib\images\cursors\invalid32x32.gif">
+           </File>
+           <File Id="FileId181" Name="win32_CopyDrop32x32.gif"  Source="runtime\lib\images\cursors\win32_CopyDrop32x32.gif">
+           </File>
+           <File Id="FileId182" Name="win32_CopyNoDrop32x32.gif"  Source="runtime\lib\images\cursors\win32_CopyNoDrop32x32.gif">
+           </File>
+           <File Id="FileId183" Name="win32_LinkDrop32x32.gif"  Source="runtime\lib\images\cursors\win32_LinkDrop32x32.gif">
+           </File>
+           <File Id="FileId184" Name="win32_LinkNoDrop32x32.gif"  Source="runtime\lib\images\cursors\win32_LinkNoDrop32x32.gif">
+           </File>
+           <File Id="FileId185" Name="win32_MoveDrop32x32.gif"  Source="runtime\lib\images\cursors\win32_MoveDrop32x32.gif">
+           </File>
+           <File Id="FileId186" Name="win32_MoveNoDrop32x32.gif"  Source="runtime\lib\images\cursors\win32_MoveNoDrop32x32.gif">
+           </File>
+         </Component>
+        </Directory>
+       </Directory>
+       <Directory Id="dirid187" Name="jfr">
+        <Component Id="comp18" DiskId="1" Guid="8b88add3-cb46-4b1a-a118-927b397912f0">
+         <CreateFolder/>
+         <RemoveFolder Id="RemoveDir188" On="uninstall" />
+          <File Id="FileId189" Name="default.jfc"  Source="runtime\lib\jfr\default.jfc">
+          </File>
+          <File Id="FileId190" Name="profile.jfc"  Source="runtime\lib\jfr\profile.jfc">
+          </File>
+        </Component>
+       </Directory>
+       <Directory Id="dirid191" Name="management">
+        <Component Id="comp19" DiskId="1" Guid="40949c36-c196-41c9-8a9a-3707e39b122b">
+         <CreateFolder/>
+         <RemoveFolder Id="RemoveDir192" On="uninstall" />
+          <File Id="FileId193" Name="jmxremote.access"  Source="runtime\lib\management\jmxremote.access">
+          </File>
+          <File Id="FileId194" Name="jmxremote.password.template"  Source="runtime\lib\management\jmxremote.password.template">
+          </File>
+          <File Id="FileId195" Name="management.properties"  Source="runtime\lib\management\management.properties">
+          </File>
+          <File Id="FileId196" Name="snmp.acl.template"  Source="runtime\lib\management\snmp.acl.template">
+          </File>
+        </Component>
+       </Directory>
+       <Directory Id="dirid197" Name="security">
+        <Component Id="comp20" DiskId="1" Guid="e6356416-b0d2-4e70-bc5d-167862b3fa61">
+         <CreateFolder/>
+         <RemoveFolder Id="RemoveDir198" On="uninstall" />
+          <File Id="FileId199" Name="blacklist"  Source="runtime\lib\security\blacklist">
+          </File>
+          <File Id="FileId200" Name="blacklisted.certs"  Source="runtime\lib\security\blacklisted.certs">
+          </File>
+          <File Id="FileId201" Name="cacerts"  Source="runtime\lib\security\cacerts">
+          </File>
+          <File Id="FileId202" Name="java.policy"  Source="runtime\lib\security\java.policy">
+          </File>
+          <File Id="FileId203" Name="java.security"  Source="runtime\lib\security\java.security">
+          </File>
+          <File Id="FileId204" Name="javaws.policy"  Source="runtime\lib\security\javaws.policy">
+          </File>
+          <File Id="FileId205" Name="local_policy.jar"  Source="runtime\lib\security\local_policy.jar">
+          </File>
+          <File Id="FileId206" Name="trusted.libraries"  Source="runtime\lib\security\trusted.libraries">
+          </File>
+          <File Id="FileId207" Name="US_export_policy.jar"  Source="runtime\lib\security\US_export_policy.jar">
+          </File>
+        </Component>
+       </Directory>
+      </Directory>
+     </Directory>
+   </Directory>
+  </Directory>
+  <Directory Id="ProgramMenuFolder">
+    <Directory Id="ProgramMenuDir" Name="projectswg.com">
+      <Component Id="comp21" Guid="a9e6f43b-1de9-44b7-9c75-9d7df10fc4a0">
+        <RemoveFolder Id="ProgramMenuDir" On="uninstall" />
+         <RegistryValue Root="HKCU" Key="Software\projectswg.com\ProjectSWG" Type="string" Value="" />
+      </Component>
+    </Directory>
+ </Directory>
+ </Directory>
+ <Feature Id="DefaultFeature" Title="Main Feature" Level="1">
+    <ComponentRef Id="comp0" />
+    <ComponentRef Id="comp1" />
+    <ComponentRef Id="comp2" />
+    <ComponentRef Id="comp3" />
+    <ComponentRef Id="comp4" />
+    <ComponentRef Id="comp5" />
+    <ComponentRef Id="comp6" />
+    <ComponentRef Id="comp7" />
+    <ComponentRef Id="comp8" />
+    <ComponentRef Id="comp9" />
+    <ComponentRef Id="comp10" />
+    <ComponentRef Id="comp11" />
+    <ComponentRef Id="comp12" />
+    <ComponentRef Id="comp13" />
+    <ComponentRef Id="comp14" />
+    <ComponentRef Id="comp15" />
+    <ComponentRef Id="comp16" />
+    <ComponentRef Id="comp17" />
+    <ComponentRef Id="comp18" />
+    <ComponentRef Id="comp19" />
+    <ComponentRef Id="comp20" />
+    <ComponentRef Id="comp21" />
+    <ComponentRef Id="CleanupMainApplicationFolder" />
+ </Feature>
+</Include>

@@ -23,7 +23,6 @@ import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import com.projectswg.launchpad.ProjectSWG;
 import com.projectswg.launchpad.service.Manager;
 
 import javafx.fxml.FXML;
@@ -36,6 +35,8 @@ import javafx.scene.effect.Blend;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.InnerShadow;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -74,8 +75,8 @@ public class SetupController implements ModalComponent
 		greenGlow.setBottomInput(new DropShadow(5, Color.GREEN));
 		greenGlow.setTopInput(new InnerShadow(5, Color.GREEN));
 		
-		swgLabel = new Label(ProjectSWG.UP_ARROW);
-		pswgLabel = new Label(ProjectSWG.DOWN_ARROW);
+		swgLabel = new Label(null, new ImageView(new Image("/resources/swg_icon_by_interestingjohn.png")));
+		pswgLabel = new Label(null, new ImageView(new Image("/resources/pswg_logo.png")));
 	}
 	
 	@Override
@@ -118,41 +119,33 @@ public class SetupController implements ModalComponent
 		});
 		
 		progressIndicator = new ProgressIndicator();
-		progressIndicator.setManaged(false);
-		progressIndicator.resize(15, 15);
+		progressIndicator.setMaxSize(15, 15);
+		progressIndicator.setPrefSize(15, 15);
+		progressIndicator.setMinSize(15, 15);
 		
 		manager.getState().addListener((observable, oldValue, newValue) -> {
 			switch (newValue.intValue()) {
 			case Manager.STATE_INIT:
-				swgFolderTextField.setEffect(redGlow);
-				pswgFolderTextField.setEffect(redGlow);
-				setupDisplay.queueNode(swgLabel);
-				break;
-				
 			case Manager.STATE_SWG_SETUP_REQUIRED:
 				setupDisplay.queueNode(swgLabel);
 				swgFolderTextField.setEffect(redGlow);
-				if (pswgFolderTextField.getText().equals(""))
-					pswgFolderTextField.setEffect(redGlow);
-				else
-					pswgFolderTextField.setEffect(greenGlow);
-				pswgFolderButton.setDisable(true);
+				pswgFolderTextField.setVisible(false);
+				pswgFolderButton.setVisible(false);
 				break;
 				
 			case Manager.STATE_SWG_SCANNING:
-				swgFolderTextField.setEffect(redGlow);
-				if (pswgFolderTextField.getText().equals(""))
-					pswgFolderTextField.setEffect(redGlow);
-				else
-					pswgFolderTextField.setEffect(greenGlow);
 				setupDisplay.queueNode(progressIndicator);
+				swgFolderTextField.setEffect(redGlow);
+				pswgFolderTextField.setVisible(false);
+				pswgFolderButton.setVisible(false);
 				break;
 				
 			case Manager.STATE_PSWG_SETUP_REQUIRED:
 				setupDisplay.queueNode(pswgLabel);
 				swgFolderTextField.setEffect(greenGlow);
 				pswgFolderTextField.setEffect(redGlow);
-				pswgFolderButton.setDisable(false);
+				pswgFolderTextField.setVisible(true);
+				pswgFolderButton.setVisible(true);
 				break;
 				
 			default:

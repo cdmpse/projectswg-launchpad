@@ -181,10 +181,8 @@ public class ModalController implements FxmlController
 	
 	public void hide()
 	{
-		if (modalComponent == null) {
-			ProjectSWG.log("modalScreen::hide : null component");
+		if (modalComponent == null)
 			return;
-		}
 
 		//mainRoot.setDisable(false);
 		double initialOpacity = modalRoot.getOpacity();

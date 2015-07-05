@@ -11,15 +11,15 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.layout.ColumnConstraints?>
 
-<Accordion fx:id="settingsRoot" maxHeight="1.7976931348623157E308" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.projectswg.launchpad.controller.SettingsController">
+<Accordion fx:id="settingsRoot" maxHeight="Infinity" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.projectswg.launchpad.controller.SettingsController">
    <panes>
       <TitledPane text="General">
          <content>
             <GridPane hgap="10.0" vgap="5.0">
                <children>
-                  <CheckBox fx:id="soundCheckBox" mnemonicParsing="false" text="🔊" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                  <CheckBox fx:id="soundCheckBox" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="0" />
                   <Label text="Theme" GridPane.rowIndex="2" />
-                  <CheckBox fx:id="closeAfterLaunchCheckBox" mnemonicParsing="false" text="Close after launch" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <CheckBox fx:id="closeAfterLaunchCheckBox" mnemonicParsing="false" text="Close After Launch" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                   <Label text="Animation" GridPane.rowIndex="3" />
                   <Slider fx:id="animationSlider" blockIncrement="1.0" majorTickUnit="1.0" max="2.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="2.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                   <HBox alignment="CENTER" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.valignment="CENTER">
@@ -91,6 +91,7 @@
                      </children>
                   </VBox>
                   <ComboBox fx:id="loginServerComboBox" maxWidth="Infinity" GridPane.columnIndex="1" />
+                  <CheckBox fx:id="loginServerLockedCheckBox" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                   <Label text="Server" />
                   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
                      <children>
@@ -123,7 +124,6 @@
                         <Button fx:id="removeLoginServerButton" maxWidth="30.0" minWidth="30.0" mnemonicParsing="false" prefWidth="30.0" text="-" />
                      </children>
                   </HBox>
-                  <CheckBox fx:id="loginServerLockedCheckBox" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                </children>
                <padding>
                   <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
@@ -136,18 +136,25 @@
             <GridPane hgap="10.0" vgap="5.0">
                <children>
                   <CheckBox fx:id="localhostCheckBox" mnemonicParsing="false" text="Localhost" />
-                  <Button fx:id="deleteGameProfilesButton" mnemonicParsing="false" text="Delete game profiles" GridPane.rowIndex="3" />
-                  <CheckBox fx:id="openOnLaunchCheckBox" disable="true" mnemonicParsing="false" text="Open on launch" GridPane.rowIndex="2">
+                  <Button fx:id="deleteGameProfilesButton" mnemonicParsing="false" text="Delete Game Profiles" GridPane.rowIndex="4" />
+                  <CheckBox fx:id="openOnLaunchCheckBox" disable="true" mnemonicParsing="false" text="Open on Launch" GridPane.rowIndex="2">
                      <GridPane.margin>
                         <Insets left="20.0" />
                      </GridPane.margin>
                   </CheckBox>
-                  <CheckBox fx:id="debugCheckBox" mnemonicParsing="false" text="Debug" GridPane.rowIndex="1" />
+                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.rowIndex="3">
+                     <children>
+                        <CheckBox fx:id="debugCheckBox" mnemonicParsing="false" text="Debug" />
+                        <Hyperlink fx:id="showHyperlink" text="Show" />
+                     </children>
+                  </HBox>
+                  <CheckBox fx:id="captureCheckBox" mnemonicParsing="false" text="Capture" GridPane.rowIndex="1" />
                </children>
                <columnConstraints>
                   <ColumnConstraints hgrow="ALWAYS" />
                </columnConstraints>
                <rowConstraints>
+                  <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" />
                   <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" />
                   <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" />
                   <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" />
@@ -192,13 +199,17 @@
       </TitledPane>
       <TitledPane text="About">
          <content>
-            <VBox spacing="10.0">
+            <VBox spacing="20.0">
                <children>
-                  <Hyperlink fx:id="pswgHyperlink" text="www.projectswg.com" />
-                  <Label text="License" />
+                  <Hyperlink fx:id="pswgHyperlink" />
+                  <TextFlow fx:id="thanksTextFlow">
+                     <children>
+                        <Label style="-fx-font-weight: bold;" text="Credits" />
+                     </children></TextFlow>
                   <TextFlow>
                      <children>
-                        <Text fx:id="licenseText" strokeType="OUTSIDE" strokeWidth="0.0" text="insert license text" />
+                        <Label style="-fx-font-weight: bold;" text="License" />
+                        <Text fx:id="licenseText" text="insert license text" />
                      </children>
                   </TextFlow>
                </children>

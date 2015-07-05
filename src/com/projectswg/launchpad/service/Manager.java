@@ -52,7 +52,6 @@ import com.projectswg.launchpad.model.Instance;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.util.Pair;
 
@@ -98,10 +97,8 @@ public class Manager
 	public static final int STATE_WINE_REQUIRED = 8;
 	public static final int STATE_PSWG_READY = 9;
 	
-	private volatile ArrayList<Resource> resources;
-	private volatile ObservableList<Instance> instances;
-	
-	private volatile SimpleStringProperty mainOut;
+	private ArrayList<Resource> resources;
+	private SimpleStringProperty mainOut;
 	
 	// install locations
 	private SimpleStringProperty swgFolder;
@@ -124,10 +121,12 @@ public class Manager
 	private PswgScanService pswgScanService;
 	private UpdateService updateService;
 	private PingService pingService;
-
+	private ProjectSWG pswg;
 	
-	public Manager()
+	
+	public Manager(ProjectSWG pswg)
 	{
+		this.pswg = pswg;
 		resources = null;
 		mainOut = new SimpleStringProperty();
 		
@@ -149,9 +148,6 @@ public class Manager
 		updateService = new UpdateService(this);
 		pingService = new PingService(this);
 		
-		// game instances
-		instances = FXCollections.observableArrayList();
-		
 		addSwgScanServiceListeners();
 		swgFolder.addListener((observable, oldValue, newValue) -> {
 			if (newValue == null)
@@ -168,12 +164,10 @@ public class Manager
 					Platform.runLater(() -> {
 						state.set(STATE_SWG_SCANNING);
 					});
-					ProjectSWG.log("starting swg scan");
 					swgScanService.reset();
 					swgScanService.start();
-				} else {
+				} else
 					ProjectSWG.log("swg scan already running");
-				}
 		});
 		
 		// pswg
@@ -221,23 +215,12 @@ public class Manager
 		String loginServer = ProjectSWG.PREFS.get("login_server", "");
 		if (loginServer.equals(""))
 			ProjectSWG.PREFS.put("login_server", PSWG_LOGIN_SERVER_NAME);
-		
-		
-		Platform.runLater(() -> {
-			// wine
-			wineBinary.set(ProjectSWG.PREFS.get("wine_binary",  ""));
-			wineArguments.set(ProjectSWG.PREFS.get("wine_arguments", ""));
-			wineEnvironmentVariables.set(ProjectSWG.PREFS.get("wine_environment_variables", ""));
-			// folders
-			swgFolder.set(ProjectSWG.PREFS.get("swg_folder", ""));
-			pswgFolder.set(ProjectSWG.PREFS.get("pswg_folder", ""));
-		});
 	}
 
 	public void addSwgScanServiceListeners()
 	{
 		swgScanService.setOnRunning((e) -> {
-			ProjectSWG.log("swgScanService onRunning start");
+			ProjectSWG.log("swgScanService: started");
 			mainOut.bind(swgScanService.messageProperty());
 			Platform.runLater(() -> {
 				state.set(STATE_SWG_SCANNING);
@@ -246,7 +229,7 @@ public class Manager
 		
 		swgScanService.setOnCancelled((e) -> {
 			mainOut.unbind();
-			ProjectSWG.log("swgScanService: failed");
+			ProjectSWG.log("swgScanService: cancelled");
 			Platform.runLater(() -> {
 				state.set(STATE_SWG_SETUP_REQUIRED);
 			});
@@ -262,7 +245,7 @@ public class Manager
 		
 		swgScanService.setOnSucceeded((e) -> {
 			mainOut.unbind();
-			ProjectSWG.log("swgScanService ended: " + swgScanService.getValue());
+			ProjectSWG.log("swgScanService succeeded: " + swgScanService.getValue());
 			Platform.runLater(() -> {
 				if (swgScanService.getValue())
 					if (pswgFolder.getValue().equals(""))
@@ -303,13 +286,11 @@ public class Manager
 		
 		pswgScanService.setOnSucceeded((e) -> {
 			mainOut.unbind();
-			ProjectSWG.log("pswgScanService onSucceeded");
-			
 			Pair<Double, ArrayList<Resource>> result = pswgScanService.getValue();
 			
 			if (result == null) {
 				Platform.runLater(() -> {
-					mainOut.set("PSWG Scan Failed");
+					mainOut.set("PSWG Scan Error");
 					state.set(STATE_PSWG_SCAN_REQUIRED);
 				});
 				return;
@@ -426,21 +407,22 @@ public class Manager
 	
 	public void startSWG()
 	{
+		ObservableList<Instance> instances = pswg.getInstances();
 		if (instances.size() > MAX_INSTANCES)
 			return;
 		String pswgFolder = ProjectSWG.PREFS.get("pswg_folder", "");
 		if (pswgFolder.equals(""))
 			return;
 		
-		ProjectSWG.log(String.format("Launching game: Folder: %s, Host: %s, Port: %s",
+		ProjectSWG.log(String.format("Launching game... Folder: %s, Host: %s, Port: %s",
 				pswgFolder,
 				loginServerHost.getValue(),
 				loginServerPlayPort.getValue()));
 		
 		GameService gameService = new GameService(this);
-		Instance swg = new Instance(gameService);
-		instances.add(swg);
-		
+		Instance instance = new Instance(gameService);
+		instance.setLabel("ProjectSWG: " + pswg.getInstanceCounter());
+		instances.add(instance);
 		gameService.start();
 	}
 	
@@ -483,6 +465,7 @@ public class Manager
 				file.createNewFile();
 			} catch (IOException e1) {
 				ProjectSWG.log("Error getting local resource: " + path);
+				ProjectSWG.log(e1.toString());
 				return null;
 			}
 		return file;
@@ -740,11 +723,6 @@ public class Manager
 	public SimpleStringProperty getMainOut()
 	{
 		return mainOut;
-	}
-	
-	public ObservableList<Instance> getInstances()
-	{
-		return instances;
 	}
 
 	public SimpleStringProperty getWineBinary()

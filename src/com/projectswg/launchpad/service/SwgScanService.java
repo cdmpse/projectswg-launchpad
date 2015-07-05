@@ -20,48 +20,49 @@
 package com.projectswg.launchpad.service;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.projectswg.launchpad.ProjectSWG;
-
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 
 public class SwgScanService extends Service<Boolean>
 {
-	// add sizes
-	public static final String[] FILES = {
+	public static final HashMap<String, String> SWG_FILES;
+	static {
+		SWG_FILES = new HashMap<>();
 		//"SwgClientSetup_r.exe",
-		"BugTool.exe",
+		//SWG_FILES.put("BugTool.exe", "");
 
-		"bottom.tre",
-		"data_animation_00.tre",
-		"data_music_00.tre",
-		"data_other_00.tre",
-		"data_sample_00.tre",
-		"data_sample_01.tre",
-		"data_sample_02.tre",
-		"data_sample_03.tre",
-		"data_sample_04.tre",
-		"data_skeletal_mesh_00.tre",
-		"data_skeletal_mesh_01.tre",
-		"data_static_mesh_00.tre",
-		"data_static_mesh_01.tre",
-		"data_texture_00.tre",
-		"data_texture_01.tre",
-		"data_texture_02.tre",
-		"data_texture_03.tre",
-		"data_texture_04.tre",
-		"data_texture_05.tre",
-		"data_texture_06.tre",
-		"data_texture_07.tre",
+		SWG_FILES.put("bottom.tre", "16205884");
+		SWG_FILES.put("data_animation_00.tre", "58966791");
+		SWG_FILES.put("data_music_00.tre", "77322894");
+		SWG_FILES.put("data_other_00.tre", "46546173");
+		SWG_FILES.put("data_sample_00.tre", "104636589");
+		SWG_FILES.put("data_sample_01.tre", "104848649");
+		SWG_FILES.put("data_sample_02.tre", "104806646");
+		SWG_FILES.put("data_sample_03.tre", "104479178");
+		SWG_FILES.put("data_sample_04.tre", "33887496");
+		SWG_FILES.put("data_skeletal_mesh_00.tre", "104259690");
+		SWG_FILES.put("data_skeletal_mesh_01.tre", "42575909");
+		SWG_FILES.put("data_static_mesh_00.tre", "104681322");
+		SWG_FILES.put("data_static_mesh_01.tre", "94719985");
+		SWG_FILES.put("data_texture_00.tre", "104816351");
+		SWG_FILES.put("data_texture_01.tre", "104831553");
+		SWG_FILES.put("data_texture_02.tre", "104923301");
+		SWG_FILES.put("data_texture_03.tre", "104659874");
+		SWG_FILES.put("data_texture_04.tre", "104887073");
+		SWG_FILES.put("data_texture_05.tre", "104820008");
+		SWG_FILES.put("data_texture_06.tre", "104773001");
+		SWG_FILES.put("data_texture_07.tre", "66226334");
 		//"default_patch.tre",
 
-		"dbghelp.dll",
+		SWG_FILES.put("dbghelp.dll", "676864");
 		//"dpvs.dll",
 		//"Mss32.dll",
-		"qt-mt305.dll"
-	};
-	
+		SWG_FILES.put("qt-mt305.dll", "3563520");
+	}
 	private final Manager manager;
 	private File file;
 	
@@ -82,21 +83,26 @@ public class SwgScanService extends Service<Boolean>
 			{
 				updateProgress(0, 1);
 
-				for (int i = 0; i < FILES.length; i++) {
+				int counter = 1;
+				for (Map.Entry<String, String> e : SWG_FILES.entrySet()) {
 					if (isCancelled())
 						return false;
-					String fileName = FILES[i];
-					
-					updateProgress(i, FILES.length * 100);
+					String fileName = e.getKey();
+					updateProgress(counter, SWG_FILES.size() * 100);
 					updateMessage("Scanning " + fileName);
-					
 					file = new File(manager.getSwgFolder().getValue() + "/" + fileName);
 					if (!file.isFile()) {
 						ProjectSWG.log("SWG file not found: " + manager.getSwgFolder().getValue() + "/" + fileName);
-						updateMessage("SWG Scan Failed");
+						updateMessage("SWG Not Found");
+						return false;
+					}
+					if (file.length() != Long.parseLong(e.getValue())) {
+						ProjectSWG.log("Failed checksum: " + e.getKey());
+						updateMessage("SWG Not Found");
 						return false;
 					}
 				}
+
 				updateMessage("SWG Scan Passed");
 				return true;
 			}

@@ -30,6 +30,7 @@ import com.projectswg.launchpad.ProjectSWG;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 
+
 public class GameService extends Service<Void>
 {	
 	private final Manager manager;
@@ -74,9 +75,9 @@ public class GameService extends Service<Void>
 				
 				if (!ProjectSWG.isWindows())
 					if (manager.getWineBinary().getValue().equals("")) {
-						ProjectSWG.log("wine binary not set");
+						ProjectSWG.log("Wine binary path not set");
 						return null;
-						
+					
 					} else {
 
 						int argLen = processString.length + 1;
@@ -86,14 +87,8 @@ public class GameService extends Service<Void>
 						argLen += wineArgs.length;
 						String[] wineProcessString = new String[argLen];
 						System.arraycopy(processString, 0, wineProcessString, 1, processString.length);
-						if (wineArgs.length > 0) {
-							try {
-								System.arraycopy(wineArgs, 0, wineProcessString, processString.length + 1, wineArgs.length);
-							} catch (Exception e) {
-								e.printStackTrace();
-								return null;
-							}
-						}
+						if (wineArgs.length > 0)
+							System.arraycopy(wineArgs, 0, wineProcessString, processString.length + 1, wineArgs.length);
 						wineProcessString[0] = manager.getWineBinary().getValue();
 						processString = wineProcessString;
 					}
@@ -116,13 +111,12 @@ public class GameService extends Service<Void>
 					InputStreamReader isr = new InputStreamReader(process.getInputStream());
 					BufferedReader stdInput = new BufferedReader(isr);
 					
-					Date now = new Date();
 					String sinp = null;
 					while ((sinp = stdInput.readLine()) != null)
-						updateMessage(now.toString() + ": " + sinp);
+						updateMessage((new Date()).toString() + ": " + sinp);
 				
 				} catch(IOException e) {
-					e.printStackTrace();
+					ProjectSWG.log(e.toString());
 				}
 				return null;
 			}

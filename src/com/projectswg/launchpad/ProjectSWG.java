@@ -24,17 +24,23 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
 import com.projectswg.launchpad.controller.FxmlController;
 import com.projectswg.launchpad.controller.GameController;
+import com.projectswg.launchpad.controller.LogController;
 import com.projectswg.launchpad.controller.MainController;
 import com.projectswg.launchpad.model.Instance;
 import com.projectswg.launchpad.service.Manager;
 
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -51,63 +57,93 @@ public class ProjectSWG extends Application
 		FXML_SCREENS.put("settings", "Settings.fxml");
 		FXML_SCREENS.put("modal", "Modal.fxml");
 		FXML_SCREENS.put("extras", "Extras.fxml");
+		FXML_SCREENS.put("log", "Log.fxml");
 	}
 	public static final Preferences PREFS = Preferences.userNodeForPackage(ProjectSWG.class);
+	public static final SimpleStringProperty DEBUG = new SimpleStringProperty();
 	
 	public static final String FXML_GAME = "Game.fxml";
 	public static final String CSS_NAME = "style.css";
 	public static final String CSS_DEFAULT = "/resources/style.css";
+	public static final String ICON = "/resources/pswg_icon.png";
 	public static final String THEMES_FOLDER = "themes";
-
 	public static final String CHECKMARK = "\u2713";
 	public static final String XMARK = "\u2717";
-	public static final String PENCIL_ICON = "\u270e";
-	public static final String MAGNIFYING_GLASS = "\ud83d\udd0d";
-	public static final String UP_ARROW = "\u21e1";
-	public static final String DOWN_ARROW = "\u21e3";
-	public static final String WHITE_CIRCLE = "\u25cb";
-	public static final String BLACK_CIRCLE = "\u25cf";
-	public static final String SPEAKER = "\ud83d\udd0a";
-	public static final String SPEAKER_MUTE = "\ud83d\udd07";
-	public static final String LOCK = "\ud83d\udd12";
-	public static final String OPEN_LOCK = "\ud83d\udd13";
+	public static final String CIRCLE = "\u25cb";
+	public static final String DOT = "\u25cf";
 	
 	public static final int ANIMATION_NONE = 0;
 	public static final int ANIMATION_LOW = 1;
 	public static final int ANIMATION_HIGH = 2;
 	
+	// slide > fade
 	public static final double SLIDE_DURATION = 300;
 	public static final double FADE_DURATION = 250;
 	
 	private HashMap<String, FxmlController> controllers;
-	private Stage primaryStage;
+	private Stage primaryStage, debugStage;
 	private Manager manager;
-
+	private ObservableList<Instance> instances;
+	private int instanceCounter;
+	
 	
 	@Override
 	public void start(Stage primaryStage)
 	{
 		this.primaryStage = primaryStage;
-
-		manager = new Manager();
+		primaryStage.setTitle("ProjectSWG");
+		primaryStage.setResizable(false);
+		// otherwise loads differently from theme load
+		primaryStage.setOpacity(0);
+		primaryStage.show();
 		
+		debugStage = new Stage();
+		debugStage.setResizable(true);
+		Image debugIcon = new Image("/resources/pswg_icon.png");
+		if (debugIcon.isError())
+			log("Error loading application icon");
+		else
+			debugStage.getIcons().add(debugIcon);
+		debugStage.setTitle("Debug");
+		
+		instanceCounter = 1;
+		instances = FXCollections.observableArrayList();
 		controllers = new HashMap<>();
 		loadTheme(PREFS.get("theme", "Default"));
 		
-		primaryStage.setResizable(false);
-		primaryStage.show();
+		primaryStage.centerOnScreen();
+		primaryStage.setOpacity(1);
+	}
+	
+	public int getInstanceCounter()
+	{
+		return instanceCounter;
+	}
+	
+	public void setInstanceCounter(int c)
+	{
+		instanceCounter = c;
 	}
 	
 	public void loadTheme(String theme)
 	{
 		PREFS.put("theme", theme);
 		
+		manager = new Manager(this);
+		
 		loadFxmls(theme);
 		loadCss(theme);
-		
-		int state = manager.getState().getValue();
-		manager.getState().set(Manager.STATE_INIT);
-		manager.getState().set(state);
+
+		Platform.runLater(() -> {
+			// wine
+			manager.getWineBinary().set(ProjectSWG.PREFS.get("wine_binary",  ""));
+			manager.getWineArguments().set(ProjectSWG.PREFS.get("wine_arguments", ""));
+			manager.getWineEnvironmentVariables().set(ProjectSWG.PREFS.get("wine_environment_variables", ""));
+			
+			// folders
+			manager.getSwgFolder().set(ProjectSWG.PREFS.get("swg_folder", ""));
+			manager.getPswgFolder().set(ProjectSWG.PREFS.get("pswg_folder", ""));
+		});
 	}
 	
 	public void loadFxmls(String theme)
@@ -117,21 +153,26 @@ public class ProjectSWG extends Application
 		for (Map.Entry<String, String> entry : FXML_SCREENS.entrySet())
 			controllers.put(entry.getKey(), loadFxml(theme, entry.getValue()));
 		
-		Scene scene = new Scene(controllers.get("main").getRoot());
-		primaryStage.setScene(scene);
-		primaryStage.setTitle("ProjectSWG");
+		primaryStage.setScene(new Scene(controllers.get("main").getRoot()));
+
+		// add to theme
 		Image icon = new Image("/resources/pswg_icon.png");
 		if (icon.isError())
-			ProjectSWG.log("Error loading application icon");
+			log("Error loading application icon");
 		else
 			primaryStage.getIcons().add(icon);
 		
 		((MainController)controllers.get("main")).init(this);
 		
+		LogController logController = (LogController)controllers.get("log");
+		logController.init(debugStage);
+		debugStage.setScene(new Scene(logController.getRoot()));
+		
 		// games
-		for (Instance swg : manager.getInstances()) {
+		for (Instance instance : instances) {
 			GameController gameController = (GameController)loadFxml(theme, FXML_GAME);
-			swg.setGameController(gameController);
+			instance.setGameController(gameController);
+			gameController.init(instance.getGameService(), instance.getStage());
 		}
 	}
 	
@@ -144,17 +185,12 @@ public class ProjectSWG extends Application
 				String codeSource = new File(ProjectSWG.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
 				File file = new File(codeSource + "/" + THEMES_FOLDER + "/" + theme + "/style.css");
 				if (!file.isFile()) {
-					ProjectSWG.log("Theme css file not found: " + theme);
+					log("Theme css file not found: " + theme);
 					return;
 				}
 				cssPath = file.toURI().toURL().toExternalForm();
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-				ProjectSWG.log("Error setting theme: MalformedURLException");
-				return;
-			} catch (URISyntaxException e) {
-				e.printStackTrace();
-				ProjectSWG.log("Error setting theme: URISyntaxException");
+			} catch (MalformedURLException | URISyntaxException e) {
+				log("Error setting theme: " + e.toString());
 				return;
 			}
 		}
@@ -162,9 +198,9 @@ public class ProjectSWG extends Application
 		primaryStage.getScene().getStylesheets().clear();
 		primaryStage.getScene().getStylesheets().add(cssPath);
 		
-		for (Instance swg : manager.getInstances()) {
-			swg.getGameController().getStage().getScene().getStylesheets().clear();
-			swg.getGameController().getStage().getScene().getStylesheets().add(cssPath);
+		for (Instance instance : instances) {
+			instance.getGameController().getStage().getScene().getStylesheets().clear();
+			instance.getGameController().getStage().getScene().getStylesheets().add(cssPath);
 		}
 	}
 	
@@ -190,18 +226,19 @@ public class ProjectSWG extends Application
 	
 	public static void log(String text)
 	{
-		System.out.println("[ PSWGLog ] " + text);
+		Platform.runLater(() -> {
+			DEBUG.set((new Date()).toString() + ": " + text);
+		});
 	}
-
+	
 	public static FxmlController loadFxml(String theme, String fxml)
 	{
-		ProjectSWG.log("loadFxml: " + fxml);
-		
+		log("loadFxml: " + fxml);
 		String codeSource = "";
 		try {
 			codeSource = new File(ProjectSWG.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
-		} catch (URISyntaxException e1) {
-			e1.printStackTrace();
+		} catch (URISyntaxException e) {
+			log("Error loading FXML: " + e.toString());
 			return null;
 		}
 		
@@ -212,22 +249,21 @@ public class ProjectSWG extends Application
 			if (file.isFile()) {
 				fxmlLoader = new FXMLLoader();
 				try {
-					ProjectSWG.log("loading: " + codeSource + "/" + THEMES_FOLDER + "/" + theme + "/" + fxml);
+					log("loading: " + codeSource + "/" + THEMES_FOLDER + "/" + theme + "/" + fxml);
 					fxmlLoader.load(new FileInputStream(codeSource + "/" + THEMES_FOLDER + "/" + theme + "/" + fxml));
 				} catch (IOException e) {
-					e.printStackTrace();
+					log(e.toString());
 					fxmlLoader = null;
 				}
 			}
 		}
 		
 		if (fxmlLoader == null) {
-			// theme wasnt loaded, load default
 			fxmlLoader = new FXMLLoader(ProjectSWG.class.getResource("view/" + fxml));
 			try { 
 				fxmlLoader.load();
 			} catch (IOException e) {
-				e.printStackTrace();
+				log(e.toString());
 				return null;
 			}
 		}
@@ -237,9 +273,11 @@ public class ProjectSWG extends Application
 	
 	public static boolean isWindows()
 	{
-		if (System.getProperty("os.name").startsWith("Windows"))
-			return true;
-		else
-			return false;
+		return System.getProperty("os.name").startsWith("Windows");
+	}
+	
+	public ObservableList<Instance> getInstances()
+	{
+		return instances;
 	}
 }

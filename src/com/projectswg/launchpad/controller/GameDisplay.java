@@ -20,14 +20,15 @@
 package com.projectswg.launchpad.controller;
 
 import java.util.ArrayList;
+
 import com.projectswg.launchpad.ProjectSWG;
+
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.ParallelTransition;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.collections.ListChangeListener;
 import javafx.geometry.Side;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -36,10 +37,12 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+
 import com.projectswg.launchpad.model.Instance;
 import com.projectswg.launchpad.service.GameService;
 
@@ -48,27 +51,18 @@ public class GameDisplay
 	private static final int SLIDE_DURATION = 500;
 	
 	private Pane root;
-	private volatile ArrayList<Instance> display;
+	private ArrayList<Instance> display;
 	private MainController mainController;
-
+	
 	
 	public GameDisplay(MainController mainController)
 	{
 		this.mainController = mainController;
-		this.root = mainController.getGameProcessPane();
 		display = new ArrayList<>();
-		
-		mainController.getManager().getInstances().addListener((ListChangeListener.Change<? extends Instance> e) -> {
-			while (e.next())
-				if (e.wasAdded()) {
-					if (ProjectSWG.PREFS.getBoolean("close_after_launch", false))
-						Platform.exit();
-					for (Instance swg : e.getAddedSubList())
-						addGame(swg);
-				} else if (e.wasRemoved())
-					for (Instance swg : e.getRemoved())
-						removeGame(swg);
-		});
+		this.root = mainController.getGameProcessPane();
+
+		for (Instance instance : mainController.getPswg().getInstances())
+			display.add(instance);
 	}
 	
 	public Pane getRoot()
@@ -94,10 +88,11 @@ public class GameDisplay
 		}
 	}
 	
-	public void addGame(Instance swg)
+	public void addGame(Instance instance)
 	{
-		String title = "ProjectSWG: " + (display.size() + 1);
-
+		display.add(instance);		
+		mainController.getPswg().setInstanceCounter(mainController.getPswg().getInstanceCounter() + 1);
+		
 		Stage stage = new Stage();
 		Image icon = new Image("/resources/pswg_icon.png");
 		if (icon.isError())
@@ -105,24 +100,29 @@ public class GameDisplay
 		else
 			stage.getIcons().add(icon);
 		
-		stage.setTitle(title);
+		stage.setTitle(instance.getLabel());
 		GameController gameController = (GameController)ProjectSWG.loadFxml(ProjectSWG.PREFS.get("theme", "Default"), ProjectSWG.FXML_GAME);
 		Scene scene = new Scene(gameController.getRoot());
 		stage.setScene(scene);
 		stage.setResizable(true);
-		swg.setStage(stage);
+		instance.setStage(stage);
 		
-		Button gameButton = new Button(ProjectSWG.WHITE_CIRCLE);
-		gameButton.setTooltip(new Tooltip("Game process: " + display.size()));
-		gameButton.setOpacity(0);
-		Group gameButtonGroup = new Group(gameButton);
-		
-		swg.setGameButtonGroup(gameButtonGroup);
-		swg.setGameController(gameController);
-		display.add(swg);
-		GameService gameService = swg.getGameService();
+		GameService gameService = instance.getGameService();
 		gameController.init(gameService, stage);
+		Button gameButton = createGameButton(gameService, gameController, instance);
+		Group gameButtonGroup = new Group(gameButton);
+		instance.setGameButtonGroup(gameButtonGroup);
+		instance.setGameController(gameController);
 		
+		displayGames();
+	}
+	
+	public Button createGameButton(GameService gameService, GameController gameController, Instance swg)
+	{
+		Button gameButton = new Button(null, new ImageView(new Image("/resources/atom_running.gif")));
+		gameButton.setTooltip(new Tooltip("Game Process " + display.size()));
+		gameButton.setOpacity(0);
+
 		// menu
 		ContextMenu contextMenu = new ContextMenu();
 		
@@ -130,7 +130,7 @@ public class GameDisplay
 		cm1Remove.setOnAction((e) -> {
 			if (gameService.isRunning())
 				gameService.cancel();
-			mainController.getManager().getInstances().remove(swg);
+			mainController.getPswg().getInstances().remove(swg);
 		});
 		
 		MenuItem cm2Stop = new MenuItem("Stop");
@@ -154,61 +154,65 @@ public class GameDisplay
 		
 		gameService.runningProperty().addListener((observable, oldValue, newValue) -> {
 			if (!newValue) {
-				gameButton.setText(ProjectSWG.BLACK_CIRCLE);
+				gameButton.setGraphic(new ImageView(new Image("/resources/atom_stopped.gif")));
+				gameButton.getStyleClass().add("stopped");
 				cm2Stop.setDisable(true);
 			}
 		});
 		
-		root.getChildren().add(gameButtonGroup);
-		
-		Platform.runLater(() -> {
-			displayGames();
-		});
-		
-		if (ProjectSWG.PREFS.getBoolean("open_on_launch", false))
-			gameController.show();
+		return gameButton;
 	}
 	
 	public void displayGames()
 	{
-		double notch = root.getWidth() / (1 + display.size());
+		if (display.size() == 0)
+			return;
+		
+		double notch = root.getWidth() / (display.size() + 1);
 
 		for (int i = 0; i < display.size(); i++) {
-			
+
 			Instance swg = display.get(i);
 			Group gameButtonGroup = swg.getGameButtonGroup();
-			Button gameButton = (Button)gameButtonGroup.getChildren().get(0);
-		
-			if (gameButton.getLayoutX() == 0) {
-				gameButton.setLayoutX(root.getWidth());
-				gameButton.setLayoutY(root.getHeight() / 2 - gameButtonGroup.layoutBoundsProperty().getValue().getHeight() / 2);
-			}
 			
-			double destX = notch * (i + 1) - gameButtonGroup.layoutBoundsProperty().getValue().getWidth() / 2;
-
+			if (!root.getChildren().contains(gameButtonGroup))
+				root.getChildren().add(gameButtonGroup);
+			
+			Button gameButton = (Button)gameButtonGroup.getChildren().get(0);
+			
+			final int finali = i;
 			Platform.runLater(() -> {
-				switch (ProjectSWG.PREFS.getInt("animation", ProjectSWG.ANIMATION_HIGH)) {
-				case ProjectSWG.ANIMATION_NONE:
-					gameButton.setLayoutX(destX);
-					gameButton.setOpacity(1);
-					break;
+				// otherwise buttonGroup width is sometimes 0
+				Platform.runLater(() -> {
+					if (gameButton.getLayoutX() == 0)
+						gameButton.setLayoutX(root.getWidth());
 					
-				case ProjectSWG.ANIMATION_LOW:
-					gameButton.setLayoutX(destX);
-					gameButton.setOpacity(1);
-					break;
-					
-				case ProjectSWG.ANIMATION_HIGH:
-					gameButton.setOpacity(1);
-					ParallelTransition showGameAnimationHigh = new ParallelTransition();
-					final Timeline slideLeft = new Timeline();
-					final KeyValue showGameAnimationHighKV = new KeyValue(gameButton.layoutXProperty(), destX, Interpolator.EASE_OUT);
-					final KeyFrame showGameAnimationHighKF = new KeyFrame(Duration.millis(SLIDE_DURATION), showGameAnimationHighKV);
-					slideLeft.getKeyFrames().add(showGameAnimationHighKF);
-					showGameAnimationHigh.getChildren().addAll(slideLeft);
-					showGameAnimationHigh.play();
-					break;
-				}
+					gameButton.setLayoutY(root.getHeight() / 2 - gameButtonGroup.layoutBoundsProperty().getValue().getHeight() / 2);
+					final double targetX = notch * (finali + 1) - gameButtonGroup.layoutBoundsProperty().getValue().getWidth() / 2;
+
+					switch (ProjectSWG.PREFS.getInt("animation", ProjectSWG.ANIMATION_HIGH)) {
+					case ProjectSWG.ANIMATION_NONE:
+						gameButton.setLayoutX(targetX);
+						gameButton.setOpacity(1);
+						break;
+						
+					case ProjectSWG.ANIMATION_LOW:
+						gameButton.setLayoutX(targetX);
+						gameButton.setOpacity(1);
+						break;
+						
+					case ProjectSWG.ANIMATION_HIGH:
+						gameButton.setOpacity(1);
+						ParallelTransition showGameAnimationHigh = new ParallelTransition();
+						final Timeline slideLeft = new Timeline();
+						final KeyValue showGameAnimationHighKV = new KeyValue(gameButton.layoutXProperty(), targetX, Interpolator.EASE_OUT);
+						final KeyFrame showGameAnimationHighKF = new KeyFrame(Duration.millis(SLIDE_DURATION), showGameAnimationHighKV);
+						slideLeft.getKeyFrames().add(showGameAnimationHighKF);
+						showGameAnimationHigh.getChildren().addAll(slideLeft);
+						showGameAnimationHigh.play();
+						break;
+					}
+				});
 			});
 		}
 	}
