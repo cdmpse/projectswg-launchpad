@@ -30,7 +30,6 @@ import com.projectswg.launchpad.ProjectSWG;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 
-
 public class GameService extends Service<Void>
 {	
 	private final Manager manager;

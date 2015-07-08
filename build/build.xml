@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 	<project name="ProjectSWG" default="do-deploy" basedir="."  xmlns:fx="javafx:com.sun.javafx.tools.ant">
-	   
-	<taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
-	
 	<target name="init-fx-tasks">
+		<echo>Ant Java path... ${java.home}</echo>
+		
         <path id="fxant">
 			<filelist>
-				<file name="${java.home}/lib/ant-javafx.jar"/>
-				<file name="${java.home}/jre/lib/ext/jfxrt.jar"/>
+				<file name="${java.home}/../lib/ant-javafx.jar"/>
+				<file name="${java.home}/../jre/lib/ext/jfxrt.jar"/>
 			</filelist>
 		</path>
 		<taskdef resource="com/sun/javafx/tools/ant/antlib.xml"

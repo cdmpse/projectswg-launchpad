@@ -61,7 +61,6 @@ import javafx.scene.text.TextFlow;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
-
 public class SettingsController implements ModalComponent
 {
 	@FXML
@@ -164,7 +163,7 @@ public class SettingsController implements ModalComponent
 			initWinePane();
 		initAboutPane();
 		
-		animationSlider.setValue(ProjectSWG.PREFS.getInt("animation", ProjectSWG.ANIMATION_HIGH));
+		animationSlider.setValue(ProjectSWG.PREFS.getInt("animation", ProjectSWG.ANIMATION_NONE));
 	}
 	
 	@Override

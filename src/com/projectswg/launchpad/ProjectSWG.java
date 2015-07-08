@@ -44,6 +44,9 @@ import javafx.collections.ObservableList;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaException;
+import javafx.scene.media.MediaPlayer;
 import javafx.fxml.FXMLLoader;
 
 public class ProjectSWG extends Application
@@ -75,6 +78,7 @@ public class ProjectSWG extends Application
 	public static final int ANIMATION_NONE = 0;
 	public static final int ANIMATION_LOW = 1;
 	public static final int ANIMATION_HIGH = 2;
+	public static final int ANIMATION_WARS = 3;
 	
 	// slide > fade
 	public static final double SLIDE_DURATION = 300;
@@ -113,6 +117,7 @@ public class ProjectSWG extends Application
 		
 		primaryStage.centerOnScreen();
 		primaryStage.setOpacity(1);
+		playSound("launcher_start");
 	}
 	
 	public int getInstanceCounter()
@@ -233,42 +238,75 @@ public class ProjectSWG extends Application
 	
 	public static FxmlController loadFxml(String theme, String fxml)
 	{
-		log("loadFxml: " + fxml);
-		String codeSource = "";
+		FXMLLoader fxmlLoader = null;
 		try {
-			codeSource = new File(ProjectSWG.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
-		} catch (URISyntaxException e) {
-			log("Error loading FXML: " + e.toString());
+			if (!theme.equals("Default")) {
+				String codeSource = new File(ProjectSWG.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
+				log("loading: " + codeSource + "/" + THEMES_FOLDER + "/" + theme + "/" + fxml);
+				File file = new File(codeSource + "/" + THEMES_FOLDER + "/" + theme + "/" + fxml);
+				if (file.isFile()) {
+					fxmlLoader = new FXMLLoader();
+					fxmlLoader.load(new FileInputStream(codeSource + "/" + THEMES_FOLDER + "/" + theme + "/" + fxml));
+				}
+			}
+			if (fxmlLoader == null) {
+				fxmlLoader = new FXMLLoader(ProjectSWG.class.getResource("view/" + fxml));
+				fxmlLoader.load();
+			}
+		} catch (IOException | URISyntaxException e) {
+			log("Error loading fmxl: " + e.toString());
 			return null;
 		}
 		
-		FXMLLoader fxmlLoader = null;
-		
-		if (!theme.equals("Default")) {
-			File file = new File(codeSource + "/" + THEMES_FOLDER + "/" + theme + "/" + fxml);
-			if (file.isFile()) {
-				fxmlLoader = new FXMLLoader();
-				try {
-					log("loading: " + codeSource + "/" + THEMES_FOLDER + "/" + theme + "/" + fxml);
-					fxmlLoader.load(new FileInputStream(codeSource + "/" + THEMES_FOLDER + "/" + theme + "/" + fxml));
-				} catch (IOException e) {
-					log(e.toString());
-					fxmlLoader = null;
-				}
-			}
-		}
-		
-		if (fxmlLoader == null) {
-			fxmlLoader = new FXMLLoader(ProjectSWG.class.getResource("view/" + fxml));
-			try { 
-				fxmlLoader.load();
-			} catch (IOException e) {
-				log(e.toString());
-				return null;
-			}
-		}
-		
 		return fxmlLoader.getController();
+	}
+	
+	public static void playSound(String sound)
+	{
+		if (!PREFS.getBoolean("sound", false))
+			return;
+		
+		sound += ".mp3";
+		String theme = PREFS.get("theme", "Default");
+		Media media = null;
+
+		if (!theme.equals("Default")) {
+			try {
+				String codeSource = new File(ProjectSWG.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
+				File f = new File(codeSource + File.separator + THEMES_FOLDER + File.separator + theme + File.separator + sound);
+				if (f.isFile()) {
+					media = new Media(f.toURI().toString());
+					if (media.getError() == null) {
+						media.setOnError(new Runnable() {
+							public void run()
+							{
+								log("Media error");
+							}
+						});
+					}
+				}
+			} catch (IllegalArgumentException | URISyntaxException e1) {
+				log("Error loading theme audio: " + e1.toString());
+			}
+		} 
+		if (media == null) {
+			try {
+				media = new Media(ProjectSWG.class.getResource("/resources/" + sound).toString());
+			} catch (MediaException | NullPointerException e1) {
+				log("Error loading default audio: " + e1.toString());
+				return;
+			}
+		}
+		MediaPlayer mp = new MediaPlayer(media);
+		if (mp.getError() == null) {
+			mp.setOnError(new Runnable() {
+				public void run()
+				{
+					log("MediaPlayer error");
+				}
+			});
+			mp.play();
+		}
 	}
 	
 	public static boolean isWindows()

@@ -4,14 +4,15 @@
 
 ### Launchpad ###
 
-* Version 0.4
+* Version 0.5
 
 
 ### Known Issues ###
 		
-Linux
+Debian GNU/Linux
 
 * Game process doesn't quit from launchpad
+* Sound effects don't work
 
 
 ### Credits ###

@@ -21,7 +21,7 @@
                   <Label text="Theme" GridPane.rowIndex="2" />
                   <CheckBox fx:id="closeAfterLaunchCheckBox" mnemonicParsing="false" text="Close After Launch" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                   <Label text="Animation" GridPane.rowIndex="3" />
-                  <Slider fx:id="animationSlider" blockIncrement="1.0" majorTickUnit="1.0" max="2.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="2.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                  <Slider fx:id="animationSlider" blockIncrement="1.0" majorTickUnit="1.0" max="3.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                   <HBox alignment="CENTER" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.valignment="CENTER">
                      <children>
                         <ComboBox fx:id="themeComboBox" maxWidth="Infinity" HBox.hgrow="ALWAYS" />

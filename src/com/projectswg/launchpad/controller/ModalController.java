@@ -22,27 +22,6 @@ package com.projectswg.launchpad.controller;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import com.projectswg.launchpad.ProjectSWG;
 
 import javafx.animation.Interpolator;
@@ -108,6 +87,7 @@ public class ModalController implements FxmlController
 	{
 		this.mainController = mainController;
 		closeButton.setOnAction((e) -> {
+			ProjectSWG.playSound("close_modal");
 			hide();
 		});
 		modalRoot.setVisible(false);
@@ -143,7 +123,8 @@ public class ModalController implements FxmlController
 		modalLabel.setText(modalComponent.getLabel());
 
 		modalRoot.setOpacity(0);
-		switch (ProjectSWG.PREFS.getInt("animation", ProjectSWG.ANIMATION_HIGH)) {
+		switch (ProjectSWG.PREFS.getInt("animation", ProjectSWG.ANIMATION_NONE)) {
+		default:
 		case ProjectSWG.ANIMATION_NONE:
 			modalRoot.setOpacity(MODAL_OPACITY);
 			modalRoot.setVisible(true);
@@ -159,6 +140,7 @@ public class ModalController implements FxmlController
 			break;
 			
 		case ProjectSWG.ANIMATION_HIGH:
+		case ProjectSWG.ANIMATION_WARS:
 			modalRoot.setVisible(true);
 			//scale
 			final ScaleTransition scaleUp = new ScaleTransition(Duration.millis(ProjectSWG.SLIDE_DURATION), modalRoot);
@@ -175,7 +157,6 @@ public class ModalController implements FxmlController
 			ParallelTransition parallelTransition = new ParallelTransition();
 			parallelTransition.getChildren().addAll(scaleUp, shortFadeIn);
 			parallelTransition.play();
-			break;
 		}
 	}
 	
@@ -187,7 +168,8 @@ public class ModalController implements FxmlController
 		//mainRoot.setDisable(false);
 		double initialOpacity = modalRoot.getOpacity();
 		
-		switch (ProjectSWG.PREFS.getInt("animation", ProjectSWG.ANIMATION_HIGH)) {
+		switch (ProjectSWG.PREFS.getInt("animation", ProjectSWG.ANIMATION_NONE)) {
+		default:
 		case ProjectSWG.ANIMATION_NONE:
 			modalRoot.setVisible(false);
 			modalComponent.getRoot().setVisible(false);
@@ -207,6 +189,7 @@ public class ModalController implements FxmlController
 			break;
 			
 		case ProjectSWG.ANIMATION_HIGH:
+		case ProjectSWG.ANIMATION_WARS:
 			// scale
 			final ScaleTransition scaleDown = new ScaleTransition(Duration.millis(ProjectSWG.SLIDE_DURATION), modalRoot);
 			scaleDown.setFromX(1);
@@ -229,7 +212,6 @@ public class ModalController implements FxmlController
 				modalComponent.getRoot().setVisible(false);
 			});
 			parallelTransition.play();
-			break;
 		}
 	}
 	

@@ -25,7 +25,6 @@ import javafx.stage.Stage;
 import com.projectswg.launchpad.controller.GameController;
 import com.projectswg.launchpad.service.GameService;
 
-
 public class Instance
 {
 	private GameService gameService;

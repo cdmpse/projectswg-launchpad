@@ -25,11 +25,6 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import com.projectswg.launchpad.ProjectSWG;
-
-
-
-
-
 import com.projectswg.launchpad.service.GameService;
 
 import javafx.application.Platform;
@@ -129,18 +124,16 @@ public class GameController implements FxmlController
 		});
 		
 		stopButton.setOnAction((e) -> {
-			if (gameService.isRunning()) {
+			if (gameService.isRunning())
 				gameService.cancel();
-			};
 		});	
 
-		if (ProjectSWG.PREFS.getBoolean("capture", false)) {
+		if (ProjectSWG.PREFS.getBoolean("capture", false))
 			gameService.messageProperty().addListener((observable, oldValue, newValue) -> {
 				outputTextArea.appendText(newValue + "\n");
 			});
-		} else {
+		else
 			outputTextArea.setText("capture not set");
-		}
 		
 		gameService.runningProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue)

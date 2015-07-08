@@ -27,7 +27,6 @@ import javafx.scene.control.Button;
 import com.projectswg.launchpad.ProjectSWG;
 import com.projectswg.launchpad.controller.MainController;
 
-
 public class TREFix implements ExtraModule
 {
 	public static final String LABEL = "TREFix";

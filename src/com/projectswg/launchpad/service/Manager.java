@@ -451,8 +451,8 @@ public class Manager
 			ProcessBuilder pb = new ProcessBuilder(processString);
 			pb.directory(dir);
 			pb.start();
-		} catch(IOException e) {
-			e.printStackTrace();
+		} catch(IOException e1) {
+			ProjectSWG.log(e1.toString());
 		}
 	}
 	
@@ -506,12 +506,13 @@ public class Manager
 			SecretKeySpec sks = new SecretKeySpec(Manager.AES_SESSION_KEY.getBytes(), "AES");
 			cipher.init(Cipher.ENCRYPT_MODE, sks, new IvParameterSpec(Manager.AES_SESSION_KEY.getBytes()));
 			return cipher.doFinal(text.getBytes());
-		} catch (NoSuchAlgorithmException | NoSuchPaddingException e1) {
-			e1.printStackTrace();
-		} catch (InvalidKeyException | InvalidAlgorithmParameterException e) {
-			e.printStackTrace();
-		} catch (IllegalBlockSizeException | BadPaddingException e) {
-			e.printStackTrace();
+		} catch (NoSuchAlgorithmException |
+				NoSuchPaddingException |
+				InvalidKeyException |
+				InvalidAlgorithmParameterException |
+				IllegalBlockSizeException |
+				BadPaddingException e1) {
+			ProjectSWG.log(e1.toString());
 		}
 		return null;
 	}
@@ -524,12 +525,13 @@ public class Manager
 			SecretKeySpec sks = new SecretKeySpec(key.getBytes(), "AES");
 			cipher.init(Cipher.DECRYPT_MODE, sks, new IvParameterSpec(key.getBytes()));
 			return new String(cipher.doFinal(data));
-		} catch (NoSuchAlgorithmException | NoSuchPaddingException e2) {
-			e2.printStackTrace();
-		} catch (InvalidKeyException | InvalidAlgorithmParameterException e1) {
-			e1.printStackTrace();
-		} catch (IllegalBlockSizeException | BadPaddingException e) {
-			e.printStackTrace();
+		} catch (NoSuchAlgorithmException |
+				NoSuchPaddingException |
+				InvalidKeyException |
+				InvalidAlgorithmParameterException |
+				IllegalBlockSizeException |
+				BadPaddingException e1) {
+			ProjectSWG.log(e1.toString());
 		}
 		return null;
 	}
@@ -641,11 +643,10 @@ public class Manager
 		Preferences loginServersNode = Preferences.userNodeForPackage(ProjectSWG.class).node("login_servers");
 		ArrayList<String> serverList = new ArrayList<>();
 		try {
-			for (String name : loginServersNode.keys()) {
+			for (String name : loginServersNode.keys())
 				serverList.add(name);
-			}
-		} catch (BackingStoreException e) {
-			e.printStackTrace();
+		} catch (BackingStoreException e1) {
+			ProjectSWG.log(e1.toString());
 		}
 		return serverList;
 	}

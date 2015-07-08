@@ -29,6 +29,7 @@ import javafx.animation.KeyValue;
 import javafx.animation.ParallelTransition;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.geometry.Side;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -159,7 +160,6 @@ public class GameDisplay
 				cm2Stop.setDisable(true);
 			}
 		});
-		
 		return gameButton;
 	}
 	
@@ -177,43 +177,47 @@ public class GameDisplay
 			
 			if (!root.getChildren().contains(gameButtonGroup))
 				root.getChildren().add(gameButtonGroup);
-			
 			Button gameButton = (Button)gameButtonGroup.getChildren().get(0);
-			
 			final int finali = i;
-			Platform.runLater(() -> {
-				// otherwise buttonGroup width is sometimes 0
-				Platform.runLater(() -> {
-					if (gameButton.getLayoutX() == 0)
-						gameButton.setLayoutX(root.getWidth());
-					
-					gameButton.setLayoutY(root.getHeight() / 2 - gameButtonGroup.layoutBoundsProperty().getValue().getHeight() / 2);
-					final double targetX = notch * (finali + 1) - gameButtonGroup.layoutBoundsProperty().getValue().getWidth() / 2;
+			Task<Void> task = new Task<Void>() {
+				@Override
+				protected Void call() throws Exception {
+					Thread.sleep(50);
+					Platform.runLater(() -> {
+						if (gameButton.getLayoutX() == 0)
+							gameButton.setLayoutX(root.getWidth());
+						
+						gameButton.setLayoutY(root.getHeight() / 2 - gameButtonGroup.layoutBoundsProperty().getValue().getHeight() / 2);
+						final double targetX = notch * (finali + 1) - gameButtonGroup.layoutBoundsProperty().getValue().getWidth() / 2;
 
-					switch (ProjectSWG.PREFS.getInt("animation", ProjectSWG.ANIMATION_HIGH)) {
-					case ProjectSWG.ANIMATION_NONE:
-						gameButton.setLayoutX(targetX);
-						gameButton.setOpacity(1);
-						break;
-						
-					case ProjectSWG.ANIMATION_LOW:
-						gameButton.setLayoutX(targetX);
-						gameButton.setOpacity(1);
-						break;
-						
-					case ProjectSWG.ANIMATION_HIGH:
-						gameButton.setOpacity(1);
-						ParallelTransition showGameAnimationHigh = new ParallelTransition();
-						final Timeline slideLeft = new Timeline();
-						final KeyValue showGameAnimationHighKV = new KeyValue(gameButton.layoutXProperty(), targetX, Interpolator.EASE_OUT);
-						final KeyFrame showGameAnimationHighKF = new KeyFrame(Duration.millis(SLIDE_DURATION), showGameAnimationHighKV);
-						slideLeft.getKeyFrames().add(showGameAnimationHighKF);
-						showGameAnimationHigh.getChildren().addAll(slideLeft);
-						showGameAnimationHigh.play();
-						break;
-					}
-				});
-			});
+						switch (ProjectSWG.PREFS.getInt("animation", ProjectSWG.ANIMATION_HIGH)) {
+						default:
+						case ProjectSWG.ANIMATION_NONE:
+							gameButton.setLayoutX(targetX);
+							gameButton.setOpacity(1);
+							break;
+							
+						case ProjectSWG.ANIMATION_LOW:
+							gameButton.setLayoutX(targetX);
+							gameButton.setOpacity(1);
+							break;
+							
+						case ProjectSWG.ANIMATION_HIGH:
+						case ProjectSWG.ANIMATION_WARS:
+							gameButton.setOpacity(1);
+							ParallelTransition showGameAnimationHigh = new ParallelTransition();
+							final Timeline slideLeft = new Timeline();
+							final KeyValue showGameAnimationHighKV = new KeyValue(gameButton.layoutXProperty(), targetX, Interpolator.EASE_OUT);
+							final KeyFrame showGameAnimationHighKF = new KeyFrame(Duration.millis(SLIDE_DURATION), showGameAnimationHighKV);
+							slideLeft.getKeyFrames().add(showGameAnimationHighKF);
+							showGameAnimationHigh.getChildren().addAll(slideLeft);
+							showGameAnimationHigh.play();
+						}
+					});
+					return null;
+				}	
+			};
+			task.run();
 		}
 	}
 }

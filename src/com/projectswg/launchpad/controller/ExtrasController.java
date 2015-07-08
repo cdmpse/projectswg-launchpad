@@ -21,7 +21,9 @@ package com.projectswg.launchpad.controller;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+
 import com.projectswg.launchpad.extras.ExtraModule;
+
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -35,7 +37,6 @@ public class ExtrasController implements ModalComponent
 	public static final String LABEL = "Extras";
 	
 	private MainController mainController;
-	
 	
 	public ExtrasController()
 	{

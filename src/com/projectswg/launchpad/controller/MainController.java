@@ -21,12 +21,10 @@ package com.projectswg.launchpad.controller;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-
 import com.projectswg.launchpad.ProjectSWG;
 import com.projectswg.launchpad.extras.TREFix;
 import com.projectswg.launchpad.model.Instance;
 import com.projectswg.launchpad.service.Manager;
-
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -116,14 +114,11 @@ public class MainController implements FxmlController
 		setupComponent = (SetupController)pswg.getControllers().get("setup");
 		extrasComponent = (ExtrasController)pswg.getControllers().get("extras");
 		
-		modalController.getRoot().opacityProperty().addListener((observable, oldValue, newValue) -> {
-			blur.setRadius(newValue.doubleValue() * 10);
-		});
-		
 		modalController.init(this);
 		modalController.addComponent(settingsComponent);
 		modalController.addComponent(setupComponent);
 		modalController.addComponent(extrasComponent);
+		
 		
 		root.getChildren().add(modalController.getRoot());
 
@@ -133,6 +128,10 @@ public class MainController implements FxmlController
 		
 		addButtonListeners();
 
+		modalController.getRoot().opacityProperty().addListener((observable, oldValue, newValue) -> {
+			blur.setRadius(newValue.doubleValue() * 10);
+		});
+		
 		manager.getMainOut().addListener((observable, oldValue, newValue) -> {
 			mainDisplay.queueString(newValue);
 		});
@@ -153,6 +152,7 @@ public class MainController implements FxmlController
 			case Manager.STATE_SWG_SCANNING:
 				setupButton.setVisible(false);
 				cancelButton.setVisible(true);
+				cancelButton.setDefaultButton(true);
 				progressIndicator.setVisible(true);
 				settingsButton.setDisable(true);
 				optionsButton.setDisable(true);
@@ -324,34 +324,42 @@ public class MainController implements FxmlController
 	public void addButtonListeners()
 	{
 		playButton.setOnAction((e) -> {
+			ProjectSWG.playSound("play_button");
 			manager.startSWG();
 		});
 	
 		setupButton.setOnAction((e) -> {
+			ProjectSWG.playSound("setup_button");
 			modalController.showWithComponent(setupComponent);
 		});
 		
 		cancelButton.setOnAction((e) -> {
+			ProjectSWG.playSound("cancel_button");
 			manager.requestStop();
 		});
 		
 		scanButton.setOnAction((e) -> {
+			ProjectSWG.playSound("scan_button");
 			manager.fullScan();
 		});
 		
 		settingsButton.setOnAction((e) -> {
+			ProjectSWG.playSound("main_button");
 			modalController.showWithComponent(settingsComponent);
 		});
 		
 		optionsButton.setOnAction((e) -> {
+			ProjectSWG.playSound("main_button");
 			manager.launchGameSettings();
 		});
 		
 		extrasButton.setOnAction((e) -> {
+			ProjectSWG.playSound("main_button");
 			modalController.showWithComponent(extrasComponent);
 		});
 		
 		updateButton.setOnAction((e) -> {
+			ProjectSWG.playSound("update_button");
 			manager.updatePswg();
 		});
 	}
@@ -386,7 +394,8 @@ public class MainController implements FxmlController
 	
 	public void showProgressBar()
 	{
-		switch (ProjectSWG.PREFS.getInt("animation", ProjectSWG.ANIMATION_HIGH)) {
+		switch (ProjectSWG.PREFS.getInt("animation", ProjectSWG.ANIMATION_NONE)) {
+		default:
 		case ProjectSWG.ANIMATION_NONE:
 			progressBar.setVisible(true);
 			break;
@@ -397,6 +406,7 @@ public class MainController implements FxmlController
 			showDownloadLow.play();
 			break;
 		case ProjectSWG.ANIMATION_HIGH:
+		case ProjectSWG.ANIMATION_WARS:
 			progressBar.setOpacity(0);
 			progressBar.setVisible(true);
 			stopDownloadAnimation();
@@ -407,7 +417,8 @@ public class MainController implements FxmlController
 	
 	public void hideProgressBar()
 	{
-		switch (ProjectSWG.PREFS.getInt("animation", ProjectSWG.ANIMATION_HIGH)) {
+		switch (ProjectSWG.PREFS.getInt("animation", ProjectSWG.ANIMATION_NONE)) {
+		default:
 		case ProjectSWG.ANIMATION_NONE:
 			progressBar.setVisible(false);
 			break;
@@ -416,6 +427,7 @@ public class MainController implements FxmlController
 			hideDownloadLow.play();
 			break;
 		case ProjectSWG.ANIMATION_HIGH:
+		case ProjectSWG.ANIMATION_WARS:
 			stopDownloadAnimation();
 			hideDownloadHigh.play();
 			break;
@@ -458,19 +470,19 @@ public class MainController implements FxmlController
 		@Override
 		public void onChanged(Change<? extends Instance> change) {
 			while (change.next())
-				if (change.wasAdded()) {
+				if (change.wasAdded())
 					if (ProjectSWG.PREFS.getBoolean("close_after_launch", false))
 						Platform.exit();
-					for (Instance instance : change.getAddedSubList()) {
-						ProjectSWG.log("instanceListener: " + instance.getLabel());
-						gameDisplay.addGame(instance);
-						if (ProjectSWG.PREFS.getBoolean("open_on_launch", false))
-							instance.getGameController().show();
-					}
-				} else if (change.wasRemoved()) {
+					else
+						for (Instance instance : change.getAddedSubList()) {
+							ProjectSWG.log("instanceListener: " + instance.getLabel());
+							gameDisplay.addGame(instance);
+							if (ProjectSWG.PREFS.getBoolean("open_on_launch", false))
+								instance.getGameController().show();
+						}
+				else if (change.wasRemoved())
 					for (Instance instance : change.getRemoved())
 						gameDisplay.removeGame(instance);
-				}
 			}
 	}
 }

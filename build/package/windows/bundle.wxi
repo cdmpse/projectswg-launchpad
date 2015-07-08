@@ -7,7 +7,7 @@
       <CreateFolder/>
       <RemoveFolder Id="RemoveDir0" On="uninstall" />
         <RegistryKey Root="HKCU"  Key="Software\projectswg.com\ProjectSWG">
-         <RegistryValue Name="Version" Value="0.4" Type="string" KeyPath="yes"/>
+         <RegistryValue Name="Version" Value="0.5" Type="string" KeyPath="yes"/>
        </RegistryKey>
        <File Id="FileId1" Name="msvcp100.dll"  Source="msvcp100.dll">
        </File>
