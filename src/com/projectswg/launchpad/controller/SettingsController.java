@@ -79,6 +79,9 @@ public class SettingsController implements ModalComponent
 	private Button refreshThemesButton, removeLoginServerButton, addLoginServerButton, wineBinaryButton;
 	
 	@FXML
+	private Button binaryButton, gameFeaturesButton;
+	
+	@FXML
 	private TextField wineArgumentsTextField, wineEnvironmentVariablesTextField;
 	
 	@FXML
@@ -97,17 +100,14 @@ public class SettingsController implements ModalComponent
 	private TextField hostnameTextField, portTextField, statusPortTextField;
 	
 	@FXML
-	private Tooltip settingsSwgFolderTooltip, settingsPswgFolderTooltip, wineBinaryTooltip;
-	
-	@FXML
-	private Hyperlink pswgHyperlink, showHyperlink;
+	private Hyperlink pswgHyperlink, showHyperlink, resetBinaryHyperlink, resetGameFeaturesHyperlink;
 	
 	@FXML
 	private Text licenseText;
 	
 	@FXML
 	private TextFlow thanksTextFlow;
-	
+
 	private static final String LABEL = "Settings";
 	private static final int WINE_PANE_INDEX = 3;
 	
@@ -247,11 +247,10 @@ public class SettingsController implements ModalComponent
 		ChangeListener<String> hostnameTextChangeListener = new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				if (Pattern.matches(hostnamePattern, newValue)) {
+				if (Pattern.matches(hostnamePattern, newValue))
 					manager.setLoginServerHostname(loginServerComboBox.getValue(), newValue);
-				} else {
+				else
 					hostnameTextField.setText(oldValue);
-				}
 			}
 		};
 		
@@ -275,7 +274,6 @@ public class SettingsController implements ModalComponent
 			}
 		};
 		
-		// hostnameTextField.setTextFormatter(textFormatter);
 		final ImageView lockOpen = new ImageView(new Image("/resources/lock_open.png"));
 		final ImageView lockClosed = new ImageView(new Image("/resources/lock_closed.png"));
 		
@@ -320,6 +318,8 @@ public class SettingsController implements ModalComponent
 				return;
 			
 			ProjectSWG.log("Setting server: " + newValue);
+			mainController.getPlayButtonTooltip().setText("Profile: " + newValue);
+			
 			loginServerLockedCheckBox.setSelected(true);
 			if (newValue.equals(Manager.PSWG_LOGIN_SERVER_NAME)) {
 				loginServerLockedCheckBox.setDisable(true);
@@ -378,9 +378,13 @@ public class SettingsController implements ModalComponent
 	public void initSetupFolderSettings()
 	{
 		settingsSwgFolderButton.textProperty().bind(manager.getSwgFolder());
+		final Tooltip settingsSwgFolderTooltip = new Tooltip();
 		settingsSwgFolderTooltip.textProperty().bind(manager.getSwgFolder());
+		settingsSwgFolderButton.setTooltip(settingsSwgFolderTooltip);
 		settingsPswgFolderButton.textProperty().bind(manager.getPswgFolder());
+		final Tooltip settingsPswgFolderTooltip = new Tooltip();
 		settingsPswgFolderTooltip.textProperty().bind(manager.getPswgFolder());
+		settingsPswgFolderButton.setTooltip(settingsPswgFolderTooltip);
 		
 		manager.getState().addListener((observable, oldValue, newValue) -> {
 			switch (newValue.intValue()) {
@@ -470,6 +474,23 @@ public class SettingsController implements ModalComponent
 				deleteGameProfilesButton.setDisable(false);
 		});
 		
+		if (ProjectSWG.PREFS.getBoolean("debug", false))
+			debugCheckBox.setSelected(true);
+		else
+			showHyperlink.setDisable(true);
+		
+		debugCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+			ProjectSWG.PREFS.putBoolean("debug", newValue);
+			showHyperlink.setDisable(!newValue);
+			((LogController)mainController.getPswg().getControllers().get("log")).removeDebugListener();
+			if (newValue)
+				((LogController)mainController.getPswg().getControllers().get("log")).addDebugListener();
+		});
+		
+		showHyperlink.setOnAction((e) -> {
+			((LogController)mainController.getPswg().getControllers().get("log")).show();
+		});
+		
 		deleteGameProfilesButton.setOnAction((e) -> {
 			String pswgFolder = manager.getPswgFolder().getValue();
 			if (pswgFolder.equals(""))
@@ -490,28 +511,78 @@ public class SettingsController implements ModalComponent
 				}
 		});
 		
-		if (ProjectSWG.PREFS.getBoolean("debug", false))
-			debugCheckBox.setSelected(true);
-		else
-			showHyperlink.setDisable(true);
-		
-		debugCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
-			ProjectSWG.PREFS.putBoolean("debug", newValue);
-			showHyperlink.setDisable(!newValue);
-			((LogController)mainController.getPswg().getControllers().get("log")).removeDebugListener();
-			if (newValue)
-				((LogController)mainController.getPswg().getControllers().get("log")).addDebugListener();
+		final Tooltip binaryTooltip = new Tooltip();
+		binaryTooltip.textProperty().bind(manager.getBinary());
+		binaryButton.textProperty().bind(manager.getBinary());
+		binaryButton.setTooltip(binaryTooltip);
+		binaryButton.setOnAction((e) -> {
+			FileChooser fileChooser = new FileChooser();
+			fileChooser.setTitle("Set Binary Location");
+			File file = fileChooser.showOpenDialog(mainController.getStage());
+			if (file == null || !file.isFile())
+				return;
+			
+			String bin =  file.getAbsolutePath();
+			manager.getBinary().set(bin);
 		});
 		
-		showHyperlink.setOnAction((e) -> {
-			((LogController)mainController.getPswg().getControllers().get("log")).show();
+		resetBinaryHyperlink.setOnAction((e) -> {
+			manager.getBinary().set(manager.getPswgFolder().getValue() + "/SwgClient_r.exe");
+		});
+		
+		final Tooltip gameFeaturesTooltip = new Tooltip();
+		gameFeaturesTooltip.textProperty().bind(manager.getGameFeatures());
+		gameFeaturesButton.textProperty().bind(manager.getGameFeatures());
+		gameFeaturesButton.setTooltip(binaryTooltip);
+		gameFeaturesButton.setOnAction((e) -> {
+			TextInputDialog dialog = new TextInputDialog();
+			dialog.setTitle("Game Features");
+			dialog.setHeaderText("Change");
+			dialog.setContentText("Game features: ");
+			Optional<String> result = dialog.showAndWait();
+			result.ifPresent(gf -> {
+				manager.getGameFeatures().set(gf);
+			});
+		});
+		
+		resetGameFeaturesHyperlink.setOnAction((e) -> {
+			manager.getGameFeatures().set(Manager.GAME_FEATURES);
+		});
+		
+		manager.getState().addListener((observable, oldValue, newValue) -> {
+			switch (newValue.intValue()) {
+			case Manager.STATE_SWG_SETUP_REQUIRED:
+			case Manager.STATE_SWG_SCANNING:
+			case Manager.STATE_PSWG_SETUP_REQUIRED:
+			case Manager.STATE_PSWG_SCAN_REQUIRED:
+			case Manager.STATE_PSWG_SCANNING:
+			case Manager.STATE_UPDATE_REQUIRED:
+			case Manager.STATE_UPDATING:
+				binaryButton.setDisable(true);
+				resetBinaryHyperlink.setDisable(true);
+				gameFeaturesButton.setDisable(true);
+				resetGameFeaturesHyperlink.setDisable(true);
+				break;
+			
+			case Manager.STATE_WINE_REQUIRED:
+			case Manager.STATE_PSWG_READY:
+				binaryButton.setDisable(false);
+				resetBinaryHyperlink.setDisable(false);
+				gameFeaturesButton.setDisable(false);
+				resetGameFeaturesHyperlink.setDisable(false);
+				break;
+				
+			default:
+			}
 		});
 	}
 	
 	public void initWinePane()
 	{
 		wineBinaryButton.textProperty().bind(manager.getWineBinary());
+		final Tooltip wineBinaryTooltip = new Tooltip();
 		wineBinaryTooltip.textProperty().bind(manager.getWineBinary());
+		wineBinaryButton.setTooltip(wineBinaryTooltip);
 		
 		wineBinaryButton.setOnAction((e) -> {
 			FileChooser fileChooser = new FileChooser();

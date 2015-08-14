@@ -156,6 +156,31 @@ public class NodeDisplay
 			fade.play();
 			break;
 
+		case ProjectSWG.ANIMATION_WARS:
+			
+			final double width = nextGroup.layoutBoundsProperty().getValue().getWidth();
+			final double height = nextGroup.layoutBoundsProperty().getValue().getHeight();
+			final double rootMidX = root.getWidth() / 2;
+			final double rootMidY = root.getHeight() / 2;
+			
+			final PerspectiveTransform pt = new PerspectiveTransform();
+			nextNode.layoutYProperty().addListener((observable, oldValue, newValue) -> {
+				// upper left & right x
+				pt.setUlx(rootMidX - width / 2 - (newValue.doubleValue() - rootMidY) / rootMidY * width / 7);
+				pt.setUrx(rootMidX + width / 2 + (newValue.doubleValue() - rootMidY) / rootMidY * width / 7);
+				// lower left & right x
+				pt.setLlx(rootMidX - width / 2 - (newValue.doubleValue() + height - rootMidY) / rootMidY * width / 7);
+				pt.setLrx(rootMidX + width / 2 + (newValue.doubleValue() + height - rootMidY) / rootMidY * width / 7);
+				// lower left & right y
+				pt.setLly(newValue.doubleValue() + nextGroup.layoutBoundsProperty().getValue().getHeight());
+				pt.setLry(newValue.doubleValue() + nextGroup.layoutBoundsProperty().getValue().getHeight());
+				// upper left & right y
+				pt.setUly(newValue.doubleValue());
+				pt.setUry(newValue.doubleValue());
+			});
+			nextGroup.setEffect(pt);
+			nextGroup.setCache(true);
+			
 		case ProjectSWG.ANIMATION_HIGH:
 			
 			ParallelTransition parallelTransition = new ParallelTransition();
@@ -190,61 +215,6 @@ public class NodeDisplay
 			parallelTransition.getChildren().addAll(slideAndFadeIn);
 			parallelTransition.play();
 			break;
-			
-		case ProjectSWG.ANIMATION_WARS:
-
-			double width = nextGroup.layoutBoundsProperty().getValue().getWidth();
-			double height = nextGroup.layoutBoundsProperty().getValue().getHeight();
-			double rootMidX = root.getWidth() / 2;
-			double rootMidY = root.getHeight() / 2;
-			
-			final PerspectiveTransform pt = new PerspectiveTransform();
-			nextNode.layoutYProperty().addListener((observable, oldValue, newValue) -> {
-				// upper left & right x
-				pt.setUlx(rootMidX - width / 2 - (newValue.doubleValue() - rootMidY) / rootMidY / 7 * width);
-				pt.setUrx(rootMidX + width / 2 + (newValue.doubleValue() - rootMidY) / rootMidY / 7 * width);
-				// lower left & right x
-				pt.setLlx(rootMidX - width / 2 - (newValue.doubleValue() + height - rootMidY) / rootMidY / 7 * width);
-				pt.setLrx(rootMidX + width / 2 + (newValue.doubleValue() + height - rootMidY) / rootMidY / 7 * width);
-				// lower left & right y
-				pt.setLly(newValue.doubleValue() + nextGroup.layoutBoundsProperty().getValue().getHeight());
-				pt.setLry(newValue.doubleValue() + nextGroup.layoutBoundsProperty().getValue().getHeight());
-				// upper left & right y
-				pt.setUly(newValue.doubleValue());
-				pt.setUry(newValue.doubleValue());
-			});
-			nextGroup.setEffect(pt);
-			nextGroup.setCache(true);
-			
-			ParallelTransition swt = new ParallelTransition();
-			final Timeline persSlideAndFadeIn = new Timeline();
-			
-			if (prevNode != null) {
-				final Timeline persSlideAndFadeOut = new Timeline();
-				final KeyValue persDelayedFadeOutKV = new KeyValue(prevNode.opacityProperty(), 0, Interpolator.EASE_BOTH);
-				final KeyFrame persDelayedFadeOutKF = new KeyFrame(Duration.millis(FADE_DURATION), persDelayedFadeOutKV);
-				persSlideAndFadeOut.getKeyFrames().add(persDelayedFadeOutKF);
-				persSlideAndFadeOut.setDelay(Duration.millis(SLIDE_DURATION - FADE_DURATION));
-				final KeyValue persOldSlideUpKV = new KeyValue(prevNode.layoutYProperty(), 0, Interpolator.EASE_OUT);
-				final KeyFrame persOldSlideUpKF = new KeyFrame(Duration.millis(SLIDE_DURATION), persOldSlideUpKV);
-				persSlideAndFadeOut.getKeyFrames().add(persOldSlideUpKF);
-				swt.getChildren().add(persSlideAndFadeOut);
-			}
-			
-			final KeyValue persSlideAndFadeInKV = new KeyValue(nextNode.opacityProperty(), 1, Interpolator.EASE_BOTH);
-			final KeyFrame persSlideAndFadeInKF = new KeyFrame(Duration.millis(FADE_DURATION), persSlideAndFadeInKV);
-			persSlideAndFadeIn.getKeyFrames().add(persSlideAndFadeInKF);
-			final KeyValue newPersSlideUpKV = new KeyValue(nextNode.layoutYProperty(), midY, Interpolator.EASE_OUT);
-			final KeyFrame newPersSlideUpKF = new KeyFrame(Duration.millis(SLIDE_DURATION), newPersSlideUpKV);
-			
-			persSlideAndFadeIn.getKeyFrames().add(newPersSlideUpKF);
-			swt.setOnFinished((e) -> {
-				if (root.getChildren().size() > 1)
-					root.getChildren().remove(0);
-				processNextFromQueue();
-			});
-			swt.getChildren().addAll(persSlideAndFadeIn);
-			swt.play();
-		};
+		}
 	}
 }

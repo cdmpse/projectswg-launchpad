@@ -148,11 +148,10 @@ public class GameController implements FxmlController
 		});
 		
 		stage.setOnShown((e) -> {
-			if (gameService.isRunning()) {
+			if (gameService.isRunning())
 				gameStatusDisplay.queueString(ProjectSWG.CIRCLE);
-			} else {
+			else
 				gameStatusDisplay.queueString(ProjectSWG.DOT);
-			}
 		});
 	}
 	

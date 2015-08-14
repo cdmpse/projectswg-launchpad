@@ -76,16 +76,8 @@
                            <children>
                               <Label text="SWG" GridPane.rowIndex="7" />
                               <Label text="ProjectSWG" GridPane.rowIndex="9" />
-                              <Button fx:id="settingsSwgFolderButton" maxWidth="Infinity" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="7">
-                                 <tooltip>
-                                    <Tooltip fx:id="settingsSwgFolderTooltip" />
-                                 </tooltip>
-                              </Button>
-                              <Button fx:id="settingsPswgFolderButton" maxWidth="Infinity" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="9">
-                                 <tooltip>
-                                    <Tooltip fx:id="settingsPswgFolderTooltip" />
-                                 </tooltip>
-                              </Button>
+                              <Button fx:id="settingsSwgFolderButton" maxWidth="Infinity" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                              <Button fx:id="settingsPswgFolderButton" maxWidth="Infinity" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="9" />
                               <VBox alignment="CENTER" GridPane.columnIndex="2" GridPane.rowIndex="7">
                                  <children>
                                     <Pane fx:id="swgFolderDisplayPane" VBox.vgrow="ALWAYS" />
@@ -184,10 +176,7 @@
                   <Label text="Binary" />
                   <Label text="Arguments" GridPane.rowIndex="1" />
                   <Label text="Environment Variables" GridPane.rowIndex="2" />
-                  <Button fx:id="wineBinaryButton" maxWidth="Infinity" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
-                     <tooltip>
-                        <Tooltip fx:id="wineBinaryTooltip" />
-                     </tooltip></Button>
+                  <Button fx:id="wineBinaryButton" maxWidth="Infinity" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" />
                   <TextField fx:id="wineArgumentsTextField" promptText="Optional" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                   <TextField fx:id="wineEnvironmentVariablesTextField" promptText="Optional" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                </children>

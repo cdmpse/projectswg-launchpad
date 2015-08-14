@@ -31,6 +31,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.effect.Blend;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.effect.DropShadow;
@@ -106,6 +107,8 @@ public class SetupController implements ModalComponent
 			manager.getSwgFolder().set(null);
 			manager.getSwgFolder().set(swgPath);
 		});
+		final Tooltip swgFolderButtonTooltip = new Tooltip("Select the original Star Wars Galaxies installation folder.");
+		swgFolderButton.setTooltip(swgFolderButtonTooltip);
 		
 		pswgFolderButton.setOnAction((e) -> {
 			DirectoryChooser directoryChooser = new DirectoryChooser();
@@ -117,6 +120,8 @@ public class SetupController implements ModalComponent
 			String pswgPath = file.getAbsolutePath();
 			manager.getPswgFolder().set(pswgPath);
 		});
+		final Tooltip pswgFolderButtonTooltip = new Tooltip("Select an existing ProjectSWG folder or create a new one.");
+		pswgFolderButton.setTooltip(pswgFolderButtonTooltip);
 		
 		progressIndicator = new ProgressIndicator();
 		progressIndicator.setMaxSize(15, 15);

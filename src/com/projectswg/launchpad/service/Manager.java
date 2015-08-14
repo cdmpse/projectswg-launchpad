@@ -69,6 +69,8 @@ public class Manager
 	// server string format: [hostname],[port],[statusPort]
 	public static final String PSWG_LOGIN_SERVER_STRING = "login1.projectswg.com,44453,44462";
 	
+	public static final String GAME_FEATURES = "34374193";
+	
 	public static final int LOGIN_SERVER_HOSTNAME = 0;
 	public static final int LOGIN_SERVER_PORT = 1;
 	public static final int LOGIN_SERVER_STATUSPORT = 2;
@@ -117,6 +119,9 @@ public class Manager
 	private SimpleStringProperty wineArguments;
 	private SimpleStringProperty wineEnvironmentVariables;
 	
+	private SimpleStringProperty binary;
+	private SimpleStringProperty gameFeatures;
+	
 	private SwgScanService swgScanService;
 	private PswgScanService pswgScanService;
 	private UpdateService updateService;
@@ -125,6 +130,11 @@ public class Manager
 	
 	
 	public Manager(ProjectSWG pswg)
+	{
+		this(pswg, STATE_INIT);
+	}
+	
+	public Manager(ProjectSWG pswg, int initialState)
 	{
 		this.pswg = pswg;
 		resources = null;
@@ -137,7 +147,10 @@ public class Manager
 		swgFolder = new SimpleStringProperty();
 		pswgFolder = new SimpleStringProperty();
 		
-		state = new SimpleIntegerProperty(STATE_INIT);
+		state = new SimpleIntegerProperty(initialState);
+		
+		binary = new SimpleStringProperty();
+		gameFeatures = new SimpleStringProperty();
 		
 		wineBinary = new SimpleStringProperty("");
 		wineArguments = new SimpleStringProperty("");
@@ -188,6 +201,17 @@ public class Manager
 		// update service
 		addUpdateServiceListeners();
 		
+		// launch configuration
+		binary.set(ProjectSWG.PREFS.get("binary", ""));
+		binary.addListener((observable, oldValue, newValue) -> {
+			ProjectSWG.PREFS.put("binary", newValue);
+		});
+		
+		gameFeatures.set(ProjectSWG.PREFS.get("game_features", ""));
+		gameFeatures.addListener((observable, oldValue, newValue) -> {
+			ProjectSWG.PREFS.put("game_features", newValue);
+		});
+		
 		// wine
 		wineBinary.addListener((observable, oldValue, newValue) -> {
 			ProjectSWG.PREFS.put("wine_binary", newValue);
@@ -212,8 +236,7 @@ public class Manager
 		if (loginServersNode.get(PSWG_LOGIN_SERVER_NAME, "").equals(""))
 			loginServersNode.put(PSWG_LOGIN_SERVER_NAME, PSWG_LOGIN_SERVER_STRING);
 		
-		String loginServer = ProjectSWG.PREFS.get("login_server", "");
-		if (loginServer.equals(""))
+		if (ProjectSWG.PREFS.get("login_server", "").equals(""))
 			ProjectSWG.PREFS.put("login_server", PSWG_LOGIN_SERVER_NAME);
 	}
 
@@ -310,6 +333,10 @@ public class Manager
 							mainOut.set("Wine Setup Required");
 							return;
 						}
+					if (binary.getValue().equals(""))
+						binary.set(pswgFolder.getValue() + "/SwgClient_r.exe");
+					if (gameFeatures.getValue().equals(""))
+						gameFeatures.set(Manager.GAME_FEATURES);
 					state.set(STATE_PSWG_READY);
 					mainOut.set("Ready");
 				}
@@ -421,7 +448,7 @@ public class Manager
 		
 		GameService gameService = new GameService(this);
 		Instance instance = new Instance(gameService);
-		instance.setLabel("ProjectSWG: " + pswg.getInstanceCounter());
+		instance.setLabel("ProjectSWG: " + pswg.getInstanceNumber());
 		instances.add(instance);
 		gameService.start();
 	}
@@ -759,5 +786,13 @@ public class Manager
 	public SimpleStringProperty getWineEnvironmentVariables()
 	{
 		return wineEnvironmentVariables;
+	}
+
+	public SimpleStringProperty getBinary() {
+		return binary;
+	}
+	
+	public SimpleStringProperty getGameFeatures() {
+		return gameFeatures;
 	}
 }

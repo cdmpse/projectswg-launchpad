@@ -88,7 +88,7 @@ public class ProjectSWG extends Application
 	private Stage primaryStage, debugStage;
 	private Manager manager;
 	private ObservableList<Instance> instances;
-	private int instanceCounter;
+	private int instanceCount = 0;
 	
 	
 	@Override
@@ -97,7 +97,7 @@ public class ProjectSWG extends Application
 		this.primaryStage = primaryStage;
 		primaryStage.setTitle("ProjectSWG");
 		primaryStage.setResizable(false);
-		// otherwise loads differently from theme load
+		// otherwise loads slightly different from theme load
 		primaryStage.setOpacity(0);
 		primaryStage.show();
 		
@@ -110,7 +110,6 @@ public class ProjectSWG extends Application
 			debugStage.getIcons().add(debugIcon);
 		debugStage.setTitle("Debug");
 		
-		instanceCounter = 1;
 		instances = FXCollections.observableArrayList();
 		controllers = new HashMap<>();
 		loadTheme(PREFS.get("theme", "Default"));
@@ -120,14 +119,9 @@ public class ProjectSWG extends Application
 		playSound("launcher_start");
 	}
 	
-	public int getInstanceCounter()
+	public int getInstanceNumber()
 	{
-		return instanceCounter;
-	}
-	
-	public void setInstanceCounter(int c)
-	{
-		instanceCounter = c;
+		return ++instanceCount;
 	}
 	
 	public void loadTheme(String theme)
@@ -188,7 +182,7 @@ public class ProjectSWG extends Application
 		if (!theme.equals("Default")) {
 			try {
 				String codeSource = new File(ProjectSWG.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
-				File file = new File(codeSource + "/" + THEMES_FOLDER + "/" + theme + "/style.css");
+				final File file = new File(codeSource + "/" + THEMES_FOLDER + "/" + theme + "/style.css");
 				if (!file.isFile()) {
 					log("Theme css file not found: " + theme);
 					return;
@@ -231,6 +225,7 @@ public class ProjectSWG extends Application
 	
 	public static void log(String text)
 	{
+		System.out.println(text);
 		Platform.runLater(() -> {
 			DEBUG.set((new Date()).toString() + ": " + text);
 		});
@@ -241,7 +236,7 @@ public class ProjectSWG extends Application
 		FXMLLoader fxmlLoader = null;
 		try {
 			if (!theme.equals("Default")) {
-				String codeSource = new File(ProjectSWG.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
+				final String codeSource = new File(ProjectSWG.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
 				log("loading: " + codeSource + "/" + THEMES_FOLDER + "/" + theme + "/" + fxml);
 				File file = new File(codeSource + "/" + THEMES_FOLDER + "/" + theme + "/" + fxml);
 				if (file.isFile()) {
@@ -272,18 +267,17 @@ public class ProjectSWG extends Application
 
 		if (!theme.equals("Default")) {
 			try {
-				String codeSource = new File(ProjectSWG.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
-				File f = new File(codeSource + File.separator + THEMES_FOLDER + File.separator + theme + File.separator + sound);
+				final String codeSource = new File(ProjectSWG.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
+				File f = new File(codeSource + "/" + THEMES_FOLDER + "/" + theme + "/" + sound);
 				if (f.isFile()) {
 					media = new Media(f.toURI().toString());
-					if (media.getError() == null) {
+					if (media.getError() == null)
 						media.setOnError(new Runnable() {
 							public void run()
 							{
 								log("Media error");
 							}
 						});
-					}
 				}
 			} catch (IllegalArgumentException | URISyntaxException e1) {
 				log("Error loading theme audio: " + e1.toString());
@@ -297,15 +291,15 @@ public class ProjectSWG extends Application
 				return;
 			}
 		}
-		MediaPlayer mp = new MediaPlayer(media);
-		if (mp.getError() == null) {
-			mp.setOnError(new Runnable() {
+		final MediaPlayer mediaPlayer = new MediaPlayer(media);
+		if (mediaPlayer.getError() == null) {
+			mediaPlayer.setOnError(new Runnable() {
 				public void run()
 				{
 					log("MediaPlayer error");
 				}
 			});
-			mp.play();
+			mediaPlayer.play();
 		}
 	}
 	

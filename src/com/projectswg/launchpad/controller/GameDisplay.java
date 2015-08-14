@@ -91,8 +91,7 @@ public class GameDisplay
 	
 	public void addGame(Instance instance)
 	{
-		display.add(instance);		
-		mainController.getPswg().setInstanceCounter(mainController.getPswg().getInstanceCounter() + 1);
+		display.add(instance);
 		
 		Stage stage = new Stage();
 		Image icon = new Image("/resources/pswg_icon.png");

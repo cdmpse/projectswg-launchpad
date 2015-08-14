@@ -39,6 +39,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.Tooltip;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -87,6 +88,7 @@ public class MainController implements FxmlController
 	private Timeline showDownloadLow, hideDownloadLow;
 	private ParallelTransition showDownloadHigh, hideDownloadHigh;
 	private InstanceListener instanceListener;
+	private Tooltip playButtonTooltip;
 	
 
 	@Override
@@ -106,8 +108,9 @@ public class MainController implements FxmlController
 		gameDisplay = new GameDisplay(this);
 		mainDisplay = new NodeDisplay(mainDisplayPane);
 
-		// move to css?
 		progressIndicator.setMaxSize(36, 36);
+		playButtonTooltip = new Tooltip();
+		playButton.setTooltip(playButtonTooltip);
 		
 		modalController = (ModalController)pswg.getControllers().get("modal");
 		settingsComponent = (SettingsController)pswg.getControllers().get("settings");
@@ -118,7 +121,6 @@ public class MainController implements FxmlController
 		modalController.addComponent(settingsComponent);
 		modalController.addComponent(setupComponent);
 		modalController.addComponent(extrasComponent);
-		
 		
 		root.getChildren().add(modalController.getRoot());
 
@@ -484,5 +486,10 @@ public class MainController implements FxmlController
 					for (Instance instance : change.getRemoved())
 						gameDisplay.removeGame(instance);
 			}
+	}
+	
+	public Tooltip getPlayButtonTooltip()
+	{
+		return playButtonTooltip;
 	}
 }

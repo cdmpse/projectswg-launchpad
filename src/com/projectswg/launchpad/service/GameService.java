@@ -57,18 +57,17 @@ public class GameService extends Service<Void>
 			{
 				String pswgFolder = manager.getPswgFolder().getValue();
 				String host = manager.getLoginServerHost().getValue();
-				String port = manager.getLoginServerPlayPort().getValue();
 				
 				String[] processString = new String[] {
-						pswgFolder + "/SwgClient_r.exe",
+						manager.getBinary().getValue(),
 						"--",
 						"-s",
 						"Station",
 						"subscriptionFeatures=1",
-						"gameFeatures=34374193",
+						"gameFeatures=" + manager.getGameFeatures().getValue(),
 						"-s",
 						"ClientGame",
-						"loginServerPort0=" + port,
+						"loginServerPort0=" + manager.getLoginServerPlayPort().getValue(),
 						"loginServerAddress0=" + (ProjectSWG.PREFS.getBoolean("localhost", false) ? Manager.LOCALHOST : host)
 				};
 				
