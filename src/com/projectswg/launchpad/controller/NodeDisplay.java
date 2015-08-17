@@ -68,7 +68,9 @@ public class NodeDisplay
 	{
 		if (s == null)
 			return;
-		queueNode(new TextFlow(new Text(s)));
+		Text t = new Text(s);
+		t.getStyleClass().add("display");
+		queueNode(new TextFlow(t));
 	}
 	
 	public void queueNode(Parent node)

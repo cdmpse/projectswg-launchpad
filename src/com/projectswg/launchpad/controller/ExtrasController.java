@@ -22,11 +22,14 @@ package com.projectswg.launchpad.controller;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import com.projectswg.launchpad.ProjectSWG;
 import com.projectswg.launchpad.extras.ExtraModule;
 
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.TilePane;
 
 public class ExtrasController implements ModalComponent
@@ -37,6 +40,8 @@ public class ExtrasController implements ModalComponent
 	public static final String LABEL = "Extras";
 	
 	private MainController mainController;
+	private EventHandler<MouseEvent> buttonHover;
+	private EventHandler<MouseEvent> buttonPress;
 	
 	public ExtrasController()
 	{
@@ -46,6 +51,8 @@ public class ExtrasController implements ModalComponent
 	{
 		Button button = module.createButton();
 		// css?
+		button.setOnMouseEntered(buttonHover);
+		button.setOnMouseClicked(buttonPress);
 		button.setPrefHeight(90);
 		button.setPrefWidth(90);
 		extrasRoot.getChildren().add(button);
@@ -68,6 +75,20 @@ public class ExtrasController implements ModalComponent
 		this.mainController = mainController;
 		
 		extrasRoot.getChildren().clear();
+		
+		buttonHover = new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				ProjectSWG.playSound("button_hover");
+			}
+		};
+		
+		buttonPress = new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				ProjectSWG.playSound("button_press");
+			}
+		};
 	}
 	
 	@Override

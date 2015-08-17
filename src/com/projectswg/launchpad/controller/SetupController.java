@@ -76,8 +76,8 @@ public class SetupController implements ModalComponent
 		greenGlow.setBottomInput(new DropShadow(5, Color.GREEN));
 		greenGlow.setTopInput(new InnerShadow(5, Color.GREEN));
 		
-		swgLabel = new Label(null, new ImageView(new Image("/resources/swg_icon_by_interestingjohn.png")));
-		pswgLabel = new Label(null, new ImageView(new Image("/resources/pswg_logo.png")));
+		swgLabel = new Label(null, new ImageView(new Image("/resources/setup_swg.png")));
+		pswgLabel = new Label(null, new ImageView(new Image("/resources/setup_pswg.png")));
 	}
 	
 	@Override

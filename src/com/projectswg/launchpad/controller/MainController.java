@@ -34,6 +34,9 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -42,6 +45,7 @@ import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Tooltip;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -89,6 +93,7 @@ public class MainController implements FxmlController
 	private ParallelTransition showDownloadHigh, hideDownloadHigh;
 	private InstanceListener instanceListener;
 	private Tooltip playButtonTooltip;
+	private EventHandler<MouseEvent> buttonHover;
 	
 
 	@Override
@@ -141,11 +146,11 @@ public class MainController implements FxmlController
 		manager.getState().addListener((observable, oldValue, newValue) -> {
 			switch (newValue.intValue()) {
 			case Manager.STATE_SWG_SETUP_REQUIRED:
-				playButton.setVisible(false);
 				scanButton.setVisible(false);
 				setupButton.setVisible(true);
 				cancelButton.setVisible(false);
 				progressIndicator.setVisible(false);
+				playButton.setDisable(true);
 				settingsButton.setDisable(false);
 				optionsButton.setDisable(true);
 				extrasButton.setDisable(true);
@@ -162,19 +167,19 @@ public class MainController implements FxmlController
 				break;
 			
 			case Manager.STATE_PSWG_SETUP_REQUIRED:
-				playButton.setVisible(false);
 				scanButton.setVisible(false);
 				setupButton.setVisible(true);
 				cancelButton.setVisible(false);
 				progressIndicator.setVisible(false);
+				playButton.setDisable(true);
 				settingsButton.setDisable(false);
 				optionsButton.setDisable(true);
 				extrasButton.setDisable(true);
 				break;
 				
 			case Manager.STATE_PSWG_SCAN_REQUIRED:
-				playButton.setVisible(true);
 				scanButton.setVisible(true);
+				scanButton.setDefaultButton(true);
 				setupButton.setVisible(false);
 				cancelButton.setVisible(false);
 				progressIndicator.setVisible(false);
@@ -196,6 +201,7 @@ public class MainController implements FxmlController
 				break;
 			
 			case Manager.STATE_UPDATE_REQUIRED:
+				updateButton.setDefaultButton(true);
 				cancelButton.setVisible(false);
 				updateButton.setVisible(true);
 				setupButton.setVisible(false);
@@ -325,43 +331,58 @@ public class MainController implements FxmlController
 	
 	public void addButtonListeners()
 	{
+		buttonHover = new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				ProjectSWG.playSound("button_hover");
+			}
+		};
+		
+		playButton.setOnMouseEntered(buttonHover);
 		playButton.setOnAction((e) -> {
-			ProjectSWG.playSound("play_button");
+			ProjectSWG.playSound("button_press");
 			manager.startSWG();
 		});
 	
+		setupButton.setOnMouseEntered(buttonHover);
 		setupButton.setOnAction((e) -> {
-			ProjectSWG.playSound("setup_button");
+			ProjectSWG.playSound("button_press");
 			modalController.showWithComponent(setupComponent);
 		});
 		
+		cancelButton.setOnMouseEntered(buttonHover);
 		cancelButton.setOnAction((e) -> {
-			ProjectSWG.playSound("cancel_button");
+			ProjectSWG.playSound("button_press");
 			manager.requestStop();
 		});
 		
+		scanButton.setOnMouseEntered(buttonHover);
 		scanButton.setOnAction((e) -> {
-			ProjectSWG.playSound("scan_button");
+			ProjectSWG.playSound("button_press");
 			manager.fullScan();
 		});
 		
+		settingsButton.setOnMouseEntered(buttonHover);
 		settingsButton.setOnAction((e) -> {
-			ProjectSWG.playSound("main_button");
+			ProjectSWG.playSound("button_press");
 			modalController.showWithComponent(settingsComponent);
 		});
 		
+		optionsButton.setOnMouseEntered(buttonHover);
 		optionsButton.setOnAction((e) -> {
-			ProjectSWG.playSound("main_button");
+			ProjectSWG.playSound("button_press");
 			manager.launchGameSettings();
 		});
 		
+		extrasButton.setOnMouseEntered(buttonHover);
 		extrasButton.setOnAction((e) -> {
-			ProjectSWG.playSound("main_button");
+			ProjectSWG.playSound("button_press");
 			modalController.showWithComponent(extrasComponent);
 		});
 		
+		updateButton.setOnMouseEntered(buttonHover);
 		updateButton.setOnAction((e) -> {
-			ProjectSWG.playSound("update_button");
+			ProjectSWG.playSound("button_press");
 			manager.updatePswg();
 		});
 	}
@@ -491,5 +512,10 @@ public class MainController implements FxmlController
 	public Tooltip getPlayButtonTooltip()
 	{
 		return playButtonTooltip;
+	}
+	
+	public EventHandler<MouseEvent> getButtonHover()
+	{
+		return buttonHover;
 	}
 }

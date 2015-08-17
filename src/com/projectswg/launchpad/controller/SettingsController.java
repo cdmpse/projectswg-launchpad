@@ -37,6 +37,8 @@ import com.projectswg.launchpad.service.Manager;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Accordion;
@@ -55,7 +57,9 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.DirectoryChooser;
@@ -117,7 +121,9 @@ public class SettingsController implements ModalComponent
 	private NodeDisplay swgFolderDisplay, pswgFolderDisplay;
 	private Manager manager;
 	private ProgressIndicator progressIndicator;
-	
+	private EventHandler<MouseEvent> buttonHover;
+	private EventHandler<MouseEvent> buttonPress;
+	private EventHandler<MouseEvent> comboClicked;
 	
 	public SettingsController()
 	{
@@ -133,6 +139,7 @@ public class SettingsController implements ModalComponent
 			if (newValue != null)
 				Platform.runLater(() -> {
 					newValue.setCollapsible(false);
+					ProjectSWG.playSound("pane_expand");
 				});
 		});
 		
@@ -149,6 +156,27 @@ public class SettingsController implements ModalComponent
 	{
 		this.mainController = mainController;
 		this.manager = mainController.getManager();
+		
+		buttonHover = new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				ProjectSWG.playSound("button_hover");
+			}
+		};
+		
+		buttonPress = new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				ProjectSWG.playSound("button_press");
+			}
+		};
+		
+		comboClicked = new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				ProjectSWG.playSound("combo_clicked");
+			}
+		};
 		
 		pingDisplay = new NodeDisplay(pingDisplayPane);
 		swgFolderDisplay = new NodeDisplay(swgFolderDisplayPane);
@@ -191,11 +219,14 @@ public class SettingsController implements ModalComponent
 		});
 		
 		// theme
+		refreshThemesButton.setOnMouseEntered(buttonHover);
+		refreshThemesButton.setOnMouseClicked(buttonPress);
 		refreshThemesButton.setOnAction((e) -> {
 			refreshThemeList();
 		});
 		refreshThemeList();
 		
+		themeComboBox.setOnMouseClicked(comboClicked);
 		themeComboBox.setValue(ProjectSWG.PREFS.get("theme", "Default"));
 		themeComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
 			if (oldValue == null || newValue == null)
@@ -212,6 +243,7 @@ public class SettingsController implements ModalComponent
 		// animation
 		animationSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
 			if (!animationSlider.valueChangingProperty().getValue())
+				ProjectSWG.playSound("slider_select");
 				ProjectSWG.PREFS.putInt("animation", newValue.intValue());
 		});
 	}
@@ -313,6 +345,7 @@ public class SettingsController implements ModalComponent
 			}
 		});
 		
+		loginServerComboBox.setOnMouseClicked(comboClicked);
 		loginServerComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue == null)
 				return;
@@ -333,7 +366,10 @@ public class SettingsController implements ModalComponent
 		});
 		refreshLoginServerComboBox();
 		
+		pingButton.setOnMouseEntered(buttonHover);
+		pingButton.setOnMouseClicked(buttonPress);
 		pingButton.setOnAction((e) -> {
+			ProjectSWG.playSound("button_pressed");
 			manager.pingLoginServer();
 		});
 		
@@ -347,7 +383,9 @@ public class SettingsController implements ModalComponent
 			pingDisplay.queueNode(progressIndicator);
 		});
 		
+		addLoginServerButton.setOnMouseEntered(buttonHover);
 		addLoginServerButton.setOnAction((e) -> {
+			ProjectSWG.playSound("button_press");
 			TextInputDialog dialog = new TextInputDialog();
 			dialog.setTitle("Add Server");
 			dialog.setHeaderText("Please enter a name for the server.");
@@ -361,7 +399,9 @@ public class SettingsController implements ModalComponent
 			});
 		});
 		
+		removeLoginServerButton.setOnMouseEntered(buttonHover);
 		removeLoginServerButton.setOnAction((e) -> {
+			ProjectSWG.playSound("button_press");
 			Alert alert = new Alert(AlertType.CONFIRMATION);
 			alert.setTitle("Remove Server");
 			alert.setHeaderText("Are you sure you want to remove this server?");
@@ -378,6 +418,7 @@ public class SettingsController implements ModalComponent
 	public void initSetupFolderSettings()
 	{
 		settingsSwgFolderButton.textProperty().bind(manager.getSwgFolder());
+		settingsSwgFolderButton.setOnMouseEntered(buttonHover);
 		final Tooltip settingsSwgFolderTooltip = new Tooltip();
 		settingsSwgFolderTooltip.textProperty().bind(manager.getSwgFolder());
 		settingsSwgFolderButton.setTooltip(settingsSwgFolderTooltip);
@@ -385,6 +426,7 @@ public class SettingsController implements ModalComponent
 		final Tooltip settingsPswgFolderTooltip = new Tooltip();
 		settingsPswgFolderTooltip.textProperty().bind(manager.getPswgFolder());
 		settingsPswgFolderButton.setTooltip(settingsPswgFolderTooltip);
+		settingsPswgFolderButton.setOnMouseEntered(buttonHover);
 		
 		manager.getState().addListener((observable, oldValue, newValue) -> {
 			switch (newValue.intValue()) {
@@ -425,6 +467,7 @@ public class SettingsController implements ModalComponent
 		});
 		
 		settingsSwgFolderButton.setOnAction((e) -> {
+			ProjectSWG.playSound("button_press");
 			DirectoryChooser directoryChooser = new DirectoryChooser();
 			directoryChooser.setTitle("Select SWG folder");
 			File file = directoryChooser.showDialog(mainController.getStage());
@@ -436,6 +479,7 @@ public class SettingsController implements ModalComponent
 		});
 		
 		settingsPswgFolderButton.setOnAction((e) -> {
+			ProjectSWG.playSound("button_press");
 			DirectoryChooser directoryChooser = new DirectoryChooser();
 			directoryChooser.setTitle("Select ProjectSWG folder");
 			File file = directoryChooser.showDialog(mainController.getStage());
@@ -491,31 +535,13 @@ public class SettingsController implements ModalComponent
 			((LogController)mainController.getPswg().getControllers().get("log")).show();
 		});
 		
-		deleteGameProfilesButton.setOnAction((e) -> {
-			String pswgFolder = manager.getPswgFolder().getValue();
-			if (pswgFolder.equals(""))
-				return;
-			Alert alert = new Alert(AlertType.CONFIRMATION);
-			alert.setTitle("Delete game profiles");
-			alert.setHeaderText(String.format("This will remove the %s/profiles' folder.", pswgFolder));
-			Optional<ButtonType> result = alert.showAndWait();
-			if (result.get() == ButtonType.OK)
-				try {
-					Manager.removeRecursive(Paths.get(pswgFolder + "/profiles"));
-				} catch (IOException e1) {
-					e1.printStackTrace();
-					alert = new Alert(AlertType.ERROR);
-					alert.setTitle("Error");
-					alert.setHeaderText("An error occurred.");
-					alert.showAndWait();
-				}
-		});
-		
 		final Tooltip binaryTooltip = new Tooltip();
 		binaryTooltip.textProperty().bind(manager.getBinary());
 		binaryButton.textProperty().bind(manager.getBinary());
 		binaryButton.setTooltip(binaryTooltip);
+		binaryButton.setOnMouseEntered(buttonHover);
 		binaryButton.setOnAction((e) -> {
+			ProjectSWG.playSound("button_press");
 			FileChooser fileChooser = new FileChooser();
 			fileChooser.setTitle("Set Binary Location");
 			File file = fileChooser.showOpenDialog(mainController.getStage());
@@ -534,7 +560,9 @@ public class SettingsController implements ModalComponent
 		gameFeaturesTooltip.textProperty().bind(manager.getGameFeatures());
 		gameFeaturesButton.textProperty().bind(manager.getGameFeatures());
 		gameFeaturesButton.setTooltip(binaryTooltip);
+		gameFeaturesButton.setOnMouseEntered(buttonHover);
 		gameFeaturesButton.setOnAction((e) -> {
+			ProjectSWG.playSound("button_press");
 			TextInputDialog dialog = new TextInputDialog();
 			dialog.setTitle("Game Features");
 			dialog.setHeaderText("Change");
@@ -575,6 +603,29 @@ public class SettingsController implements ModalComponent
 			default:
 			}
 		});
+		
+		deleteGameProfilesButton.setOnMouseEntered(buttonHover);
+		deleteGameProfilesButton.setOnAction((e) -> {
+			ProjectSWG.playSound("button_press");
+			
+			String pswgFolder = manager.getPswgFolder().getValue();
+			if (pswgFolder.equals(""))
+				return;
+			Alert alert = new Alert(AlertType.CONFIRMATION);
+			alert.setTitle("Delete game profiles");
+			alert.setHeaderText(String.format("This will remove the %s/profiles' folder.", pswgFolder));
+			Optional<ButtonType> result = alert.showAndWait();
+			if (result.get() == ButtonType.OK)
+				try {
+					Manager.removeRecursive(Paths.get(pswgFolder + "/profiles"));
+				} catch (IOException e1) {
+					e1.printStackTrace();
+					alert = new Alert(AlertType.ERROR);
+					alert.setTitle("Error");
+					alert.setHeaderText("An error occurred.");
+					alert.showAndWait();
+				}
+		});
 	}
 	
 	public void initWinePane()
@@ -583,8 +634,9 @@ public class SettingsController implements ModalComponent
 		final Tooltip wineBinaryTooltip = new Tooltip();
 		wineBinaryTooltip.textProperty().bind(manager.getWineBinary());
 		wineBinaryButton.setTooltip(wineBinaryTooltip);
-		
+		wineBinaryButton.setOnMouseEntered(buttonHover);
 		wineBinaryButton.setOnAction((e) -> {
+			ProjectSWG.playSound("button_press");
 			FileChooser fileChooser = new FileChooser();
 			fileChooser.setTitle("Set Wine Location");
 			File file = fileChooser.showOpenDialog(mainController.getStage());
@@ -627,30 +679,6 @@ public class SettingsController implements ModalComponent
 				ProjectSWG.log(e1.toString());
 			}
 		});
-
-		// Icons -  - Linh Pham Thi Dieu
-		Text iconsText = new Text("\nIcons - ");
-        Hyperlink iconsHyperlink = new Hyperlink("Linh Pham Thi Dieu");
-        iconsHyperlink.setOnAction((e) -> {
-	 		try {
-				java.awt.Desktop.getDesktop().browse(new URI("http://linhpham.me/#works"));
-			} catch (Exception e1) {
-				ProjectSWG.log(e1.toString());
-			}
-        });
-
-		// SWG Icon -  - Linh Pham Thi Dieu
-		Text swgIconText = new Text("\nSWG Icon - ");
-        Hyperlink swgIconHyperlink = new Hyperlink("InterestingJohn");
-        swgIconHyperlink.setOnAction((e) -> {
-	 		try {
-				java.awt.Desktop.getDesktop().browse(new URI("http://interestingjohn.deviantart.com/art/SWG-Icon-68116934"));
-			} catch (Exception e1) {
-				ProjectSWG.log(e1.toString());
-			}
-        });
-        
-        thanksTextFlow.getChildren().addAll(logoText, logoHyperlink, iconsText, iconsHyperlink, swgIconText, swgIconHyperlink);
 	 
 		licenseText.setText(
 			"\n\nThis file is part of ProjectSWG Launchpad.\n" +

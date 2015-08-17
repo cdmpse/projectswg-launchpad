@@ -86,6 +86,10 @@ public class ModalController implements FxmlController
 	public void init(MainController mainController)
 	{
 		this.mainController = mainController;
+		closeButton.setOnMouseEntered((e) -> {
+			ProjectSWG.playSound("button_hover");
+		});
+		
 		closeButton.setOnAction((e) -> {
 			ProjectSWG.playSound("close_modal");
 			hide();
@@ -117,6 +121,7 @@ public class ModalController implements FxmlController
 	{
 		if (modalComponent == null)
 			return;
+		ProjectSWG.playSound("open_modal");
 		
 		this.modalComponent = modalComponent;
 		modalComponent.getRoot().setVisible(true);

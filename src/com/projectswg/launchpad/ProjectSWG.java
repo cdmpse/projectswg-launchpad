@@ -112,6 +112,7 @@ public class ProjectSWG extends Application
 		
 		instances = FXCollections.observableArrayList();
 		controllers = new HashMap<>();
+		//loadTheme("Default");
 		loadTheme(PREFS.get("theme", "Default"));
 		
 		primaryStage.centerOnScreen();
