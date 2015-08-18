@@ -22,9 +22,9 @@
                   <Button fx:id="playButton" defaultButton="true" disable="true" focusTraversable="false" mnemonicParsing="false" prefWidth="80.0" text="Play" GridPane.rowIndex="0" />
                   <ProgressBar fx:id="progressBar" minWidth="200.0" progress="0.0" visible="false" GridPane.rowIndex="4" />
                   <ProgressIndicator fx:id="progressIndicator" focusTraversable="false" mouseTransparent="true" visible="false" GridPane.rowIndex="2" />
-                  <Button fx:id="updateButton" focusTraversable="false" mnemonicParsing="false" prefWidth="80.0" text="Update" visible="false" GridPane.rowIndex="2" />
-                  <Button fx:id="cancelButton" focusTraversable="false" mnemonicParsing="false" prefWidth="80.0" text="Cancel" visible="false" />
-                  <Button fx:id="setupButton" focusTraversable="false" mnemonicParsing="false" prefWidth="80.0" text="Setup" visible="false" GridPane.rowIndex="2" />
+                  <Button fx:id="updateButton" defaultButton="true" focusTraversable="false" mnemonicParsing="false" prefWidth="80.0" text="Update" visible="false" GridPane.rowIndex="2" />
+                  <Button fx:id="cancelButton" defaultButton="true" focusTraversable="false" mnemonicParsing="false" prefWidth="80.0" text="Cancel" visible="false" />
+                  <Button fx:id="setupButton" defaultButton="true" focusTraversable="false" mnemonicParsing="false" prefWidth="80.0" text="Setup" visible="false" GridPane.rowIndex="2" />
                   <Pane fx:id="mainDisplayPane" maxHeight="40.0" maxWidth="1.7976931348623157E308" minHeight="40.0" prefHeight="40.0" GridPane.rowIndex="3" />
                </children>
                <columnConstraints>

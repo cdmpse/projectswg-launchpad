@@ -288,7 +288,7 @@ public class ProjectSWG extends Application
 			try {
 				media = new Media(ProjectSWG.class.getResource("/resources/" + sound).toString());
 			} catch (MediaException | NullPointerException e1) {
-				log("Error loading default audio: " + e1.toString());
+				//log("Error loading default audio: " + e1.toString());
 				return;
 			}
 		}

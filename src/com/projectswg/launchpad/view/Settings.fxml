@@ -17,7 +17,7 @@
          <content>
             <GridPane hgap="10.0" vgap="5.0">
                <children>
-                  <CheckBox fx:id="soundCheckBox" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                  <CheckBox fx:id="soundCheckBox" mnemonicParsing="false" text="Sound" GridPane.columnIndex="1" GridPane.rowIndex="0" />
                   <Label text="Theme" GridPane.rowIndex="2" />
                   <CheckBox fx:id="closeAfterLaunchCheckBox" mnemonicParsing="false" text="Close After Launch" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                   <Label text="Animation" GridPane.rowIndex="3" />
@@ -85,23 +85,23 @@
                      </children>
                   </VBox>
                   <ComboBox fx:id="loginServerComboBox" maxWidth="Infinity" GridPane.columnIndex="1" />
-                  <CheckBox fx:id="loginServerLockedCheckBox" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                  <CheckBox fx:id="loginServerLockedCheckBox" mnemonicParsing="false" text="Lock" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                   <Label text="Server" />
                   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
                      <children>
-                        <Label maxWidth="60.0" minWidth="60.0" prefWidth="60.0" text="Host" />
+                        <Label maxWidth="70.0" minWidth="70.0" prefWidth="70.0" text="Host" />
                         <TextField fx:id="hostnameTextField" promptText="Enter a hostname" HBox.hgrow="ALWAYS" />
                      </children>
                   </HBox>
                   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
                      <children>
-                        <Label maxWidth="60.0" minWidth="60.0" prefWidth="60.0" text="Port" />
+                        <Label maxWidth="70.0" minWidth="70.0" prefWidth="70.0" text="Port" />
                         <TextField fx:id="portTextField" maxWidth="Infinity" promptText="Enter a port" HBox.hgrow="ALWAYS" />
                      </children>
                   </HBox>
                   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
                      <children>
-                        <Label maxWidth="60.0" minWidth="60.0" prefWidth="60.0" text="Status Port" />
+                        <Label maxWidth="70.0" minWidth="70.0" prefWidth="70.0" text="Status Port" />
                         <TextField fx:id="statusPortTextField" maxWidth="Infinity" promptText="Optional" HBox.hgrow="ALWAYS" />
                      </children>
                   </HBox>
@@ -220,11 +220,6 @@
                         <VBox spacing="20.0">
                            <children>
                               <Hyperlink fx:id="pswgHyperlink" />
-                              <TextFlow fx:id="thanksTextFlow" VBox.vgrow="ALWAYS">
-                                 <children>
-                                    <Label style="-fx-font-weight: bold;" text="Credits" />
-                                 </children>
-                              </TextFlow>
                               <TextFlow maxWidth="280.0" minWidth="280.0" prefWidth="280.0" VBox.vgrow="ALWAYS">
                                  <children>
                                     <Label style="-fx-font-weight: bold;" text="License" />

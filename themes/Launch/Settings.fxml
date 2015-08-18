@@ -97,7 +97,7 @@
                                  </children>
                               </VBox>
                               <ComboBox fx:id="loginServerComboBox" maxWidth="Infinity" GridPane.columnIndex="1" />
-                              <CheckBox fx:id="loginServerLockedCheckBox" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <CheckBox fx:id="loginServerLockedCheckBox" mnemonicParsing="false" text="Lock" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                               <Label text="Server" />
                               <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
                                  <children>

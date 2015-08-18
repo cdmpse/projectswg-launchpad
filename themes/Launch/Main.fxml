@@ -49,10 +49,10 @@
                               <Button fx:id="settingsButton" maxWidth="100.0" minWidth="100.0" mnemonicParsing="false" prefWidth="100.0" text="Settings" GridPane.rowIndex="1" />
                               <Button fx:id="optionsButton" maxWidth="100.0" minWidth="100.0" mnemonicParsing="false" prefWidth="100.0" text="Options" GridPane.rowIndex="4" />
                               <Button fx:id="scanButton" maxWidth="100.0" minWidth="100.0" mnemonicParsing="false" prefWidth="100.0" text="Scan" visible="false" GridPane.rowIndex="3" />
-                              <Button fx:id="playButton" maxWidth="100.0" minWidth="100.0" mnemonicParsing="false" prefWidth="100.0" text="Play" visible="true" GridPane.rowIndex="2" />
-                              <Button fx:id="updateButton" maxWidth="100.0" minWidth="100.0" mnemonicParsing="false" prefWidth="100.0" text="Update" visible="false" GridPane.rowIndex="3" />
-                              <Button fx:id="cancelButton" maxWidth="100.0" minWidth="100.0" mnemonicParsing="false" prefWidth="100.0" text="Cancel" visible="false" GridPane.rowIndex="3" />
-                              <Button fx:id="setupButton" maxWidth="100.0" minWidth="100.0" mnemonicParsing="false" prefWidth="100.0" text="Setup" GridPane.rowIndex="3" />
+                              <Button fx:id="playButton" defaultButton="true" maxWidth="100.0" minWidth="100.0" mnemonicParsing="false" prefWidth="100.0" text="Play" visible="true" GridPane.rowIndex="2" />
+                              <Button fx:id="updateButton" defaultButton="true" maxWidth="100.0" minWidth="100.0" mnemonicParsing="false" prefWidth="100.0" text="Update" visible="false" GridPane.rowIndex="3" />
+                              <Button fx:id="cancelButton" defaultButton="true" maxWidth="100.0" minWidth="100.0" mnemonicParsing="false" prefWidth="100.0" text="Cancel" visible="false" GridPane.rowIndex="3" />
+                              <Button fx:id="setupButton" defaultButton="true" maxWidth="100.0" minWidth="100.0" mnemonicParsing="false" prefWidth="100.0" text="Setup" GridPane.rowIndex="3" />
                            </children>
                         </GridPane>
                         <Region maxHeight="40.0" minHeight="40.0" prefHeight="40.0" VBox.vgrow="ALWAYS" />

@@ -108,9 +108,6 @@ public class SettingsController implements ModalComponent
 	
 	@FXML
 	private Text licenseText;
-	
-	@FXML
-	private TextFlow thanksTextFlow;
 
 	private static final String LABEL = "Settings";
 	private static final int WINE_PANE_INDEX = 3;
@@ -202,14 +199,10 @@ public class SettingsController implements ModalComponent
 	
 	public void initGeneralPane()
 	{
-		final ImageView speakerOn = new ImageView(new Image("/resources/speaker_on.png"));
-		final ImageView speakerOff = new ImageView(new Image("/resources/speaker_off.png"));
 		// sound
 		soundCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
 			ProjectSWG.PREFS.putBoolean("sound", newValue);
-			soundCheckBox.setGraphic(newValue ? speakerOn : speakerOff);
 		});
-		soundCheckBox.setGraphic(ProjectSWG.PREFS.getBoolean("sound", false) ? speakerOn : speakerOff);
 		soundCheckBox.setSelected(ProjectSWG.PREFS.getBoolean("sound", false));
 		
 		// close on launch
@@ -306,15 +299,8 @@ public class SettingsController implements ModalComponent
 			}
 		};
 		
-		final ImageView lockOpen = new ImageView(new Image("/resources/lock_open.png"));
-		final ImageView lockClosed = new ImageView(new Image("/resources/lock_closed.png"));
-		
-		loginServerLockedCheckBox.setGraphic(loginServerLockedCheckBox.isSelected() ? lockOpen : lockClosed);
 		loginServerLockedCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue) {
-				
-				loginServerLockedCheckBox.setGraphic(lockClosed);
-				
 				hostnameTextField.setDisable(true);
 				hostnameTextField.textProperty().removeListener(hostnameTextChangeListener);
 				hostnameTextField.textProperty().bind(manager.getLoginServerHost());
@@ -326,11 +312,7 @@ public class SettingsController implements ModalComponent
 				statusPortTextField.setDisable(true);
 				statusPortTextField.textProperty().removeListener(statusPortTextChangeListener);
 				statusPortTextField.textProperty().bind(manager.getLoginServerPingPort());
-				
 			} else {
-				
-				loginServerLockedCheckBox.setGraphic(lockOpen);
-				
 				hostnameTextField.setDisable(false);
 				hostnameTextField.textProperty().unbind();
 				hostnameTextField.textProperty().addListener(hostnameTextChangeListener);
@@ -417,13 +399,16 @@ public class SettingsController implements ModalComponent
 	
 	public void initSetupFolderSettings()
 	{
+		final Tooltip settingsSwgFolderTooltip = new Tooltip();
+		final Tooltip settingsPswgFolderTooltip = new Tooltip();
+		
 		settingsSwgFolderButton.textProperty().bind(manager.getSwgFolder());
 		settingsSwgFolderButton.setOnMouseEntered(buttonHover);
-		final Tooltip settingsSwgFolderTooltip = new Tooltip();
+
 		settingsSwgFolderTooltip.textProperty().bind(manager.getSwgFolder());
 		settingsSwgFolderButton.setTooltip(settingsSwgFolderTooltip);
 		settingsPswgFolderButton.textProperty().bind(manager.getPswgFolder());
-		final Tooltip settingsPswgFolderTooltip = new Tooltip();
+
 		settingsPswgFolderTooltip.textProperty().bind(manager.getPswgFolder());
 		settingsPswgFolderButton.setTooltip(settingsPswgFolderTooltip);
 		settingsPswgFolderButton.setOnMouseEntered(buttonHover);

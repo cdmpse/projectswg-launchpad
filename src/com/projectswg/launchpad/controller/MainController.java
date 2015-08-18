@@ -232,6 +232,7 @@ public class MainController implements FxmlController
 				settingsButton.setDisable(false);
 				optionsButton.setDisable(true);
 				extrasButton.setDisable(true);
+				scanButton.setDefaultButton(false);
 				break;
 				
 			case Manager.STATE_PSWG_READY:
@@ -245,6 +246,7 @@ public class MainController implements FxmlController
 				optionsButton.setDisable(false);
 				extrasButton.setDisable(false);
 				playButton.setDisable(false);
+				scanButton.setDefaultButton(false);
 				break;
 				
 			default:
@@ -500,8 +502,8 @@ public class MainController implements FxmlController
 						for (Instance instance : change.getAddedSubList()) {
 							ProjectSWG.log("instanceListener: " + instance.getLabel());
 							gameDisplay.addGame(instance);
-							if (ProjectSWG.PREFS.getBoolean("open_on_launch", false))
-								instance.getGameController().show();
+							if (ProjectSWG.PREFS.getBoolean("open_on_launch", false) && ProjectSWG.PREFS.getBoolean("capture", false))
+									instance.getGameController().show();
 						}
 				else if (change.wasRemoved())
 					for (Instance instance : change.getRemoved())
