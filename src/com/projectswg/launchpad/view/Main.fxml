@@ -9,52 +9,58 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<StackPane fx:id="root" maxHeight="600.0" maxWidth="380.0" minHeight="600.0" minWidth="380.0" prefHeight="600.0" prefWidth="380.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.projectswg.launchpad.controller.MainController">
+<StackPane fx:id="root" prefHeight="486.0" prefWidth="786.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.projectswg.launchpad.controller.MainController">
    <children>
-      <VBox fx:id="mainRoot" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="380.0" minWidth="380.0" prefWidth="380.0" spacing="10.0">
+      <VBox fx:id="mainRoot" alignment="TOP_CENTER">
          <children>
-            <Region prefHeight="8.0" />
-            <ImageView fx:id="mainGraphic" fitHeight="261.0" fitWidth="295.0" pickOnBounds="true" preserveRatio="true" />
-            <Region prefHeight="8.0" />
-            <GridPane vgap="10.0">
+            <HBox VBox.vgrow="ALWAYS">
                <children>
-                  <Button fx:id="scanButton" focusTraversable="false" mnemonicParsing="false" prefWidth="80.0" text="Scan" visible="false" GridPane.rowIndex="2" />
-                  <Button fx:id="playButton" defaultButton="true" disable="true" focusTraversable="false" mnemonicParsing="false" prefWidth="80.0" text="Play" GridPane.rowIndex="0" />
-                  <ProgressBar fx:id="progressBar" minWidth="200.0" progress="0.0" visible="false" GridPane.rowIndex="4" />
-                  <ProgressIndicator fx:id="progressIndicator" focusTraversable="false" mouseTransparent="true" visible="false" GridPane.rowIndex="2" />
-                  <Button fx:id="updateButton" defaultButton="true" focusTraversable="false" mnemonicParsing="false" prefWidth="80.0" text="Update" visible="false" GridPane.rowIndex="2" />
-                  <Button fx:id="cancelButton" defaultButton="true" focusTraversable="false" mnemonicParsing="false" prefWidth="80.0" text="Cancel" visible="false" />
-                  <Button fx:id="setupButton" defaultButton="true" focusTraversable="false" mnemonicParsing="false" prefWidth="80.0" text="Setup" visible="false" GridPane.rowIndex="2" />
-                  <Pane fx:id="mainDisplayPane" maxHeight="40.0" maxWidth="1.7976931348623157E308" minHeight="40.0" prefHeight="40.0" GridPane.rowIndex="3" />
-               </children>
-               <columnConstraints>
-                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" />
-               </columnConstraints>
-               <rowConstraints>
-                  <RowConstraints maxHeight="50.0" vgrow="ALWAYS" />
-                  <RowConstraints maxHeight="5.0" minHeight="5.0" prefHeight="5.0" vgrow="ALWAYS" />
-                  <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="ALWAYS" />
-                  <RowConstraints maxHeight="50.0" vgrow="ALWAYS" />
-                  <RowConstraints maxHeight="40.0" vgrow="ALWAYS" />
-                  <RowConstraints maxHeight="Infinity" vgrow="ALWAYS" />
-                  <RowConstraints maxHeight="Infinity" minHeight="10.0" vgrow="ALWAYS" />
-               </rowConstraints>
-            </GridPane>
-            <VBox alignment="TOP_CENTER" maxHeight="Infinity" VBox.vgrow="ALWAYS">
-               <children>
-                  <TilePane alignment="CENTER" hgap="10.0" prefTileHeight="40.0" vgap="10.0" VBox.vgrow="ALWAYS">
+                  <Region maxWidth="120.0" minWidth="120.0" prefWidth="120.0" />
+                  <VBox maxWidth="260.0" minWidth="260.0" prefWidth="260.0" HBox.hgrow="ALWAYS">
                      <children>
-                        <Button fx:id="settingsButton" focusTraversable="false" maxHeight="Infinity" maxWidth="Infinity" mnemonicParsing="false" text="Settings" />
-                        <Button fx:id="optionsButton" focusTraversable="false" maxHeight="Infinity" maxWidth="Infinity" mnemonicParsing="false" text="Options" />
-                        <Button fx:id="extrasButton" focusTraversable="false" maxHeight="Infinity" maxWidth="Infinity" mnemonicParsing="false" text="Extras" />
+                        <Region maxHeight="310.0" minHeight="310.0" prefHeight="310.0" />
+                        <ProgressBar fx:id="progressBar" maxWidth="1.7976931348623157E308" progress="0.0" visible="false" VBox.vgrow="ALWAYS" />
+                        <Pane fx:id="mainDisplayPane" maxHeight="60.0" maxWidth="Infinity" minHeight="60.0" prefHeight="60.0" />
+                        <Region prefHeight="200.0" prefWidth="200.0" />
+                        <Pane fx:id="gameProcessPane" maxHeight="80.0" minHeight="80.0" prefHeight="80.0" VBox.vgrow="ALWAYS" />
                      </children>
-                     <padding>
-                        <Insets left="10.0" right="10.0" />
-                     </padding>
-                  </TilePane>
-                  <Pane fx:id="gameProcessPane" maxHeight="80.0" maxWidth="1.7976931348623157E308" minHeight="80.0" prefHeight="80.0" VBox.vgrow="ALWAYS" />
+                  </VBox>
+                  <VBox alignment="CENTER" maxWidth="120.0" minWidth="120.0" prefWidth="120.0" HBox.hgrow="ALWAYS">
+                     <children>
+                        <ProgressIndicator fx:id="progressIndicator" focusTraversable="false" maxHeight="40.0" maxWidth="40.0" minHeight="40.0" minWidth="40.0" mouseTransparent="true" prefHeight="40.0" prefWidth="40.0" visible="false" />
+                     </children>
+                  </VBox>
+                  <VBox maxWidth="200.0" minWidth="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                     <children>
+                        <Region maxHeight="120.0" minHeight="120.0" prefHeight="120.0" />
+                        <GridPane>
+                          <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" />
+                          </columnConstraints>
+                          <rowConstraints>
+                              <RowConstraints maxHeight="50.0" minHeight="50.0" prefHeight="50.0" vgrow="SOMETIMES" />
+                            <RowConstraints maxHeight="50.0" minHeight="50.0" prefHeight="50.0" vgrow="SOMETIMES" />
+                              <RowConstraints maxHeight="50.0" minHeight="50.0" prefHeight="50.0" vgrow="SOMETIMES" />
+                              <RowConstraints maxHeight="50.0" minHeight="50.0" prefHeight="50.0" vgrow="SOMETIMES" />
+                              <RowConstraints maxHeight="50.0" minHeight="50.0" prefHeight="50.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <Button fx:id="extrasButton" maxWidth="100.0" minWidth="100.0" mnemonicParsing="false" prefWidth="100.0" text="Extras" />
+                              <Button fx:id="settingsButton" maxWidth="100.0" minWidth="100.0" mnemonicParsing="false" prefWidth="100.0" text="Settings" GridPane.rowIndex="1" />
+                              <Button fx:id="optionsButton" maxWidth="100.0" minWidth="100.0" mnemonicParsing="false" prefWidth="100.0" text="Options" GridPane.rowIndex="4" />
+                              <Button fx:id="scanButton" maxWidth="100.0" minWidth="100.0" mnemonicParsing="false" prefWidth="100.0" text="Scan" visible="false" GridPane.rowIndex="3" />
+                              <Button fx:id="playButton" defaultButton="true" maxWidth="100.0" minWidth="100.0" mnemonicParsing="false" prefWidth="100.0" text="Play" visible="true" GridPane.rowIndex="2" />
+                              <Button fx:id="updateButton" defaultButton="true" maxWidth="100.0" minWidth="100.0" mnemonicParsing="false" prefWidth="100.0" text="Update" visible="false" GridPane.rowIndex="3" />
+                              <Button fx:id="cancelButton" defaultButton="true" maxWidth="100.0" minWidth="100.0" mnemonicParsing="false" prefWidth="100.0" text="Cancel" visible="false" GridPane.rowIndex="3" />
+                              <Button fx:id="setupButton" defaultButton="true" maxWidth="100.0" minWidth="100.0" mnemonicParsing="false" prefWidth="100.0" text="Setup" GridPane.rowIndex="3" />
+                           </children>
+                        </GridPane>
+                        <Region maxHeight="40.0" minHeight="40.0" prefHeight="40.0" VBox.vgrow="ALWAYS" />
+                     </children>
+                  </VBox>
+                  <Region prefHeight="80.0" prefWidth="80.0" />
                </children>
-            </VBox>
+            </HBox>
          </children>
          <opaqueInsets>
             <Insets />

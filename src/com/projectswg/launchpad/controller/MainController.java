@@ -75,9 +75,6 @@ public class MainController implements FxmlController
 	@FXML
 	private Pane mainDisplayPane, gameProcessPane;
 	
-	@FXML
-	private ImageView mainGraphic;
-	
 	private ObservableList<GameController> games;
 	private GaussianBlur blur;
 	private ProjectSWG pswg;

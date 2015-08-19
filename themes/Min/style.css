@@ -1,0 +1,37 @@
+/*
+ * Default theme
+ */
+
+
+.root {
+	-fx-background-color: white;
+}
+
+#modalRoot {
+	-fx-background-color: white;
+	-fx-border-color: grey;
+	-fx-opacity: 1.0;
+}
+
+.progress-indicator .spinner {
+	-fx-border-color: transparent;
+	-fx-background-color: transparent;
+}
+
+#mainGraphic {
+	-fx-image: url("pswg.png");
+}
+
+#swgFolderTextField, #pswgFolderTextField {
+	-fx-background-color: white;
+	-fx-border-color: black;
+}
+
+.menu-button {
+    -fx-content-display: graphic-only;
+    -fx-background-color: transparent;
+}
+
+#outputTextArea {
+	-fx-highlight-text-fill: firebrick;
+}

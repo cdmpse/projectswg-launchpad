@@ -112,7 +112,6 @@ public class ProjectSWG extends Application
 		
 		instances = FXCollections.observableArrayList();
 		controllers = new HashMap<>();
-		//loadTheme("Default");
 		loadTheme(PREFS.get("theme", "Default"));
 		
 		primaryStage.centerOnScreen();
@@ -266,32 +265,33 @@ public class ProjectSWG extends Application
 		String theme = PREFS.get("theme", "Default");
 		Media media = null;
 
-		if (!theme.equals("Default")) {
-			try {
-				final String codeSource = new File(ProjectSWG.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
-				File f = new File(codeSource + "/" + THEMES_FOLDER + "/" + theme + "/" + sound);
-				if (f.isFile()) {
-					media = new Media(f.toURI().toString());
-					if (media.getError() == null)
-						media.setOnError(new Runnable() {
-							public void run()
-							{
-								log("Media error");
-							}
-						});
-				}
-			} catch (IllegalArgumentException | URISyntaxException e1) {
-				log("Error loading theme audio: " + e1.toString());
-			}
-		} 
-		if (media == null) {
+		if (theme.equals("Default")) {
 			try {
 				media = new Media(ProjectSWG.class.getResource("/resources/" + sound).toString());
 			} catch (MediaException | NullPointerException e1) {
-				//log("Error loading default audio: " + e1.toString());
+				log("Error loading default audio: " + e1.toString());
 				return;
 			}
-		}
+		} else {
+			try {
+				final String codeSource = new File(ProjectSWG.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
+				File f = new File(codeSource + "/" + THEMES_FOLDER + "/" + theme + "/" + sound);
+				if (!f.isFile())
+					return;
+				media = new Media(f.toURI().toString());
+				if (media.getError() == null)
+					media.setOnError(new Runnable() {
+						public void run()
+						{
+							log("Media error");
+						}
+					});
+			} catch (IllegalArgumentException | URISyntaxException e1) {
+				log("Error loading theme audio: " + e1.toString());
+				return;
+			}
+		} 
+
 		final MediaPlayer mediaPlayer = new MediaPlayer(media);
 		if (mediaPlayer.getError() == null) {
 			mediaPlayer.setOnError(new Runnable() {

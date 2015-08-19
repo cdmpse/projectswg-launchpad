@@ -133,7 +133,7 @@ public class GameController implements FxmlController
 				outputTextArea.appendText(newValue + "\n");
 			});
 		else
-			outputTextArea.setText("capture not set");
+			outputTextArea.setText("debug game not set");
 		
 		gameService.runningProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue)
@@ -169,8 +169,9 @@ public class GameController implements FxmlController
 		
 		Platform.runLater(() -> {
 			outputTextArea.selectRange(lastFind, lastFind + searchText.length());
-			lastFind += searchText.length();
 		});
+		
+		lastFind += searchText.length();
 	}
 	
 	@Override

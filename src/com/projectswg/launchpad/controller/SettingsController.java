@@ -645,6 +645,7 @@ public class SettingsController implements ModalComponent
 	
 	public void initAboutPane()
 	{
+		/*
 		pswgHyperlink.setText("www.projectswg.com");
 		pswgHyperlink.setOnAction((e) -> {
 			try {
@@ -653,18 +654,8 @@ public class SettingsController implements ModalComponent
 				ProjectSWG.log(e1.toString());
 			}
 		});
-	
-		// Logo - Skorpios PSWG
-		Text logoText = new Text("\n\nLogo - ");
-		Hyperlink logoHyperlink = new Hyperlink("Skorpios PSWG");
-		logoHyperlink.setOnAction((e) -> {
-			try {
-				java.awt.Desktop.getDesktop().browse(new URI("http://www.projectswg.com/topic/34330-project-swg-logos/"));
-			} catch (Exception e1) {
-				ProjectSWG.log(e1.toString());
-			}
-		});
-	 
+	 	*/
+		
 		licenseText.setText(
 			"\n\nThis file is part of ProjectSWG Launchpad.\n" +
 			"ProjectSWG Launchpad is free software: you can redistribute " + 

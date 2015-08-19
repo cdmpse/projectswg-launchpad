@@ -119,7 +119,7 @@ public class GameDisplay
 	
 	public Button createGameButton(GameService gameService, GameController gameController, Instance swg)
 	{
-		Button gameButton = new Button(null, new ImageView(new Image("/resources/atom_running.gif")));
+		Button gameButton = new Button();
 		gameButton.setTooltip(new Tooltip("Game Process " + display.size()));
 		gameButton.setOpacity(0);
 
@@ -154,7 +154,6 @@ public class GameDisplay
 		
 		gameService.runningProperty().addListener((observable, oldValue, newValue) -> {
 			if (!newValue) {
-				gameButton.setGraphic(new ImageView(new Image("/resources/atom_stopped.gif")));
 				gameButton.getStyleClass().add("stopped");
 				cm2Stop.setDisable(true);
 			}
