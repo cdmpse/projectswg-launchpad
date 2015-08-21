@@ -12,7 +12,6 @@
 Debian GNU/Linux
 
 * Game process doesn't quit from launchpad
-* Sound effects don't work
 
 
 ### License ###
