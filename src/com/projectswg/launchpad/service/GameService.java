@@ -75,9 +75,7 @@ public class GameService extends Service<Void>
 					if (manager.getWineBinary().getValue().equals("")) {
 						ProjectSWG.log("Wine binary path not set");
 						return null;
-					
 					} else {
-
 						int argLen = processString.length + 1;
 						String[] wineArgs = manager.getWineArguments().getValue().split(" ");
 						if (wineArgs.length > 0 && wineArgs[0].equals(""))

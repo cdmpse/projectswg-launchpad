@@ -188,7 +188,7 @@ public class SettingsController implements ModalComponent
 			initWinePane();
 		initAboutPane();
 		
-		animationSlider.setValue(ProjectSWG.PREFS.getInt("animation", ProjectSWG.ANIMATION_NONE));
+		animationSlider.setValue(ProjectSWG.PREFS.getInt("animation", ProjectSWG.ANIMATION_WARS));
 	}
 	
 	@Override

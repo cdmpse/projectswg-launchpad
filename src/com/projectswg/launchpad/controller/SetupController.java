@@ -61,21 +61,12 @@ public class SetupController implements ModalComponent
 	
 	private Label swgLabel, pswgLabel;
 	private MainController mainController;
-	private Blend redGlow, greenGlow;
 	private NodeDisplay setupDisplay;
 	private ProgressIndicator progressIndicator;
 	
 	
 	public SetupController()
 	{
-		redGlow = new Blend(BlendMode.MULTIPLY);
-		redGlow.setBottomInput(new InnerShadow(5, Color.RED));
-		redGlow.setTopInput(new InnerShadow(5, Color.RED));
-
-		greenGlow = new Blend(BlendMode.MULTIPLY);
-		greenGlow.setBottomInput(new DropShadow(5, Color.GREEN));
-		greenGlow.setTopInput(new InnerShadow(5, Color.GREEN));
-		
 		swgLabel = new Label(null, new ImageView(new Image("/resources/setup_swg.png")));
 		pswgLabel = new Label(null, new ImageView(new Image("/resources/setup_pswg.png")));
 	}
@@ -133,22 +124,28 @@ public class SetupController implements ModalComponent
 			case Manager.STATE_INIT:
 			case Manager.STATE_SWG_SETUP_REQUIRED:
 				setupDisplay.queueNode(swgLabel);
-				swgFolderTextField.setEffect(redGlow);
+				if (!swgFolderTextField.getStyleClass().contains("fail"))
+					swgFolderTextField.getStyleClass().add("fail");
 				pswgFolderTextField.setVisible(false);
 				pswgFolderButton.setVisible(false);
 				break;
-				
+
 			case Manager.STATE_SWG_SCANNING:
 				setupDisplay.queueNode(progressIndicator);
-				swgFolderTextField.setEffect(redGlow);
+				if (!swgFolderTextField.getStyleClass().contains("fail"))
+					swgFolderTextField.getStyleClass().add("fail");
 				pswgFolderTextField.setVisible(false);
 				pswgFolderButton.setVisible(false);
 				break;
 				
 			case Manager.STATE_PSWG_SETUP_REQUIRED:
 				setupDisplay.queueNode(pswgLabel);
-				swgFolderTextField.setEffect(greenGlow);
-				pswgFolderTextField.setEffect(redGlow);
+				if (swgFolderTextField.getStyleClass().contains("fail"))
+					swgFolderTextField.getStyleClass().remove("fail");
+				if (!swgFolderTextField.getStyleClass().contains("pass"))
+					swgFolderTextField.getStyleClass().add("pass");
+				if (!pswgFolderTextField.getStyleClass().contains("fail"))
+					pswgFolderTextField.getStyleClass().add("fail");
 				pswgFolderTextField.setVisible(true);
 				pswgFolderButton.setVisible(true);
 				break;

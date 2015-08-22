@@ -23,23 +23,16 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ResourceBundle;
-
 import com.projectswg.launchpad.ProjectSWG;
 import com.projectswg.launchpad.service.GameService;
-
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.effect.Blend;
-import javafx.scene.effect.BlendMode;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.InnerShadow;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -64,16 +57,10 @@ public class GameController implements FxmlController
 	private NodeDisplay gameStatusDisplay;
 	private GameService gameService;
 	private Stage stage;
-	private Blend redGlow;
-	
-	
+
 	public GameController()
 	{
 		lastFind = 0;
-		
-		redGlow = new Blend(BlendMode.MULTIPLY);
-		redGlow.setBottomInput(new DropShadow(5, Color.RED));
-		redGlow.setTopInput(new InnerShadow(8, Color.WHITE));
 	}
 	
 	@Override
@@ -162,10 +149,10 @@ public class GameController implements FxmlController
 		lastFind = outputTextArea.getText().toLowerCase().indexOf(searchText.toLowerCase(), lastFind);
 		if (lastFind == -1) {
 			lastFind = 0;
-			findTextField.setEffect(redGlow);
+			findTextField.getStyleClass().add("fail");
 			return;
 		} else
-			findTextField.setEffect(null);
+			findTextField.getStyleClass().remove("fail");
 		
 		Platform.runLater(() -> {
 			outputTextArea.selectRange(lastFind, lastFind + searchText.length());

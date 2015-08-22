@@ -20,9 +20,7 @@
 package com.projectswg.launchpad.controller;
 
 import java.util.ArrayList;
-
 import com.projectswg.launchpad.ProjectSWG;
-
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -38,12 +36,10 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
 import com.projectswg.launchpad.model.Instance;
 import com.projectswg.launchpad.service.GameService;
 

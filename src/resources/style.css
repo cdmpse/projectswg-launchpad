@@ -1,24 +1,32 @@
 /*
- * Planet theme
+ * Launch theme
  */
 
 .root {
     -fx-background-image: url("background.png");   
 }
 
+#logRoot {
+	-fx-background-color: #111;
+}
+
+#logRoot .button {
+	-fx-text-fill: greenyellow;
+	-fx-border-color: green;
+	-fx-background-color: transparent;
+}
+
+#logRoot .button:hover {
+	-fx-background-color: green;
+	-fx-opacity: 0.6;
+}
 .context-menu {
 	-fx-background-color: #111;
 	-fx-text-fill: green;
 }
 
-/*
-#mainGraphic {
-	-fx-image: url("pswg-logo.png");
-}
-*/
-
 #modalRoot {
-    -fx-background-color: #111111;
+    -fx-background-color: #111;
     /* -fx-border-color: rgb(49, 89, 23); */
 }
 
@@ -121,7 +129,15 @@
 }
 
 #setupRoot .text-field {
-	-fx-effect: null;
+	-fx-border-color: snow;
+}
+
+#setupRoot .text-field.pass {
+	-fx-border-color: blue;
+}
+
+#setupRoot .text-field.fail {
+	-fx-border-color: red;
 }
 
 #settingsRoot {
@@ -169,8 +185,12 @@
 	-fx-background-color: #111111;
 }
 
-.check-box > .box > .mark {
-	-fx-mark-color: green;
+.check-box .mark {
+	-fx-background-color: transparent;
+}
+
+.check-box:selected .mark {
+	-fx-background-color: green;
 }
 
 .scroll-pane .scroll-bar {

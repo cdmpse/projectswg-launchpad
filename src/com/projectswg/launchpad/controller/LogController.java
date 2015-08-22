@@ -23,17 +23,7 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ResourceBundle;
-
 import com.projectswg.launchpad.ProjectSWG;
-
-
-
-
-
-
-
-
-
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -42,12 +32,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.effect.Blend;
-import javafx.scene.effect.BlendMode;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.InnerShadow;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -67,18 +52,12 @@ public class LogController implements FxmlController
 	
 	private int lastFind;
 	private Stage stage;
-	private Blend redGlow;
 	private DebugListener debugListener;
-	
 	
 	public LogController()
 	{
 		debugListener = new DebugListener();
 		lastFind = 0;
-
-		redGlow = new Blend(BlendMode.MULTIPLY);
-		redGlow.setBottomInput(new DropShadow(5, Color.RED));
-		redGlow.setTopInput(new InnerShadow(8, Color.WHITE));
 	}
 	
 	@Override
@@ -119,7 +98,7 @@ public class LogController implements FxmlController
 		
 		findTextField.textProperty().addListener((observable, oldValue, newValue) -> {
 			lastFind = 0;
-			findTextField.setEffect(null);
+			findTextField.getStyleClass().remove("fail");
 		});
 		
 		findButton.setOnAction((e) -> {
@@ -147,10 +126,10 @@ public class LogController implements FxmlController
 		lastFind = outputTextArea.getText().toLowerCase().indexOf(searchText.toLowerCase(), lastFind);
 		if (lastFind == -1) {
 			lastFind = 0;
-			findTextField.setEffect(redGlow);
+			findTextField.getStyleClass().add("fail");
 			return;
 		} else
-			findTextField.setEffect(null);
+			findTextField.getStyleClass().remove("fail");
 		
 		Platform.runLater(() -> {
 			outputTextArea.selectRange(lastFind, lastFind + searchText.length());
