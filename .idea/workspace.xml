@@ -1,0 +1,1069 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="ad32bbf4-40b5-4795-99f9-106068bc1654" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/.name" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ProjectSWG Launchpad.iml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/ant.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/compiler.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/copyright/profiles_settings.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/resources/close-button-hover.png" afterPath="$PROJECT_DIR$/src/resources/close-button-hover.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/resources/close-button.png" afterPath="$PROJECT_DIR$/src/resources/close-button.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/projectswg/launchpad/controller/ModalController.java" afterPath="$PROJECT_DIR$/src/com/projectswg/launchpad/controller/ModalController.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/projectswg/launchpad/ProjectSWG.java" afterPath="$PROJECT_DIR$/src/com/projectswg/launchpad/ProjectSWG.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/projectswg/launchpad/view/Settings.fxml" afterPath="$PROJECT_DIR$/src/com/projectswg/launchpad/view/Settings.fxml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/themes/Minimum/Settings.fxml" afterPath="$PROJECT_DIR$/themes/Minimum/Settings.fxml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/projectswg/launchpad/controller/SettingsController.java" afterPath="$PROJECT_DIR$/src/com/projectswg/launchpad/controller/SettingsController.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/resources/style.css" afterPath="$PROJECT_DIR$/src/resources/style.css" />
+    </list>
+    <ignored path="projectswg-launchpad.iws" />
+    <ignored path=".idea/workspace.xml" />
+    <ignored path="$PROJECT_DIR$/bin/" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
+  <component name="CreatePatchCommitExecutor">
+    <option name="PATCH_PATH" value="" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
+  <component name="FavoritesManager">
+    <favorites_list name="projectswg-launchpad" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf>
+      <file leaf-file-name="ProjectSWG.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/projectswg/launchpad/ProjectSWG.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="109.655174">
+              <caret line="71" column="66" selection-start-line="71" selection-start-column="66" selection-end-line="71" selection-end-column="66" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="basic.css" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/resources/basic.css">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="style.css" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/resources/style.css">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="35" column="0" selection-start-line="35" selection-start-column="0" selection-end-line="35" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Settings.fxml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/projectswg/launchpad/view/Settings.fxml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-0.0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+          <provider editor-type-id="JavaFX-Scene-Builder">
+            <state />
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="SettingsController.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/projectswg/launchpad/controller/SettingsController.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-16.814816">
+              <caret line="674" column="90" selection-start-line="674" selection-start-column="90" selection-end-line="674" selection-end-column="90" />
+              <folding>
+                <element signature="e#24596#24597#0" expanded="true" />
+                <element signature="e#24622#24623#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Manager.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/projectswg/launchpad/service/Manager.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="785" column="39" selection-start-line="785" selection-start-column="39" selection-end-line="785" selection-end-column="39" />
+              <folding>
+                <element signature="e#0#23058#0" expanded="false" />
+                <element signature="imports" expanded="false" />
+                <element signature="e#4719#4720#0" expanded="false" />
+                <element signature="e#4748#4749#0" expanded="false" />
+                <element signature="e#21805#21806#0" expanded="false" />
+                <element signature="e#21834#21835#0" expanded="false" />
+                <element signature="e#21892#21893#0" expanded="false" />
+                <element signature="e#21925#21926#0" expanded="false" />
+                <element signature="e#21983#21984#0" expanded="false" />
+                <element signature="e#22016#22017#0" expanded="false" />
+                <element signature="e#22066#22067#0" expanded="false" />
+                <element signature="e#22090#22091#0" expanded="false" />
+                <element signature="e#22139#22140#0" expanded="false" />
+                <element signature="e#22162#22163#0" expanded="false" />
+                <element signature="e#22204#22205#0" expanded="false" />
+                <element signature="e#22229#22230#0" expanded="false" />
+                <element signature="e#22275#22276#0" expanded="false" />
+                <element signature="e#22302#22303#0" expanded="false" />
+                <element signature="e#22349#22350#0" expanded="false" />
+                <element signature="e#22370#22371#0" expanded="false" />
+                <element signature="e#22419#22420#0" expanded="false" />
+                <element signature="e#22443#22444#0" expanded="false" />
+                <element signature="e#22488#22489#0" expanded="false" />
+                <element signature="e#22507#22508#0" expanded="false" />
+                <element signature="e#22554#22555#0" expanded="false" />
+                <element signature="e#22582#22583#0" expanded="false" />
+                <element signature="e#22631#22632#0" expanded="false" />
+                <element signature="e#22660#22661#0" expanded="false" />
+                <element signature="e#22708#22709#0" expanded="false" />
+                <element signature="e#22731#22732#0" expanded="false" />
+                <element signature="e#22784#22785#0" expanded="false" />
+                <element signature="e#22811#22812#0" expanded="false" />
+                <element signature="e#22875#22876#0" expanded="false" />
+                <element signature="e#22913#22914#0" expanded="false" />
+                <element signature="e#22957#22958#0" expanded="false" />
+                <element signature="e#22977#22978#0" expanded="false" />
+                <element signature="e#23028#23029#0" expanded="false" />
+                <element signature="e#23054#23055#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ModalController.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/projectswg/launchpad/controller/ModalController.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="64" column="18" selection-start-line="64" selection-start-column="18" selection-end-line="64" selection-end-column="18" />
+              <folding>
+                <element signature="e#0#6680#0" expanded="false" />
+                <element signature="imports" expanded="false" />
+                <element signature="e#1944#1945#0" expanded="false" />
+                <element signature="e#1967#1968#0" expanded="false" />
+                <element signature="e#2004#2005#0" expanded="false" />
+                <element signature="e#2032#2033#0" expanded="false" />
+                <element signature="e#6648#6649#0" expanded="false" />
+                <element signature="e#6676#6677#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ModalComponent.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/projectswg/launchpad/controller/ModalComponent.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="23" column="17" selection-start-line="23" selection-start-column="17" selection-end-line="23" selection-end-column="17" />
+              <folding>
+                <element signature="e#0#1009#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MainController.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/projectswg/launchpad/controller/MainController.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="54" column="13" selection-start-line="54" selection-start-column="13" selection-end-line="54" selection-end-column="13" />
+              <folding>
+                <element signature="e#0#15316#0" expanded="false" />
+                <element signature="imports" expanded="false" />
+                <element signature="e#11143#11144#0" expanded="false" />
+                <element signature="e#11190#11191#0" expanded="false" />
+                <element signature="e#12593#12594#0" expanded="false" />
+                <element signature="e#12618#12619#0" expanded="false" />
+                <element signature="e#12648#12649#0" expanded="false" />
+                <element signature="e#12667#12668#0" expanded="false" />
+                <element signature="e#12712#12713#0" expanded="false" />
+                <element signature="e#12744#12745#0" expanded="false" />
+                <element signature="e#12794#12795#0" expanded="false" />
+                <element signature="e#12823#12824#0" expanded="false" />
+                <element signature="e#14022#14023#0" expanded="false" />
+                <element signature="e#14040#14041#0" expanded="false" />
+                <element signature="e#14074#14075#0" expanded="false" />
+                <element signature="e#14092#14093#0" expanded="false" />
+                <element signature="e#14126#14127#0" expanded="false" />
+                <element signature="e#14147#14148#0" expanded="false" />
+                <element signature="e#14202#14203#0" expanded="false" />
+                <element signature="e#14221#14222#0" expanded="false" />
+                <element signature="e#14260#14261#0" expanded="false" />
+                <element signature="e#14289#14290#0" expanded="false" />
+                <element signature="e#14332#14333#0" expanded="false" />
+                <element signature="e#14391#14392#0" expanded="false" />
+                <element signature="e#15202#15203#0" expanded="false" />
+                <element signature="e#15233#15234#0" expanded="false" />
+                <element signature="e#15288#15289#0" expanded="false" />
+                <element signature="e#15313#15314#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="LogController.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/projectswg/launchpad/controller/LogController.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="38" column="13" selection-start-line="38" selection-start-column="13" selection-end-line="38" selection-end-column="13" />
+              <folding>
+                <element signature="e#0#3832#0" expanded="false" />
+                <element signature="imports" expanded="false" />
+                <element signature="e#1838#1839#0" expanded="false" />
+                <element signature="e#1862#1863#0" expanded="false" />
+                <element signature="e#2851#2852#0" expanded="false" />
+                <element signature="e#2904#2905#0" expanded="false" />
+                <element signature="e#2941#2942#0" expanded="false" />
+                <element signature="e#2991#2992#0" expanded="false" />
+                <element signature="e#3520#3521#0" expanded="false" />
+                <element signature="e#3541#3542#0" expanded="false" />
+                <element signature="e#3571#3572#0" expanded="false" />
+                <element signature="e#3590#3591#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/src/com/projectswg/launchpad/controller/ModalController.java" />
+        <option value="$PROJECT_DIR$/src/com/projectswg/launchpad/service/Manager.java" />
+        <option value="$PROJECT_DIR$/src/resources/style.css" />
+        <option value="$PROJECT_DIR$/src/com/projectswg/launchpad/ProjectSWG.java" />
+        <option value="$PROJECT_DIR$/src/com/projectswg/launchpad/controller/SettingsController.java" />
+        <option value="$PROJECT_DIR$/src/resources/basic.css" />
+      </list>
+    </option>
+  </component>
+  <component name="NamedScopeManager">
+    <order />
+  </component>
+  <component name="ProjectFrameBounds">
+    <option name="x" value="1912" />
+    <option name="y" value="-8" />
+    <option name="width" value="1936" />
+    <option name="height" value="1176" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="false">
+    <OptionsSetting value="true" id="Add" />
+    <OptionsSetting value="true" id="Remove" />
+    <OptionsSetting value="true" id="Checkout" />
+    <OptionsSetting value="true" id="Update" />
+    <OptionsSetting value="true" id="Status" />
+    <OptionsSetting value="true" id="Edit" />
+    <ConfirmationsSetting value="0" id="Add" />
+    <ConfirmationsSetting value="0" id="Remove" />
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource />
+      <sortByType />
+    </navigator>
+    <panes>
+      <pane id="Scratches" />
+      <pane id="ProjectPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="projectswg-launchpad" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="projectswg-launchpad" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="projectswg-launchpad" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="recentsLimit" value="5" />
+    <property name="dynamic.classpath" value="false" />
+    <property name="FullScreen" value="false" />
+    <property name="settings.editor.selected.configurable" value="preferences.sourceCode" />
+    <property name="settings.editor.splitter.proportion" value="0.2" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../holocore" />
+  </component>
+  <component name="RunManager" selected="Application.ProjectSWG">
+    <configuration default="false" name="ProjectSWG" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.projectswg.launchpad.ProjectSWG" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="ProjectSWG Launchpad" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" factoryName="Plugin">
+      <module name="" />
+      <option name="VM_PARAMETERS" value="-Xmx512m -Xms256m -XX:MaxPermSize=250m -ea" />
+      <option name="PROGRAM_PARAMETERS" />
+      <method />
+    </configuration>
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <module />
+      <method />
+    </configuration>
+    <configuration default="true" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="JarApplication" factoryName="JAR Application">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="Remote" factoryName="Remote">
+      <option name="USE_SOCKET_TRANSPORT" value="true" />
+      <option name="SERVER_MODE" value="false" />
+      <option name="SHMEM_ADDRESS" value="javadebug" />
+      <option name="HOST" value="localhost" />
+      <option name="PORT" value="5005" />
+      <method />
+    </configuration>
+    <list size="1">
+      <item index="0" class="java.lang.String" itemvalue="Application.ProjectSWG" />
+    </list>
+    <recent_temporary>
+      <list size="1">
+        <item index="0" class="java.lang.String" itemvalue="Application.ProjectSWG" />
+      </list>
+    </recent_temporary>
+    <configuration name="&lt;template&gt;" type="JUnit" default="true" selected="false">
+      <option name="MAIN_CLASS_NAME" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+    </configuration>
+    <configuration name="&lt;template&gt;" type="TestNG" default="true" selected="false">
+      <option name="MAIN_CLASS_NAME" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+    </configuration>
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false" />
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="ad32bbf4-40b5-4795-99f9-106068bc1654" name="Default" comment="" />
+      <created>1440315646959</created>
+      <option name="number" value="Default" />
+      <updated>1440315646959</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="1912" y="-8" width="1936" height="1176" extended-state="6" />
+    <editor active="false" />
+    <layout>
+      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.22691552" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32907662" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25736737" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.19646366" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.16151386" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.195629" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+    </layout>
+  </component>
+  <component name="Vcs.Log.UiProperties">
+    <option name="RECENTLY_FILTERED_USER_GROUPS">
+      <collection />
+    </option>
+    <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+      <collection />
+    </option>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager />
+    <watches-manager />
+  </component>
+  <component name="antWorkspaceConfiguration">
+    <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />
+    <option name="FILTER_TARGETS" value="false" />
+    <buildFile url="file://$PROJECT_DIR$/build/build.xml">
+      <targetFilters>
+        <filter targetName="init-fx-tasks" isVisible="false" />
+        <filter targetName="do-compile" isVisible="false" />
+        <filter targetName="do-deploy" isVisible="false" />
+      </targetFilters>
+      <treeView value="false" />
+      <verbose value="false" />
+      <expanded value="true" />
+    </buildFile>
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/src/com/projectswg/launchpad/ProjectSWG.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="120" column="36" selection-start-line="120" selection-start-column="36" selection-end-line="120" selection-end-column="36" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/resources/basic.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/resources/style.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="11" column="1" selection-start-line="11" selection-start-column="1" selection-end-line="11" selection-end-column="1" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/projectswg/launchpad/service/Manager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="785" column="39" selection-start-line="785" selection-start-column="39" selection-end-line="785" selection-end-column="39" />
+          <folding>
+            <element signature="e#0#23058#0" expanded="false" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#4719#4720#0" expanded="false" />
+            <element signature="e#4748#4749#0" expanded="false" />
+            <element signature="e#21805#21806#0" expanded="false" />
+            <element signature="e#21834#21835#0" expanded="false" />
+            <element signature="e#21892#21893#0" expanded="false" />
+            <element signature="e#21925#21926#0" expanded="false" />
+            <element signature="e#21983#21984#0" expanded="false" />
+            <element signature="e#22016#22017#0" expanded="false" />
+            <element signature="e#22066#22067#0" expanded="false" />
+            <element signature="e#22090#22091#0" expanded="false" />
+            <element signature="e#22139#22140#0" expanded="false" />
+            <element signature="e#22162#22163#0" expanded="false" />
+            <element signature="e#22204#22205#0" expanded="false" />
+            <element signature="e#22229#22230#0" expanded="false" />
+            <element signature="e#22275#22276#0" expanded="false" />
+            <element signature="e#22302#22303#0" expanded="false" />
+            <element signature="e#22349#22350#0" expanded="false" />
+            <element signature="e#22370#22371#0" expanded="false" />
+            <element signature="e#22419#22420#0" expanded="false" />
+            <element signature="e#22443#22444#0" expanded="false" />
+            <element signature="e#22488#22489#0" expanded="false" />
+            <element signature="e#22507#22508#0" expanded="false" />
+            <element signature="e#22554#22555#0" expanded="false" />
+            <element signature="e#22582#22583#0" expanded="false" />
+            <element signature="e#22631#22632#0" expanded="false" />
+            <element signature="e#22660#22661#0" expanded="false" />
+            <element signature="e#22708#22709#0" expanded="false" />
+            <element signature="e#22731#22732#0" expanded="false" />
+            <element signature="e#22784#22785#0" expanded="false" />
+            <element signature="e#22811#22812#0" expanded="false" />
+            <element signature="e#22875#22876#0" expanded="false" />
+            <element signature="e#22913#22914#0" expanded="false" />
+            <element signature="e#22957#22958#0" expanded="false" />
+            <element signature="e#22977#22978#0" expanded="false" />
+            <element signature="e#23028#23029#0" expanded="false" />
+            <element signature="e#23054#23055#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/projectswg/launchpad/controller/ModalController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="64" column="18" selection-start-line="64" selection-start-column="18" selection-end-line="64" selection-end-column="18" />
+          <folding>
+            <element signature="e#0#6680#0" expanded="false" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#1944#1945#0" expanded="false" />
+            <element signature="e#1967#1968#0" expanded="false" />
+            <element signature="e#2004#2005#0" expanded="false" />
+            <element signature="e#2032#2033#0" expanded="false" />
+            <element signature="e#6648#6649#0" expanded="false" />
+            <element signature="e#6676#6677#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/projectswg/launchpad/controller/ModalComponent.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="23" column="17" selection-start-line="23" selection-start-column="17" selection-end-line="23" selection-end-column="17" />
+          <folding>
+            <element signature="e#0#1009#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/projectswg/launchpad/controller/MainController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="54" column="13" selection-start-line="54" selection-start-column="13" selection-end-line="54" selection-end-column="13" />
+          <folding>
+            <element signature="e#0#15316#0" expanded="false" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#11143#11144#0" expanded="false" />
+            <element signature="e#11190#11191#0" expanded="false" />
+            <element signature="e#12593#12594#0" expanded="false" />
+            <element signature="e#12618#12619#0" expanded="false" />
+            <element signature="e#12648#12649#0" expanded="false" />
+            <element signature="e#12667#12668#0" expanded="false" />
+            <element signature="e#12712#12713#0" expanded="false" />
+            <element signature="e#12744#12745#0" expanded="false" />
+            <element signature="e#12794#12795#0" expanded="false" />
+            <element signature="e#12823#12824#0" expanded="false" />
+            <element signature="e#14022#14023#0" expanded="false" />
+            <element signature="e#14040#14041#0" expanded="false" />
+            <element signature="e#14074#14075#0" expanded="false" />
+            <element signature="e#14092#14093#0" expanded="false" />
+            <element signature="e#14126#14127#0" expanded="false" />
+            <element signature="e#14147#14148#0" expanded="false" />
+            <element signature="e#14202#14203#0" expanded="false" />
+            <element signature="e#14221#14222#0" expanded="false" />
+            <element signature="e#14260#14261#0" expanded="false" />
+            <element signature="e#14289#14290#0" expanded="false" />
+            <element signature="e#14332#14333#0" expanded="false" />
+            <element signature="e#14391#14392#0" expanded="false" />
+            <element signature="e#15202#15203#0" expanded="false" />
+            <element signature="e#15233#15234#0" expanded="false" />
+            <element signature="e#15288#15289#0" expanded="false" />
+            <element signature="e#15313#15314#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/projectswg/launchpad/controller/LogController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="38" column="13" selection-start-line="38" selection-start-column="13" selection-end-line="38" selection-end-column="13" />
+          <folding>
+            <element signature="e#0#3832#0" expanded="false" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#1838#1839#0" expanded="false" />
+            <element signature="e#1862#1863#0" expanded="false" />
+            <element signature="e#2851#2852#0" expanded="false" />
+            <element signature="e#2904#2905#0" expanded="false" />
+            <element signature="e#2941#2942#0" expanded="false" />
+            <element signature="e#2991#2992#0" expanded="false" />
+            <element signature="e#3520#3521#0" expanded="false" />
+            <element signature="e#3541#3542#0" expanded="false" />
+            <element signature="e#3571#3572#0" expanded="false" />
+            <element signature="e#3590#3591#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/projectswg/launchpad/ProjectSWG.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="120" column="36" selection-start-line="120" selection-start-column="36" selection-end-line="120" selection-end-column="36" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/resources/basic.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/resources/style.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="11" column="1" selection-start-line="11" selection-start-column="1" selection-end-line="11" selection-end-column="1" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/projectswg/launchpad/service/Manager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="785" column="39" selection-start-line="785" selection-start-column="39" selection-end-line="785" selection-end-column="39" />
+          <folding>
+            <element signature="e#0#23058#0" expanded="false" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#4719#4720#0" expanded="false" />
+            <element signature="e#4748#4749#0" expanded="false" />
+            <element signature="e#21805#21806#0" expanded="false" />
+            <element signature="e#21834#21835#0" expanded="false" />
+            <element signature="e#21892#21893#0" expanded="false" />
+            <element signature="e#21925#21926#0" expanded="false" />
+            <element signature="e#21983#21984#0" expanded="false" />
+            <element signature="e#22016#22017#0" expanded="false" />
+            <element signature="e#22066#22067#0" expanded="false" />
+            <element signature="e#22090#22091#0" expanded="false" />
+            <element signature="e#22139#22140#0" expanded="false" />
+            <element signature="e#22162#22163#0" expanded="false" />
+            <element signature="e#22204#22205#0" expanded="false" />
+            <element signature="e#22229#22230#0" expanded="false" />
+            <element signature="e#22275#22276#0" expanded="false" />
+            <element signature="e#22302#22303#0" expanded="false" />
+            <element signature="e#22349#22350#0" expanded="false" />
+            <element signature="e#22370#22371#0" expanded="false" />
+            <element signature="e#22419#22420#0" expanded="false" />
+            <element signature="e#22443#22444#0" expanded="false" />
+            <element signature="e#22488#22489#0" expanded="false" />
+            <element signature="e#22507#22508#0" expanded="false" />
+            <element signature="e#22554#22555#0" expanded="false" />
+            <element signature="e#22582#22583#0" expanded="false" />
+            <element signature="e#22631#22632#0" expanded="false" />
+            <element signature="e#22660#22661#0" expanded="false" />
+            <element signature="e#22708#22709#0" expanded="false" />
+            <element signature="e#22731#22732#0" expanded="false" />
+            <element signature="e#22784#22785#0" expanded="false" />
+            <element signature="e#22811#22812#0" expanded="false" />
+            <element signature="e#22875#22876#0" expanded="false" />
+            <element signature="e#22913#22914#0" expanded="false" />
+            <element signature="e#22957#22958#0" expanded="false" />
+            <element signature="e#22977#22978#0" expanded="false" />
+            <element signature="e#23028#23029#0" expanded="false" />
+            <element signature="e#23054#23055#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/projectswg/launchpad/controller/ModalController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="64" column="18" selection-start-line="64" selection-start-column="18" selection-end-line="64" selection-end-column="18" />
+          <folding>
+            <element signature="e#0#6680#0" expanded="false" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#1944#1945#0" expanded="false" />
+            <element signature="e#1967#1968#0" expanded="false" />
+            <element signature="e#2004#2005#0" expanded="false" />
+            <element signature="e#2032#2033#0" expanded="false" />
+            <element signature="e#6648#6649#0" expanded="false" />
+            <element signature="e#6676#6677#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/projectswg/launchpad/controller/ModalComponent.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="23" column="17" selection-start-line="23" selection-start-column="17" selection-end-line="23" selection-end-column="17" />
+          <folding>
+            <element signature="e#0#1009#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/projectswg/launchpad/controller/MainController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="54" column="13" selection-start-line="54" selection-start-column="13" selection-end-line="54" selection-end-column="13" />
+          <folding>
+            <element signature="e#0#15316#0" expanded="false" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#11143#11144#0" expanded="false" />
+            <element signature="e#11190#11191#0" expanded="false" />
+            <element signature="e#12593#12594#0" expanded="false" />
+            <element signature="e#12618#12619#0" expanded="false" />
+            <element signature="e#12648#12649#0" expanded="false" />
+            <element signature="e#12667#12668#0" expanded="false" />
+            <element signature="e#12712#12713#0" expanded="false" />
+            <element signature="e#12744#12745#0" expanded="false" />
+            <element signature="e#12794#12795#0" expanded="false" />
+            <element signature="e#12823#12824#0" expanded="false" />
+            <element signature="e#14022#14023#0" expanded="false" />
+            <element signature="e#14040#14041#0" expanded="false" />
+            <element signature="e#14074#14075#0" expanded="false" />
+            <element signature="e#14092#14093#0" expanded="false" />
+            <element signature="e#14126#14127#0" expanded="false" />
+            <element signature="e#14147#14148#0" expanded="false" />
+            <element signature="e#14202#14203#0" expanded="false" />
+            <element signature="e#14221#14222#0" expanded="false" />
+            <element signature="e#14260#14261#0" expanded="false" />
+            <element signature="e#14289#14290#0" expanded="false" />
+            <element signature="e#14332#14333#0" expanded="false" />
+            <element signature="e#14391#14392#0" expanded="false" />
+            <element signature="e#15202#15203#0" expanded="false" />
+            <element signature="e#15233#15234#0" expanded="false" />
+            <element signature="e#15288#15289#0" expanded="false" />
+            <element signature="e#15313#15314#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/projectswg/launchpad/controller/LogController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="38" column="13" selection-start-line="38" selection-start-column="13" selection-end-line="38" selection-end-column="13" />
+          <folding>
+            <element signature="e#0#3832#0" expanded="false" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#1838#1839#0" expanded="false" />
+            <element signature="e#1862#1863#0" expanded="false" />
+            <element signature="e#2851#2852#0" expanded="false" />
+            <element signature="e#2904#2905#0" expanded="false" />
+            <element signature="e#2941#2942#0" expanded="false" />
+            <element signature="e#2991#2992#0" expanded="false" />
+            <element signature="e#3520#3521#0" expanded="false" />
+            <element signature="e#3541#3542#0" expanded="false" />
+            <element signature="e#3571#3572#0" expanded="false" />
+            <element signature="e#3590#3591#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/projectswg/launchpad/ProjectSWG.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build/build.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="16" column="30" selection-start-line="16" selection-start-column="30" selection-end-line="16" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/projectswg/launchpad/ProjectSWG.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/projectswg/launchpad/ProjectSWG.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build/build.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="16" column="30" selection-start-line="16" selection-start-column="30" selection-end-line="16" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.idea/vcs.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.idea/modules.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.idea/misc.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.idea/compiler.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.idea/ant.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.idea/copyright/profiles_settings.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.046703298">
+          <caret line="2" column="12" selection-start-line="2" selection-start-column="12" selection-end-line="2" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.idea/.name">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/projectswg/launchpad/controller/ModalController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="64" column="18" selection-start-line="64" selection-start-column="18" selection-end-line="64" selection-end-column="18" />
+          <folding>
+            <element signature="e#0#6680#0" expanded="false" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#1944#1945#0" expanded="false" />
+            <element signature="e#1967#1968#0" expanded="false" />
+            <element signature="e#2004#2005#0" expanded="false" />
+            <element signature="e#2032#2033#0" expanded="false" />
+            <element signature="e#6648#6649#0" expanded="false" />
+            <element signature="e#6676#6677#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/projectswg/launchpad/controller/ModalComponent.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="23" column="17" selection-start-line="23" selection-start-column="17" selection-end-line="23" selection-end-column="17" />
+          <folding>
+            <element signature="e#0#1009#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/projectswg/launchpad/controller/MainController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="54" column="13" selection-start-line="54" selection-start-column="13" selection-end-line="54" selection-end-column="13" />
+          <folding>
+            <element signature="e#0#15316#0" expanded="false" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#11143#11144#0" expanded="false" />
+            <element signature="e#11190#11191#0" expanded="false" />
+            <element signature="e#12593#12594#0" expanded="false" />
+            <element signature="e#12618#12619#0" expanded="false" />
+            <element signature="e#12648#12649#0" expanded="false" />
+            <element signature="e#12667#12668#0" expanded="false" />
+            <element signature="e#12712#12713#0" expanded="false" />
+            <element signature="e#12744#12745#0" expanded="false" />
+            <element signature="e#12794#12795#0" expanded="false" />
+            <element signature="e#12823#12824#0" expanded="false" />
+            <element signature="e#14022#14023#0" expanded="false" />
+            <element signature="e#14040#14041#0" expanded="false" />
+            <element signature="e#14074#14075#0" expanded="false" />
+            <element signature="e#14092#14093#0" expanded="false" />
+            <element signature="e#14126#14127#0" expanded="false" />
+            <element signature="e#14147#14148#0" expanded="false" />
+            <element signature="e#14202#14203#0" expanded="false" />
+            <element signature="e#14221#14222#0" expanded="false" />
+            <element signature="e#14260#14261#0" expanded="false" />
+            <element signature="e#14289#14290#0" expanded="false" />
+            <element signature="e#14332#14333#0" expanded="false" />
+            <element signature="e#14391#14392#0" expanded="false" />
+            <element signature="e#15202#15203#0" expanded="false" />
+            <element signature="e#15233#15234#0" expanded="false" />
+            <element signature="e#15288#15289#0" expanded="false" />
+            <element signature="e#15313#15314#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/projectswg/launchpad/controller/LogController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="38" column="13" selection-start-line="38" selection-start-column="13" selection-end-line="38" selection-end-column="13" />
+          <folding>
+            <element signature="e#0#3832#0" expanded="false" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#1838#1839#0" expanded="false" />
+            <element signature="e#1862#1863#0" expanded="false" />
+            <element signature="e#2851#2852#0" expanded="false" />
+            <element signature="e#2904#2905#0" expanded="false" />
+            <element signature="e#2941#2942#0" expanded="false" />
+            <element signature="e#2991#2992#0" expanded="false" />
+            <element signature="e#3520#3521#0" expanded="false" />
+            <element signature="e#3541#3542#0" expanded="false" />
+            <element signature="e#3571#3572#0" expanded="false" />
+            <element signature="e#3590#3591#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/projectswg/launchpad/service/Manager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="785" column="39" selection-start-line="785" selection-start-column="39" selection-end-line="785" selection-end-column="39" />
+          <folding>
+            <element signature="e#0#23058#0" expanded="false" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#4719#4720#0" expanded="false" />
+            <element signature="e#4748#4749#0" expanded="false" />
+            <element signature="e#21805#21806#0" expanded="false" />
+            <element signature="e#21834#21835#0" expanded="false" />
+            <element signature="e#21892#21893#0" expanded="false" />
+            <element signature="e#21925#21926#0" expanded="false" />
+            <element signature="e#21983#21984#0" expanded="false" />
+            <element signature="e#22016#22017#0" expanded="false" />
+            <element signature="e#22066#22067#0" expanded="false" />
+            <element signature="e#22090#22091#0" expanded="false" />
+            <element signature="e#22139#22140#0" expanded="false" />
+            <element signature="e#22162#22163#0" expanded="false" />
+            <element signature="e#22204#22205#0" expanded="false" />
+            <element signature="e#22229#22230#0" expanded="false" />
+            <element signature="e#22275#22276#0" expanded="false" />
+            <element signature="e#22302#22303#0" expanded="false" />
+            <element signature="e#22349#22350#0" expanded="false" />
+            <element signature="e#22370#22371#0" expanded="false" />
+            <element signature="e#22419#22420#0" expanded="false" />
+            <element signature="e#22443#22444#0" expanded="false" />
+            <element signature="e#22488#22489#0" expanded="false" />
+            <element signature="e#22507#22508#0" expanded="false" />
+            <element signature="e#22554#22555#0" expanded="false" />
+            <element signature="e#22582#22583#0" expanded="false" />
+            <element signature="e#22631#22632#0" expanded="false" />
+            <element signature="e#22660#22661#0" expanded="false" />
+            <element signature="e#22708#22709#0" expanded="false" />
+            <element signature="e#22731#22732#0" expanded="false" />
+            <element signature="e#22784#22785#0" expanded="false" />
+            <element signature="e#22811#22812#0" expanded="false" />
+            <element signature="e#22875#22876#0" expanded="false" />
+            <element signature="e#22913#22914#0" expanded="false" />
+            <element signature="e#22957#22958#0" expanded="false" />
+            <element signature="e#22977#22978#0" expanded="false" />
+            <element signature="e#23028#23029#0" expanded="false" />
+            <element signature="e#23054#23055#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/resources/style.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="35" column="0" selection-start-line="35" selection-start-column="0" selection-end-line="35" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/projectswg/launchpad/view/Settings.fxml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+      <provider editor-type-id="JavaFX-Scene-Builder">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/projectswg/launchpad/ProjectSWG.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="109.655174">
+          <caret line="71" column="66" selection-start-line="71" selection-start-column="66" selection-end-line="71" selection-end-column="66" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/projectswg/launchpad/controller/SettingsController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-16.814816">
+          <caret line="674" column="90" selection-start-line="674" selection-start-column="90" selection-end-line="674" selection-end-column="90" />
+          <folding>
+            <element signature="e#24596#24597#0" expanded="true" />
+            <element signature="e#24622#24623#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/resources/basic.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>

@@ -49,7 +49,7 @@
       </TitledPane>
       <TitledPane text="Setup">
          <content>
-            <VBox style="-fx-background-color: #111111;">
+            <VBox style="-fx-background-color: #111;">
                <children>
                   <ScrollPane fitToHeight="true" fitToWidth="true" style="-fx-background-color: #111;" VBox.vgrow="ALWAYS">
                      <content>
@@ -145,7 +145,7 @@
          <content>
             <VBox style="-fx-background-color: #111;">
                <children>
-                  <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" style="-fx-background-color: #111;" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
+                  <ScrollPane fitToHeight="true" fitToWidth="true" style="-fx-background-color: #111;" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
                      <content>
                         <GridPane hgap="10.0" style="-fx-background-color: #111;" vgap="5.0">
                            <children>
@@ -165,24 +165,24 @@
                               <CheckBox fx:id="captureCheckBox" mnemonicParsing="false" text="Debug Game" GridPane.rowIndex="1" />
                               <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.rowIndex="4">
                                  <children>
-                                    <Label maxWidth="100.0" minWidth="100.0" prefWidth="100.0" text="Binary">
+                                    <Label maxWidth="140.0" minWidth="140.0" prefWidth="140.0" text="Binary">
                                        <HBox.margin>
                                           <Insets />
                                        </HBox.margin>
                                     </Label>
                                     <Button fx:id="binaryButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" HBox.hgrow="ALWAYS" />
-                                    <Hyperlink fx:id="resetBinaryHyperlink" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" text="Reset" />
+                                    <Hyperlink fx:id="resetBinaryHyperlink" maxWidth="80.0" minWidth="80.0" prefWidth="80.0" text="Reset" />
                                  </children>
                               </HBox>
                               <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="5">
                                  <children>
-                                    <Label maxWidth="100.0" minWidth="100.0" prefWidth="100.0" text="Game Features">
+                                    <Label maxWidth="140.0" minWidth="140.0" prefWidth="140.0" text="Game Features">
                                        <HBox.margin>
                                           <Insets />
                                        </HBox.margin>
                                     </Label>
                                     <Button fx:id="gameFeaturesButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" HBox.hgrow="ALWAYS" />
-                                    <Hyperlink fx:id="resetGameFeaturesHyperlink" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" text="Reset" />
+                                    <Hyperlink fx:id="resetGameFeaturesHyperlink" maxWidth="80.0" minWidth="80.0" prefWidth="80.0" text="Reset" />
                                  </children>
                               </HBox>
                            </children>
@@ -248,7 +248,7 @@
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                      </padding>
                      <content>
-                        <VBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="10.0" style="-fx-background-color: #111;">
+                        <VBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-background-color: #111;">
                            <children>
                               <Label style="-fx-font-weight: bold;" text="Website" wrapText="true" />
                               <Hyperlink fx:id="pswgHyperlink" text="http://www.projectswg.com" />
@@ -259,6 +259,8 @@
                                     <Text fx:id="licenseText" text="insert license text" wrappingWidth="10.0" />
                                  </children>
                               </TextFlow>
+                              <Region maxHeight="10.0" minHeight="10.0" prefHeight="10.0" />
+                              <CheckBox fx:id="translateCheckBox" mnemonicParsing="false" text="Translate" />
                            </children>
                         </VBox>
                      </content>

@@ -61,8 +61,7 @@ public class ModalController implements FxmlController
 	public SimpleStyleableDoubleProperty opacity;
 	
 	private ModalComponent modalComponent;
-	
-	
+
 	public ModalController()
 	{
 	}

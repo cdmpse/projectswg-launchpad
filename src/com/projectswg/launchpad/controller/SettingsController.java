@@ -21,7 +21,9 @@ package com.projectswg.launchpad.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -92,7 +94,7 @@ public class SettingsController implements ModalComponent
 	private CheckBox closeAfterLaunchCheckBox, captureCheckBox, localhostCheckBox, debugCheckBox;
 	
 	@FXML
-	private CheckBox loginServerLockedCheckBox, openOnLaunchCheckBox, soundCheckBox;
+	private CheckBox loginServerLockedCheckBox, openOnLaunchCheckBox, soundCheckBox, translateCheckBox;
 	
 	@FXML
 	private ComboBox<String> loginServerComboBox, themeComboBox;
@@ -331,10 +333,10 @@ public class SettingsController implements ModalComponent
 		loginServerComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue == null)
 				return;
-			
+
 			ProjectSWG.log("Setting server: " + newValue);
 			mainController.getPlayButtonTooltip().setText("Profile: " + newValue);
-			
+
 			loginServerLockedCheckBox.setSelected(true);
 			if (newValue.equals(Manager.PSWG_LOGIN_SERVER_NAME)) {
 				loginServerLockedCheckBox.setDisable(true);
@@ -343,7 +345,7 @@ public class SettingsController implements ModalComponent
 				loginServerLockedCheckBox.setDisable(false);
 				removeLoginServerButton.setDisable(false);
 			}
-			
+
 			manager.setLoginServerByName(newValue);
 		});
 		refreshLoginServerComboBox();
@@ -356,7 +358,7 @@ public class SettingsController implements ModalComponent
 		});
 		
 		manager.getPingService().setOnSucceeded((e) -> {
-			String result = (String)e.getSource().getValue();
+			String result = (String) e.getSource().getValue();
 			ProjectSWG.log("pingerOut: " + result);
 			pingDisplay.queueString("" + result);
 		});
@@ -627,8 +629,8 @@ public class SettingsController implements ModalComponent
 			File file = fileChooser.showOpenDialog(mainController.getStage());
 			if (file == null || !file.isFile())
 				return;
-			
-			String wineBin =  file.getAbsolutePath();
+
+			String wineBin = file.getAbsolutePath();
 			manager.getWineBinary().set(wineBin);
 		});
 		
@@ -645,8 +647,6 @@ public class SettingsController implements ModalComponent
 	
 	public void initAboutPane()
 	{
-		/*
-		pswgHyperlink.setText("www.projectswg.com");
 		pswgHyperlink.setOnAction((e) -> {
 			try {
 				java.awt.Desktop.getDesktop().browse(new URI(ProjectSWG.PSWG_URL));
@@ -654,20 +654,26 @@ public class SettingsController implements ModalComponent
 				ProjectSWG.log(e1.toString());
 			}
 		});
-	 	*/
 		
 		licenseText.setText(
-			"\n\nThis file is part of ProjectSWG Launchpad.\n" +
-			"ProjectSWG Launchpad is free software: you can redistribute " + 
-          	"it and/or modify it under the terms of the GNU Affero General Public License " +
-          	"as published by the Free Software Foundation, either version 3 of " +
-          	"the License, or (at your option) any later version. ProjectSWG Launchpad is distributed " +
-          	"in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even " +
-          	"the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. " +
-          	"See the GNU Affero General Public License for more details. You should have received a " +
-          	"copy of the GNU Affero General Public License along with ProjectSWG Launchpad. " +
-          	"If not, see \"http://www.gnu.org/licenses/.\""
-        );
+				"\n\nThis file is part of ProjectSWG Launchpad.\n" +
+						"ProjectSWG Launchpad is free software: you can redistribute " +
+						"it and/or modify it under the terms of the GNU Affero General Public License " +
+						"as published by the Free Software Foundation, either version 3 of " +
+						"the License, or (at your option) any later version. ProjectSWG Launchpad is distributed " +
+						"in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even " +
+						"the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. " +
+						"See the GNU Affero General Public License for more details. You should have received a " +
+						"copy of the GNU Affero General Public License along with ProjectSWG Launchpad. " +
+						"If not, see \"http://www.gnu.org/licenses/.\""
+		);
+
+		translateCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue)
+				mainController.getPswg().getStage().getScene().getStylesheets().add(ProjectSWG.CSS_BASIC);
+			else
+				mainController.getPswg().getStage().getScene().getStylesheets().remove(ProjectSWG.CSS_BASIC);
+		});
 	}
 	
 	public void refreshThemeList()

@@ -41,6 +41,7 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -68,6 +69,7 @@ public class ProjectSWG extends Application
 	public static final String FXML_GAME = "Game.fxml";
 	public static final String CSS_NAME = "style.css";
 	public static final String CSS_DEFAULT = "/resources/style.css";
+	public static final String CSS_BASIC = "/resources/basic.css";
 	public static final String ICON = "/resources/pswg_icon.png";
 	public static final String THEMES_FOLDER = "themes";
 	public static final String CHECKMARK = "\u2713";
@@ -112,6 +114,7 @@ public class ProjectSWG extends Application
 		
 		instances = FXCollections.observableArrayList();
 		controllers = new HashMap<>();
+		Font.loadFont(ProjectSWG.class.getResource("/resources/galbasic.ttf").toExternalForm(), 10);
 		loadTheme(PREFS.get("theme", "Default"));
 		
 		primaryStage.centerOnScreen();
@@ -196,7 +199,10 @@ public class ProjectSWG extends Application
 		
 		primaryStage.getScene().getStylesheets().clear();
 		primaryStage.getScene().getStylesheets().add(cssPath);
-		
+
+		debugStage.getScene().getStylesheets().clear();
+		debugStage.getScene().getStylesheets().add(cssPath);
+
 		for (Instance instance : instances) {
 			instance.getGameController().getStage().getScene().getStylesheets().clear();
 			instance.getGameController().getStage().getScene().getStylesheets().add(cssPath);
@@ -237,7 +243,7 @@ public class ProjectSWG extends Application
 		try {
 			if (!theme.equals("Default")) {
 				final String codeSource = new File(ProjectSWG.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
-				log("loading: " + codeSource + "/" + THEMES_FOLDER + "/" + theme + "/" + fxml);
+				log("loading fxml: " + codeSource + "/" + THEMES_FOLDER + "/" + theme + "/" + fxml);
 				File file = new File(codeSource + "/" + THEMES_FOLDER + "/" + theme + "/" + fxml);
 				if (file.isFile()) {
 					fxmlLoader = new FXMLLoader();
