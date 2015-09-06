@@ -58,6 +58,12 @@ public class GameService extends Service<Void>
 				String pswgFolder = manager.getPswgFolder().getValue();
 				String host = manager.getLoginServerHost().getValue();
 				
+				File dir = new File(pswgFolder);
+				if (!dir.isDirectory()) {
+					ProjectSWG.log("Directory doesn't exist: " + pswgFolder);
+					return null;
+				}
+				
 				String[] processString = new String[] {
 						manager.getBinary().getValue(),
 						"--",
@@ -95,12 +101,6 @@ public class GameService extends Service<Void>
 				try {
 					final ProcessBuilder processBuilder = new ProcessBuilder(processString);
 				
-					File dir = new File(pswgFolder);
-					if (!dir.isDirectory()) {
-						ProjectSWG.log("Directory doesn't exist: " + pswgFolder);
-						return null;
-					}
-					
 					processBuilder.directory(dir);
 					process = processBuilder.start();
 

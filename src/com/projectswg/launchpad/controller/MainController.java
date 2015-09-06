@@ -320,10 +320,16 @@ public class MainController implements FxmlController
 		
 		// game output
 		gameDisplay.displayGames();
-		
-		/*
-		 * Extras
-		 */
+
+		// extras
+		loadExtras();
+	}
+	
+	/*
+	 * add extras here
+	 */
+	public void loadExtras()
+	{
 		TREFix trefix = new TREFix(this);
 		extrasComponent.addExtra(trefix);
 	}

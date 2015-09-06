@@ -307,10 +307,10 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 					}
 					
 					Resource res = new Resource(
-							matcher.group(4), // name
-							Integer.parseInt(matcher.group(3)), // size
-							matcher.group(2), // checksum
-							Integer.parseInt(matcher.group(1))); // strictness
+							matcher.group(4), 						// name
+							Integer.parseInt(matcher.group(3)), 	// size
+							matcher.group(2), 						// checksum
+							Integer.parseInt(matcher.group(1))); 	// strictness
 					
 					resources.add(res);
 				}
