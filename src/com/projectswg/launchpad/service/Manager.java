@@ -562,13 +562,7 @@ public class Manager
 		}
 		return null;
 	}
-	
-	public void removeLoginServer(String loginServerName)
-	{
-		Preferences loginServersNode = Preferences.userNodeForPackage(ProjectSWG.class).node("login_servers");
-		loginServersNode.remove(loginServerName);
-	}
-	
+
 	public String[] getLoginServerValues(String loginServerName)
 	{
 		Preferences loginServersNode = Preferences.userNodeForPackage(ProjectSWG.class).node("login_servers");
@@ -630,6 +624,7 @@ public class Manager
 			loginServerValues[LOGIN_SERVER_PORT],
 			loginServerValues[LOGIN_SERVER_STATUSPORT]
 		));
+		loginServerHost.set(value);
 	}
 	
 	public void setLoginServerPort(String loginServerName, String value)
@@ -641,6 +636,7 @@ public class Manager
 			value,
 			loginServerValues[LOGIN_SERVER_STATUSPORT]
 		));
+		loginServerPlayPort.set(value);
 	}
 	
 	public void setLoginServerStatusPort(String loginServerName, String value)
@@ -652,6 +648,7 @@ public class Manager
 			loginServerValues[LOGIN_SERVER_PORT],
 			value
 		));
+		loginServerPingPort.set(value);
 	}
 	
 	public void addLoginServer(String name)

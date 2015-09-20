@@ -85,7 +85,7 @@ public class SettingsController implements ModalComponent
 	private Button refreshThemesButton, removeLoginServerButton, addLoginServerButton, wineBinaryButton;
 	
 	@FXML
-	private Button binaryButton, gameFeaturesButton;
+	private Button binaryButton, gameFeaturesButton, deleteLaunchpadPreferencesButton;
 	
 	@FXML
 	private TextField wineArgumentsTextField, wineEnvironmentVariablesTextField;
@@ -306,7 +306,7 @@ public class SettingsController implements ModalComponent
 				hostnameTextField.setDisable(true);
 				hostnameTextField.textProperty().removeListener(hostnameTextChangeListener);
 				hostnameTextField.textProperty().bind(manager.getLoginServerHost());
-
+				
 				portTextField.setDisable(true);
 				portTextField.textProperty().removeListener(portTextChangeListener);
 				portTextField.textProperty().bind(manager.getLoginServerPlayPort());
@@ -334,7 +334,7 @@ public class SettingsController implements ModalComponent
 			if (newValue == null)
 				return;
 
-			ProjectSWG.log("Setting server: " + newValue);
+			ProjectSWG.log("Setting profile: " + newValue);
 			mainController.getPlayButtonTooltip().setText("Profile: " + newValue);
 
 			loginServerLockedCheckBox.setSelected(true);
@@ -393,7 +393,7 @@ public class SettingsController implements ModalComponent
 			if (result.get() == ButtonType.OK) {
 				String val = loginServerComboBox.getValue();
 				loginServerComboBox.getSelectionModel().select(0);
-				manager.removeLoginServer(val);
+				ProjectSWG.PREFS.node("login_servers").remove(val);;
 				refreshLoginServerComboBox();
 			}
 		});
@@ -599,13 +599,34 @@ public class SettingsController implements ModalComponent
 			if (pswgFolder.equals(""))
 				return;
 			Alert alert = new Alert(AlertType.CONFIRMATION);
-			alert.setTitle("Delete game profiles");
+			alert.setTitle("Delete Game Profiles");
 			alert.setHeaderText(String.format("This will remove the %s/profiles' folder.", pswgFolder));
 			Optional<ButtonType> result = alert.showAndWait();
 			if (result.get() == ButtonType.OK)
 				try {
 					Manager.removeRecursive(Paths.get(pswgFolder + "/profiles"));
 				} catch (IOException e1) {
+					e1.printStackTrace();
+					alert = new Alert(AlertType.ERROR);
+					alert.setTitle("Error");
+					alert.setHeaderText("An error occurred.");
+					alert.showAndWait();
+				}
+		});
+		
+		deleteLaunchpadPreferencesButton.setOnMouseEntered(buttonHover);
+		deleteLaunchpadPreferencesButton.setOnAction((e) -> {
+			ProjectSWG.playSound("button_press");
+			
+			Alert alert = new Alert(AlertType.CONFIRMATION);
+			alert.setTitle("Delete Launchpad Preferences");
+			alert.setHeaderText("This will remove all preferences, except profiles, set for the launcher.");
+			Optional<ButtonType> result = alert.showAndWait();
+			if (result.get() == ButtonType.OK)
+				try {
+					ProjectSWG.PREFS.clear();
+				} catch (BackingStoreException e1) {
+					ProjectSWG.log("Error clearing preferences: " + e1.toString());
 					e1.printStackTrace();
 					alert = new Alert(AlertType.ERROR);
 					alert.setTitle("Error");

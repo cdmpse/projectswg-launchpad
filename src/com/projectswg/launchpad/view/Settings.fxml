@@ -185,11 +185,13 @@
                                     <Hyperlink fx:id="resetGameFeaturesHyperlink" maxWidth="80.0" minWidth="80.0" prefWidth="80.0" text="Reset" />
                                  </children>
                               </HBox>
+                              <Button fx:id="deleteLaunchpadPreferencesButton" mnemonicParsing="false" text="Delete Launchpad Preferences" GridPane.rowIndex="7" />
                            </children>
                            <columnConstraints>
                               <ColumnConstraints hgrow="ALWAYS" />
                            </columnConstraints>
                            <rowConstraints>
+                              <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" />
                               <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" />
                               <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" />
                               <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" />

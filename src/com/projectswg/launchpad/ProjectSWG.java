@@ -27,6 +27,7 @@ import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import com.projectswg.launchpad.controller.FxmlController;
