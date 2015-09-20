@@ -67,8 +67,8 @@ public class SetupController implements ModalComponent
 	
 	public SetupController()
 	{
-		swgLabel = new Label(null, new ImageView(new Image("/resources/setup_swg.png")));
-		pswgLabel = new Label(null, new ImageView(new Image("/resources/setup_pswg.png")));
+		swgLabel = new Label("Select your original SWG installation...");
+		pswgLabel = new Label("Select where ProjectSWG will be installed...");
 	}
 	
 	@Override

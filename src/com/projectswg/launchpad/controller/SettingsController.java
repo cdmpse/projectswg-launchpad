@@ -91,7 +91,7 @@ public class SettingsController implements ModalComponent
 	private TextField wineArgumentsTextField, wineEnvironmentVariablesTextField;
 	
 	@FXML
-	private CheckBox closeAfterLaunchCheckBox, captureCheckBox, localhostCheckBox, debugCheckBox;
+	private CheckBox closeAfterLaunchCheckBox, captureCheckBox, debugCheckBox;
 	
 	@FXML
 	private CheckBox loginServerLockedCheckBox, openOnLaunchCheckBox, soundCheckBox, translateCheckBox;
@@ -222,7 +222,7 @@ public class SettingsController implements ModalComponent
 		refreshThemeList();
 		
 		themeComboBox.setOnMouseClicked(comboClicked);
-		themeComboBox.setValue(ProjectSWG.PREFS.get("theme", "Default"));
+		themeComboBox.setValue(ProjectSWG.PREFS.get("theme", ProjectSWG.THEME_DEFAULT));
 		themeComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
 			if (oldValue == null || newValue == null)
 				return;
@@ -262,7 +262,7 @@ public class SettingsController implements ModalComponent
 			ProjectSWG.log("Refresh Login Servers Error: " + e1.toString());
 		}
 		
-		loginServerComboBox.setValue(ProjectSWG.PREFS.get("login_server", Manager.PSWG_LOGIN_SERVER_NAME));
+		loginServerComboBox.setValue(ProjectSWG.PREFS.get("login_server", Manager.PROFILE_PSWG_K));
 	}
 	
 	public void initSetupLoginServerSettings()
@@ -336,17 +336,20 @@ public class SettingsController implements ModalComponent
 
 			ProjectSWG.log("Setting profile: " + newValue);
 			mainController.getPlayButtonTooltip().setText("Profile: " + newValue);
-
 			loginServerLockedCheckBox.setSelected(true);
-			if (newValue.equals(Manager.PSWG_LOGIN_SERVER_NAME)) {
+			
+			switch (newValue) {
+			case Manager.PROFILE_PSWG_K:
+			case Manager.PROFILE_LOCALHOST_K:
 				loginServerLockedCheckBox.setDisable(true);
 				removeLoginServerButton.setDisable(true);
-			} else if (oldValue != null && oldValue.equals(Manager.PSWG_LOGIN_SERVER_NAME)) {
+				break;
+			default:
 				loginServerLockedCheckBox.setDisable(false);
 				removeLoginServerButton.setDisable(false);
 			}
 
-			manager.setLoginServerByName(newValue);
+			manager.setProfile(newValue);
 		});
 		refreshLoginServerComboBox();
 		
@@ -388,7 +391,7 @@ public class SettingsController implements ModalComponent
 			ProjectSWG.playSound("button_press");
 			Alert alert = new Alert(AlertType.CONFIRMATION);
 			alert.setTitle("Remove Server");
-			alert.setHeaderText("Are you sure you want to remove this server?");
+			alert.setHeaderText("Are you sure you want to remove this profile?");
 			Optional<ButtonType> result = alert.showAndWait();
 			if (result.get() == ButtonType.OK) {
 				String val = loginServerComboBox.getValue();
@@ -480,11 +483,6 @@ public class SettingsController implements ModalComponent
 	
 	public void initDeveloperPane()
 	{
-		localhostCheckBox.setSelected(ProjectSWG.PREFS.getBoolean("localhost", false));
-		localhostCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
-			ProjectSWG.PREFS.putBoolean("localhost", newValue);
-		});
-		
 		captureCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
 			ProjectSWG.PREFS.putBoolean("capture", newValue);
 			openOnLaunchCheckBox.setDisable(!newValue);
@@ -622,7 +620,7 @@ public class SettingsController implements ModalComponent
 			alert.setTitle("Delete Launchpad Preferences");
 			alert.setHeaderText("This will remove all preferences, except profiles, set for the launcher.");
 			Optional<ButtonType> result = alert.showAndWait();
-			if (result.get() == ButtonType.OK)
+			if (result.get() == ButtonType.OK) {
 				try {
 					ProjectSWG.PREFS.clear();
 				} catch (BackingStoreException e1) {
@@ -632,7 +630,14 @@ public class SettingsController implements ModalComponent
 					alert.setTitle("Error");
 					alert.setHeaderText("An error occurred.");
 					alert.showAndWait();
+					return;
 				}
+				mainController.getPswg().loadTheme(ProjectSWG.PREFS.get("theme", ProjectSWG.THEME_DEFAULT));
+				Platform.runLater(() -> {
+					ModalController modal = (ModalController)mainController.getPswg().getControllers().get("modal");
+					modal.loadComponent((SettingsController)mainController.getPswg().getControllers().get("settings"));
+				});
+			}
 		});
 	}
 	
@@ -710,7 +715,7 @@ public class SettingsController implements ModalComponent
 		});
 
 		ArrayList<String> themeList = new ArrayList<>();
-		themeList.add("Default");
+		themeList.add(ProjectSWG.THEME_DEFAULT);
 
 		for (String dir : subdirs) {
 			ProjectSWG.log("folder: " + ProjectSWG.THEMES_FOLDER + "/" + dir + "/" + ProjectSWG.CSS_NAME);

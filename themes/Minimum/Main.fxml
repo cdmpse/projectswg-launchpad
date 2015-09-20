@@ -60,5 +60,6 @@
             <Insets />
          </opaqueInsets>
       </VBox>
+      <Label fx:id="profileLabel" text="Label" visible="false" />
    </children>
 </StackPane>

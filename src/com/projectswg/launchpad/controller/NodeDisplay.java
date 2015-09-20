@@ -42,7 +42,6 @@ public class NodeDisplay
 {
 	// add delay option
 	// add format option
-	
 	private static final int SLIDE_DURATION = 100;
 	private static final int FADE_DURATION = 100;
 

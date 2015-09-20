@@ -129,41 +129,41 @@
          <content>
             <GridPane hgap="10.0" vgap="5.0">
                <children>
-                  <CheckBox fx:id="localhostCheckBox" mnemonicParsing="false" text="Localhost" />
-                  <CheckBox fx:id="openOnLaunchCheckBox" disable="true" mnemonicParsing="false" text="Open on Launch" GridPane.rowIndex="2">
+                  <CheckBox fx:id="openOnLaunchCheckBox" disable="true" mnemonicParsing="false" text="Open on Launch" GridPane.rowIndex="1">
                      <GridPane.margin>
                         <Insets left="20.0" />
                      </GridPane.margin>
                   </CheckBox>
-                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.rowIndex="3">
+                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.rowIndex="2">
                      <children>
                         <CheckBox fx:id="debugCheckBox" mnemonicParsing="false" text="Debug" />
                         <Hyperlink fx:id="showHyperlink" text="Show" />
                      </children>
                   </HBox>
-                  <CheckBox fx:id="captureCheckBox" mnemonicParsing="false" text="Capture" GridPane.rowIndex="1" />
-                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.rowIndex="4">
+                  <CheckBox fx:id="captureCheckBox" mnemonicParsing="false" text="Capture" />
+                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.rowIndex="3">
                      <children>
                         <Label maxWidth="100.0" minWidth="100.0" prefWidth="100.0" text="Binary">
                            <HBox.margin>
                               <Insets />
                            </HBox.margin></Label>
-                        <Button fx:id="binaryButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" HBox.hgrow="ALWAYS" />
+                        <Button fx:id="binaryButton" maxWidth="Infinity" mnemonicParsing="false" HBox.hgrow="ALWAYS" />
                         <Hyperlink fx:id="resetBinaryHyperlink" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" text="Reset" />
                      </children>
                   </HBox>
-                  <Button fx:id="deleteGameProfilesButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Delete Game Profiles" GridPane.rowIndex="6" />
-                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.rowIndex="5">
+                  <Button fx:id="deleteGameProfilesButton" maxWidth="Infinity" mnemonicParsing="false" text="Delete Game Profiles" GridPane.rowIndex="5" />
+                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.rowIndex="4">
                      <children>
                         <Label maxWidth="100.0" minWidth="100.0" prefWidth="100.0" text="Game Features">
                            <HBox.margin>
                               <Insets />
                            </HBox.margin>
                         </Label>
-                        <Button fx:id="gameFeaturesButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" HBox.hgrow="ALWAYS" />
+                        <Button fx:id="gameFeaturesButton" maxWidth="Infinity" mnemonicParsing="false" HBox.hgrow="ALWAYS" />
                         <Hyperlink fx:id="resetGameFeaturesHyperlink" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" text="Reset" />
                      </children>
                   </HBox>
+                  <Button fx:id="deleteLaunchpadPreferencesButton" maxWidth="Infinity" mnemonicParsing="false" text="Delete Launchpad Preferences" GridPane.rowIndex="6" />
                </children>
                <columnConstraints>
                   <ColumnConstraints hgrow="ALWAYS" />

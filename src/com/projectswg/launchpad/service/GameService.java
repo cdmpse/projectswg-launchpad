@@ -74,7 +74,7 @@ public class GameService extends Service<Void>
 						"-s",
 						"ClientGame",
 						"loginServerPort0=" + manager.getLoginServerPlayPort().getValue(),
-						"loginServerAddress0=" + (manager.getLocalhost().getValue() ? Manager.LOCALHOST : host)
+						"loginServerAddress0=" + host
 				};
 				
 				if (!ProjectSWG.isWindows())

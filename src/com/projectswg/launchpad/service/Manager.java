@@ -66,9 +66,13 @@ public class Manager
 	public static final String AES_SESSION_KEY = "eKgeg75J3pTBURgh";
 	public static final String LOCALHOST = "127.0.0.1";
 	
-	public static final String PSWG_LOGIN_SERVER_NAME = "ProjectSWG";
 	// server string format: [hostname],[port],[statusPort]
-	public static final String PSWG_LOGIN_SERVER_STRING = "login1.projectswg.com,44453,44462";
+	// default pswg
+	public static final String PROFILE_PSWG_K = "ProjectSWG";
+	public static final String PROFILE_PSWG_V = "login1.projectswg.com,44453,44462";
+	// default localhost
+	public static final String PROFILE_LOCALHOST_K = "localhost";
+	public static final String PROFILE_LOCALHOST_V = "127.0.0.1,44453,44462";
 	
 	public static final String GAME_FEATURES = "34374193";
 	
@@ -110,12 +114,11 @@ public class Manager
 	// state
 	private SimpleIntegerProperty state;
 	
-	// current login server
+	// profile
+	private SimpleStringProperty profile;
 	private SimpleStringProperty loginServerHost;
 	private SimpleStringProperty loginServerPlayPort;
 	private SimpleStringProperty loginServerPingPort;
-	
-	private SimpleBooleanProperty localhost;
 	
 	// wine
 	private SimpleStringProperty wineBinary;
@@ -143,11 +146,10 @@ public class Manager
 		resources = null;
 		mainOut = new SimpleStringProperty();
 		
+		profile = new SimpleStringProperty();
 		loginServerHost = new SimpleStringProperty();
 		loginServerPlayPort = new SimpleStringProperty();
 		loginServerPingPort = new SimpleStringProperty();
-		
-		localhost = new SimpleBooleanProperty(ProjectSWG.PREFS.getBoolean("localhost", false));
 		
 		swgFolder = new SimpleStringProperty();
 		pswgFolder = new SimpleStringProperty();
@@ -236,11 +238,15 @@ public class Manager
 		
 		// Login server
 		Preferences loginServersNode = ProjectSWG.PREFS.node("login_servers");
-		if (loginServersNode.get(PSWG_LOGIN_SERVER_NAME, "").equals(""))
-			loginServersNode.put(PSWG_LOGIN_SERVER_NAME, PSWG_LOGIN_SERVER_STRING);
+		// add pswg profile if doesnt exist
+		if (loginServersNode.get(PROFILE_PSWG_K, "").equals(""))
+			loginServersNode.put(PROFILE_PSWG_K, PROFILE_PSWG_V);
+		// add localhost profile if doesnt exist
+		if (loginServersNode.get(PROFILE_LOCALHOST_K, "").equals(""))
+			loginServersNode.put(PROFILE_LOCALHOST_K, PROFILE_LOCALHOST_V);
 		
 		if (ProjectSWG.PREFS.get("login_server", "").equals(""))
-			ProjectSWG.PREFS.put("login_server", PSWG_LOGIN_SERVER_NAME);
+			ProjectSWG.PREFS.put("login_server", PROFILE_PSWG_K);
 	}
 
 	public void addSwgScanServiceListeners()
@@ -585,9 +591,9 @@ public class Manager
 		if (!matcher.find()) {
 			ProjectSWG.log("loginServerString did not match pattern: " + serverString);
 			ProjectSWG.log("Login server string corrupt. Creating new...");
-			matcher = pattern.matcher(PSWG_LOGIN_SERVER_STRING);
+			matcher = pattern.matcher(PROFILE_PSWG_V);
 			if (!matcher.find()) {
-				ProjectSWG.log("Critical error: PSWG_LOGIN_SERVER_STRING -> " + PSWG_LOGIN_SERVER_STRING);
+				ProjectSWG.log("Critical error: PSWG_LOGIN_SERVER_STRING -> " + PROFILE_PSWG_V);
 				return null;
 			}
 		}
@@ -599,9 +605,10 @@ public class Manager
 		};
 	}
 	
-	public void setLoginServerByName(String loginServerName)
+	public void setProfile(String loginServerName)
 	{
 		ProjectSWG.PREFS.put("login_server", loginServerName);
+		profile.set(loginServerName);
 		
 		String[] loginServerValues = getLoginServerValues(loginServerName);
 		
@@ -731,8 +738,7 @@ public class Manager
 	public SimpleStringProperty getWineEnvironmentVariables() { return wineEnvironmentVariables; }
 	public SimpleStringProperty getBinary() { return binary; }
 	public SimpleStringProperty getGameFeatures() { return gameFeatures; }
-	
-	public SimpleBooleanProperty getLocalhost() { return localhost; }
+	public SimpleStringProperty getProfile() { return profile; }
 	
 	public SimpleIntegerProperty getState() { return state; }
 }

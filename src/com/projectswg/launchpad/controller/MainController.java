@@ -136,8 +136,9 @@ public class MainController implements FxmlController
 		
 		addButtonListeners();
 
-		manager.getLoginServerHost().addListener((observable, oldValue, newValue) -> {
-			
+		profileLabel.setText(manager.getProfile().getValue());
+		manager.getProfile().addListener((observable, oldValue, newValue) -> {
+			profileLabel.setText(newValue);
 		});
 		
 		modalController.getRoot().opacityProperty().addListener((observable, oldValue, newValue) -> {

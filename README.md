@@ -4,7 +4,7 @@
 
 ### Launchpad ###
 
-* Version 0.6
+* Version 0.8
 
 
 ### Known Issues ###
