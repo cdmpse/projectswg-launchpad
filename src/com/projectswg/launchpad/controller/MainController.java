@@ -40,6 +40,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Tooltip;
@@ -71,6 +72,9 @@ public class MainController implements FxmlController
 	
 	@FXML
 	private VBox mainRoot;
+	
+	@FXML
+	private Label profileLabel;
 	
 	@FXML
 	private Pane mainDisplayPane, gameProcessPane;
@@ -132,6 +136,10 @@ public class MainController implements FxmlController
 		
 		addButtonListeners();
 
+		manager.getLoginServerHost().addListener((observable, oldValue, newValue) -> {
+			
+		});
+		
 		modalController.getRoot().opacityProperty().addListener((observable, oldValue, newValue) -> {
 			blur.setRadius(newValue.doubleValue() * 10);
 		});

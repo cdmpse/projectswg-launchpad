@@ -13,26 +13,54 @@
    <children>
       <VBox fx:id="mainRoot" alignment="TOP_CENTER">
          <children>
+            <HBox alignment="CENTER" maxHeight="50.0" minHeight="50.0" prefHeight="50.0" spacing="10.0">
+               <children>
+                  <StackPane alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                     <children>
+                        <HBox opacity="0.25" prefHeight="100.0" prefWidth="200.0" style="-fx-background-color: green;" />
+                        <HBox alignment="CENTER_LEFT" spacing="10.0" StackPane.alignment="CENTER_LEFT">
+                           <children>
+                              <Region maxWidth="40.0" minWidth="40.0" prefWidth="40.0" />
+                              <Label style="-fx-font-weight: bold;" styleClass="ticker" text="PROFILE:">
+                                 <effect>
+                                    <Glow />
+                                 </effect>
+                              </Label>
+                              <Label fx:id="profileLabel" styleClass="ticker" text="localhost">
+                                 <effect>
+                                    <Glow />
+                                 </effect>
+                              </Label>
+                           </children>
+                           <effect>
+                              <Glow />
+                           </effect>
+                        </HBox>
+                     </children>
+                  </StackPane>
+               </children>
+            </HBox>
             <HBox VBox.vgrow="ALWAYS">
                <children>
                   <Region maxWidth="120.0" minWidth="120.0" prefWidth="120.0" />
                   <VBox maxWidth="260.0" minWidth="260.0" prefWidth="260.0" HBox.hgrow="ALWAYS">
                      <children>
-                        <Region maxHeight="310.0" minHeight="310.0" prefHeight="310.0" />
+                        <Region maxHeight="260.0" minHeight="260.0" prefHeight="260.0" />
                         <ProgressBar fx:id="progressBar" maxWidth="1.7976931348623157E308" progress="0.0" visible="false" VBox.vgrow="ALWAYS" />
                         <Pane fx:id="mainDisplayPane" maxHeight="60.0" maxWidth="Infinity" minHeight="60.0" prefHeight="60.0" />
                         <Region prefHeight="200.0" prefWidth="200.0" />
                         <Pane fx:id="gameProcessPane" maxHeight="80.0" minHeight="80.0" prefHeight="80.0" VBox.vgrow="ALWAYS" />
                      </children>
                   </VBox>
-                  <VBox alignment="CENTER" maxWidth="120.0" minWidth="120.0" prefWidth="120.0" HBox.hgrow="ALWAYS">
+                  <VBox alignment="TOP_CENTER" maxWidth="120.0" minWidth="120.0" prefWidth="120.0" HBox.hgrow="ALWAYS">
                      <children>
+                        <Region prefHeight="180.0" />
                         <ProgressIndicator fx:id="progressIndicator" focusTraversable="false" maxHeight="40.0" maxWidth="40.0" minHeight="40.0" minWidth="40.0" mouseTransparent="true" prefHeight="40.0" prefWidth="40.0" visible="false" />
                      </children>
                   </VBox>
                   <VBox maxWidth="200.0" minWidth="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
                      <children>
-                        <Region maxHeight="120.0" minHeight="120.0" prefHeight="120.0" />
+                        <Region maxHeight="75.0" minHeight="75.0" prefHeight="75.0" />
                         <GridPane>
                           <columnConstraints>
                             <ColumnConstraints hgrow="SOMETIMES" />

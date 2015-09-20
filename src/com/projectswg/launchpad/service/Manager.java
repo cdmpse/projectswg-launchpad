@@ -50,6 +50,7 @@ import com.projectswg.launchpad.model.Resource;
 import com.projectswg.launchpad.model.Instance;
 
 import javafx.application.Platform;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
@@ -114,6 +115,8 @@ public class Manager
 	private SimpleStringProperty loginServerPlayPort;
 	private SimpleStringProperty loginServerPingPort;
 	
+	private SimpleBooleanProperty localhost;
+	
 	// wine
 	private SimpleStringProperty wineBinary;
 	private SimpleStringProperty wineArguments;
@@ -144,13 +147,15 @@ public class Manager
 		loginServerPlayPort = new SimpleStringProperty();
 		loginServerPingPort = new SimpleStringProperty();
 		
+		localhost = new SimpleBooleanProperty(ProjectSWG.PREFS.getBoolean("localhost", false));
+		
 		swgFolder = new SimpleStringProperty();
 		pswgFolder = new SimpleStringProperty();
 		
 		state = new SimpleIntegerProperty(initialState);
 		
-		binary = new SimpleStringProperty();
-		gameFeatures = new SimpleStringProperty();
+		binary = new SimpleStringProperty(ProjectSWG.PREFS.get("binary", ""));
+		gameFeatures = new SimpleStringProperty(ProjectSWG.PREFS.get("game_features", ""));
 		
 		wineBinary = new SimpleStringProperty("");
 		wineArguments = new SimpleStringProperty("");
@@ -202,12 +207,10 @@ public class Manager
 		addUpdateServiceListeners();
 		
 		// launch configuration
-		binary.set(ProjectSWG.PREFS.get("binary", ""));
 		binary.addListener((observable, oldValue, newValue) -> {
 			ProjectSWG.PREFS.put("binary", newValue);
 		});
 		
-		gameFeatures.set(ProjectSWG.PREFS.get("game_features", ""));
 		gameFeatures.addListener((observable, oldValue, newValue) -> {
 			ProjectSWG.PREFS.put("game_features", newValue);
 		});
@@ -710,86 +713,26 @@ public class Manager
 	    });
 	}
 	
-	public SimpleStringProperty getLoginServerHost()
-	{
-		return loginServerHost;
-	}
-
-	public SimpleStringProperty getLoginServerPlayPort()
-	{
-		return loginServerPlayPort;
-	}
-
-	public SimpleStringProperty getLoginServerPingPort()
-	{
-		return loginServerPingPort;
-	}
+	public ArrayList<Resource> getResources() { return resources; }
 	
-	public SimpleStringProperty getPswgFolder()
-	{
-		return pswgFolder;
-	}
+	public PingService getPingService() { return pingService; }
+	public UpdateService getUpdateService() { return updateService; }
+	public SwgScanService getSwgScanService() { return swgScanService; }
+	public PswgScanService getPswgScanService() { return pswgScanService; }
 	
-	public SimpleStringProperty getSwgFolder()
-	{
-		return swgFolder;
-	}
+	public SimpleStringProperty getMainOut() { return mainOut; }
+	public SimpleStringProperty getWineBinary() { return wineBinary; }
+	public SimpleStringProperty getLoginServerHost() { return loginServerHost; }
+	public SimpleStringProperty getLoginServerPlayPort() { return loginServerPlayPort; }
+	public SimpleStringProperty getLoginServerPingPort() { return loginServerPingPort; }
+	public SimpleStringProperty getPswgFolder() { return pswgFolder; }
+	public SimpleStringProperty getSwgFolder() { return swgFolder; }
+	public SimpleStringProperty getWineArguments() { return wineArguments; }
+	public SimpleStringProperty getWineEnvironmentVariables() { return wineEnvironmentVariables; }
+	public SimpleStringProperty getBinary() { return binary; }
+	public SimpleStringProperty getGameFeatures() { return gameFeatures; }
 	
-	public PingService getPingService()
-	{
-		return pingService;
-	}
+	public SimpleBooleanProperty getLocalhost() { return localhost; }
 	
-	public UpdateService getUpdateService()
-	{
-		return updateService;
-	}
-	
-	public SimpleStringProperty getMainOut()
-	{
-		return mainOut;
-	}
-
-	public SimpleStringProperty getWineBinary()
-	{
-		return wineBinary;
-	}
-
-	public SimpleIntegerProperty getState()
-	{
-		return state;
-	}
-
-	public SwgScanService getSwgScanService()
-	{
-		return swgScanService;
-	}
-
-	public PswgScanService getPswgScanService()
-	{
-		return pswgScanService;
-	}
-	
-	public ArrayList<Resource> getResources()
-	{
-		return resources;
-	}
-	
-	public SimpleStringProperty getWineArguments()
-	{
-		return wineArguments;
-	}
-	
-	public SimpleStringProperty getWineEnvironmentVariables()
-	{
-		return wineEnvironmentVariables;
-	}
-
-	public SimpleStringProperty getBinary() {
-		return binary;
-	}
-	
-	public SimpleStringProperty getGameFeatures() {
-		return gameFeatures;
-	}
+	public SimpleIntegerProperty getState() { return state; }
 }

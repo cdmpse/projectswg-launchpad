@@ -20,6 +20,7 @@
 	-fx-background-color: green;
 	-fx-opacity: 0.6;
 }
+
 .context-menu {
 	-fx-background-color: #111;
 	-fx-text-fill: green;
@@ -174,6 +175,11 @@
 
 .label {
 	-fx-text-fill: greenyellow;
+}
+
+.label.ticker {
+	-fx-text-fill: white;
+	
 }
 
 .check-box {
