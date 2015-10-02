@@ -64,9 +64,7 @@ public class GameController implements FxmlController
 	}
 	
 	@Override
-	public void initialize(URL arg0, ResourceBundle arg1)
-	{
-	}
+	public void initialize(URL arg0, ResourceBundle arg1) {}
 
 	public void show()
 	{
@@ -123,22 +121,10 @@ public class GameController implements FxmlController
 			outputTextArea.setText("debug game not set");
 		
 		gameService.runningProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue)
+			if (!newValue)
 				Platform.runLater(() -> {
-					gameStatusDisplay.queueString(ProjectSWG.CIRCLE);
-				});
-			else
-				Platform.runLater(() -> {
-					gameStatusDisplay.queueString(ProjectSWG.DOT);
 					stopButton.setDisable(true);
 				});
-		});
-		
-		stage.setOnShown((e) -> {
-			if (gameService.isRunning())
-				gameStatusDisplay.queueString(ProjectSWG.CIRCLE);
-			else
-				gameStatusDisplay.queueString(ProjectSWG.DOT);
 		});
 	}
 	
@@ -162,23 +148,8 @@ public class GameController implements FxmlController
 	}
 	
 	@Override
-	public Parent getRoot()
-	{
-		return gameRoot;
-	}
-	
-	public Stage getStage()
-	{
-		return stage;
-	}
-	
-	public Button getStopButton()
-	{
-		return stopButton;
-	}
-	
-	public GameService getGameService()
-	{
-		return gameService;
-	}
+	public Parent getRoot() { return gameRoot; }
+	public Stage getStage() { return stage; }
+	public Button getStopButton() { return stopButton; }
+	public GameService getGameService() { return gameService; }
 }

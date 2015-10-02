@@ -62,10 +62,7 @@ public class GameDisplay
 			display.add(instance);
 	}
 	
-	public Pane getRoot()
-	{
-		return root;
-	}
+	public Pane getRoot() { return root; }
 	
 	public void removeGame(Instance swg)
 	{

@@ -11,19 +11,54 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.layout.ColumnConstraints?>
 
-<VBox fx:id="setupRoot" spacing="20.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.projectswg.launchpad.controller.SetupController">
+<VBox fx:id="setupRoot" alignment="CENTER" maxWidth="680.0" minWidth="680.0" prefWidth="680.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.projectswg.launchpad.controller.SetupController">
    <children>
-      <Button fx:id="swgFolderButton" maxHeight="Infinity" maxWidth="Infinity" mnemonicParsing="false" text="Select SWG Folder" VBox.vgrow="ALWAYS" />
-      <TextField fx:id="swgFolderTextField" disable="true" editable="false" />
-      <HBox alignment="CENTER">
+      <HBox fx:id="stepOneHBox" alignment="CENTER" spacing="50.0" VBox.vgrow="ALWAYS">
          <children>
-            <Pane fx:id="setupDisplayPane" maxWidth="Infinity" prefHeight="50.0" HBox.hgrow="ALWAYS" />
+            <Label fx:id="stepOneLabel" style="-fx-font-size: 46;" text="1" HBox.hgrow="ALWAYS" />
+            <VBox alignment="CENTER" spacing="15.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <Button fx:id="swgFolderButton" maxHeight="Infinity" maxWidth="Infinity" mnemonicParsing="false" text="Select an Original SWG Installation" />
+                  <TextField fx:id="swgFolderTextField" disable="true" editable="false" />
+               </children>
+            </VBox>
          </children>
+         <padding>
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+         </padding>
       </HBox>
-      <Button fx:id="pswgFolderButton" maxHeight="Infinity" maxWidth="Infinity" mnemonicParsing="false" text="Select ProjectSWG Folder" VBox.vgrow="ALWAYS" />
-      <TextField fx:id="pswgFolderTextField" disable="true" editable="false" />
+      <HBox fx:id="stepTwoHBox" alignment="CENTER" spacing="50.0" VBox.vgrow="ALWAYS">
+         <children>
+            <Label fx:id="stepTwoLabel" style="-fx-font-size: 46;" text="2" HBox.hgrow="ALWAYS" />
+            <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" spacing="15.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <Label text="Select an Update Server" />
+                  <HBox spacing="20.0">
+                     <children>
+                        <ComboBox fx:id="updateServerComboBox" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+                        <Button fx:id="addUpdateServerButton" maxWidth="80.0" minWidth="80.0" mnemonicParsing="false" prefWidth="80.0" text="Add" HBox.hgrow="ALWAYS" />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </children>
+         <padding>
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+         </padding>
+      </HBox>
+      <HBox fx:id="stepThreeHBox" alignment="CENTER" spacing="50.0" VBox.vgrow="ALWAYS">
+         <children>
+            <Label fx:id="stepThreeLabel" style="-fx-font-size: 46;" text="3" HBox.hgrow="ALWAYS" />
+            <VBox alignment="CENTER" spacing="15.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <Button fx:id="pswgFolderButton" maxHeight="Infinity" maxWidth="Infinity" mnemonicParsing="false" text="Select the Installation Folder" />
+                  <TextField fx:id="pswgFolderTextField" disable="true" editable="false" />
+               </children>
+            </VBox>
+         </children>
+         <padding>
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+         </padding>
+      </HBox>
    </children>
-   <padding>
-      <Insets bottom="60.0" left="30.0" right="30.0" top="60.0" />
-   </padding>
 </VBox>

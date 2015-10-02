@@ -21,7 +21,7 @@
                         <HBox alignment="CENTER_LEFT" spacing="10.0" StackPane.alignment="CENTER_LEFT">
                            <children>
                               <Region maxWidth="40.0" minWidth="40.0" prefWidth="40.0" />
-                              <Label style="-fx-font-weight: bold;" styleClass="ticker" text="PROFILE:">
+                              <Label style="-fx-font-weight: bold;" styleClass="ticker" text="LOGIN SERVER:">
                                  <effect>
                                     <Glow />
                                  </effect>

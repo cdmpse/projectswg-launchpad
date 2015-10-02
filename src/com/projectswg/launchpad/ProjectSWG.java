@@ -76,8 +76,6 @@ public class ProjectSWG extends Application
 	public static final String THEME_DEFAULT = "Default";
 	public static final String CHECKMARK = "\u2713";
 	public static final String XMARK = "\u2717";
-	public static final String CIRCLE = "\u25cb";
-	public static final String DOT = "\u25cf";
 	
 	public static final int ANIMATION_NONE = 0;
 	public static final int ANIMATION_LOW = 1;
@@ -94,6 +92,11 @@ public class ProjectSWG extends Application
 	private ObservableList<Instance> instances;
 	private int instanceCount = 0;
 	
+	
+	public static void main(String[] args)
+	{
+		launch(args);
+	}
 	
 	@Override
 	public void start(Stage primaryStage)
@@ -122,11 +125,6 @@ public class ProjectSWG extends Application
 		primaryStage.centerOnScreen();
 		primaryStage.setOpacity(1);
 		playSound("launcher_start");
-	}
-	
-	public int getInstanceNumber()
-	{
-		return ++instanceCount;
 	}
 	
 	public void loadTheme(String theme)
@@ -209,26 +207,6 @@ public class ProjectSWG extends Application
 			instance.getGameController().getStage().getScene().getStylesheets().clear();
 			instance.getGameController().getStage().getScene().getStylesheets().add(cssPath);
 		}
-	}
-	
-	public HashMap<String, FxmlController> getControllers()
-	{
-		return controllers;
-	}
-	
-	public static void main(String[] args)
-	{
-		launch(args);
-	}
-	
-	public Manager getManager()
-	{
-		return manager;
-	}
-	
-	public Stage getStage()
-	{
-		return primaryStage;
 	}
 	
 	public static void log(String text)
@@ -317,8 +295,13 @@ public class ProjectSWG extends Application
 		return System.getProperty("os.name").startsWith("Windows");
 	}
 	
-	public ObservableList<Instance> getInstances()
+	public int getInstanceNumber()
 	{
-		return instances;
+		return ++instanceCount;
 	}
+	
+	public HashMap<String, FxmlController> getControllers() { return controllers; }
+	public Manager getManager() { return manager; }
+	public Stage getStage() { return primaryStage; }
+	public ObservableList<Instance> getInstances() { return instances; }
 }

@@ -24,7 +24,6 @@
             <TextField fx:id="findTextField" />
             <Button fx:id="findButton" defaultButton="true" focusTraversable="false" mnemonicParsing="false" text="Find" />
             <Region maxWidth="Infinity" HBox.hgrow="ALWAYS" />
-            <Pane fx:id="gameStatusPane" maxHeight="30.0" maxWidth="30.0" minHeight="30.0" minWidth="30.0" prefHeight="30.0" prefWidth="30.0" />
             <Button fx:id="stopButton" focusTraversable="false" mnemonicParsing="false" text="Stop" HBox.hgrow="ALWAYS" />
          </children>
       </HBox>

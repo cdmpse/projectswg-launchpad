@@ -71,48 +71,35 @@ public class SettingsController implements ModalComponent
 {
 	@FXML
 	private Accordion settingsRoot;
-	
 	@FXML
 	private TitledPane winePane;
-	
 	@FXML
 	private Slider animationSlider;
-	
 	@FXML
 	private Button settingsSwgFolderButton, settingsPswgFolderButton, pingButton, deleteGameProfilesButton;
-	
 	@FXML
 	private Button refreshThemesButton, removeLoginServerButton, addLoginServerButton, wineBinaryButton;
-	
 	@FXML
 	private Button binaryButton, gameFeaturesButton, deleteLaunchpadPreferencesButton;
-	
 	@FXML
 	private TextField wineArgumentsTextField, wineEnvironmentVariablesTextField;
-	
 	@FXML
 	private CheckBox closeAfterLaunchCheckBox, captureCheckBox, debugCheckBox;
-	
 	@FXML
 	private CheckBox loginServerLockedCheckBox, openOnLaunchCheckBox, soundCheckBox, translateCheckBox;
-	
 	@FXML
 	private ComboBox<String> loginServerComboBox, themeComboBox;
-	
 	@FXML
 	private Pane pingDisplayPane, swgFolderDisplayPane, pswgFolderDisplayPane;
-	
 	@FXML
-	private TextField hostnameTextField, portTextField, statusPortTextField;
-	
+	private TextField hostnameTextField, playPortTextField, statusPortTextField;
 	@FXML
 	private Hyperlink pswgHyperlink, showHyperlink, resetBinaryHyperlink, resetGameFeaturesHyperlink;
-	
 	@FXML
 	private Text licenseText;
 
 	private static final String LABEL = "Settings";
-	private static final int WINE_PANE_INDEX = 3;
+	private static final int WINE_PANE_INDEX = 4;
 	
 	private MainController mainController;
 	private ModalController modalController;
@@ -262,7 +249,7 @@ public class SettingsController implements ModalComponent
 			ProjectSWG.log("Refresh Login Servers Error: " + e1.toString());
 		}
 		
-		loginServerComboBox.setValue(ProjectSWG.PREFS.get("login_server", Manager.PROFILE_PSWG_K));
+		loginServerComboBox.setValue(ProjectSWG.PREFS.get("login_server", Manager.LS_PSWG_K));
 	}
 	
 	public void initSetupLoginServerSettings()
@@ -287,7 +274,7 @@ public class SettingsController implements ModalComponent
 				if (Pattern.matches(portPattern, newValue))
 					manager.setLoginServerPort(loginServerComboBox.getValue(), newValue);
 				else
-					portTextField.setText(oldValue);
+					playPortTextField.setText(oldValue);
 			}
 		};
 		
@@ -307,9 +294,9 @@ public class SettingsController implements ModalComponent
 				hostnameTextField.textProperty().removeListener(hostnameTextChangeListener);
 				hostnameTextField.textProperty().bind(manager.getLoginServerHost());
 				
-				portTextField.setDisable(true);
-				portTextField.textProperty().removeListener(portTextChangeListener);
-				portTextField.textProperty().bind(manager.getLoginServerPlayPort());
+				playPortTextField.setDisable(true);
+				playPortTextField.textProperty().removeListener(portTextChangeListener);
+				playPortTextField.textProperty().bind(manager.getLoginServerPlayPort());
 
 				statusPortTextField.setDisable(true);
 				statusPortTextField.textProperty().removeListener(statusPortTextChangeListener);
@@ -319,9 +306,9 @@ public class SettingsController implements ModalComponent
 				hostnameTextField.textProperty().unbind();
 				hostnameTextField.textProperty().addListener(hostnameTextChangeListener);
 
-				portTextField.setDisable(false);
-				portTextField.textProperty().unbind();
-				portTextField.textProperty().addListener(portTextChangeListener);
+				playPortTextField.setDisable(false);
+				playPortTextField.textProperty().unbind();
+				playPortTextField.textProperty().addListener(portTextChangeListener);
 
 				statusPortTextField.setDisable(false);
 				statusPortTextField.textProperty().unbind();
@@ -339,8 +326,8 @@ public class SettingsController implements ModalComponent
 			loginServerLockedCheckBox.setSelected(true);
 			
 			switch (newValue) {
-			case Manager.PROFILE_PSWG_K:
-			case Manager.PROFILE_LOCALHOST_K:
+			case Manager.LS_PSWG_K:
+			case Manager.LS_LOCALHOST_K:
 				loginServerLockedCheckBox.setDisable(true);
 				removeLoginServerButton.setDisable(true);
 				break;
@@ -349,7 +336,7 @@ public class SettingsController implements ModalComponent
 				removeLoginServerButton.setDisable(false);
 			}
 
-			manager.setProfile(newValue);
+			manager.setLoginServer(newValue);
 		});
 		refreshLoginServerComboBox();
 		
@@ -438,7 +425,8 @@ public class SettingsController implements ModalComponent
 			case Manager.STATE_SWG_SCANNING:
 				swgFolderDisplay.queueNode(progressIndicator);
 				break;
-				
+			
+			case Manager.STATE_UPDATE_SERVER_REQUIRED:
 			case Manager.STATE_PSWG_SCAN_REQUIRED:
 				swgFolderDisplay.queueString(ProjectSWG.CHECKMARK);
 				pswgFolderDisplay.queueString(ProjectSWG.XMARK);
@@ -735,8 +723,5 @@ public class SettingsController implements ModalComponent
 	}
 	
 	@Override
-	public Parent getRoot()
-	{
-		return settingsRoot;
-	}
+	public Parent getRoot() { return settingsRoot; }
 }

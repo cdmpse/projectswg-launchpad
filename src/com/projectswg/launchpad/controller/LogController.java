@@ -138,15 +138,8 @@ public class LogController implements FxmlController
 	}
 	
 	@Override
-	public Parent getRoot()
-	{
-		return logRoot;
-	}
-	
-	public Stage getStage()
-	{
-		return stage;
-	}
+	public Parent getRoot() { return logRoot; }
+	public Stage getStage() { return stage; }
 	
 	private class DebugListener implements ChangeListener<String>
 	{

@@ -58,28 +58,38 @@ import javafx.util.Pair;
 
 public class Manager
 {
-	public static final String PATCH_SERVER = "patch1.projectswg.com";
-	public static final String PATCH_SERVER_FILES = "http://" + PATCH_SERVER + "/files/";
-	public static final String PATCH_SERVER_LAUNCHER = "http://" + PATCH_SERVER + "/launcher/";
-	public static final String HTTP_AUTH = "pswglaunch:wvQAxc5mGgF0";
 
-	public static final String AES_SESSION_KEY = "eKgeg75J3pTBURgh";
-	public static final String LOCALHOST = "127.0.0.1";
 	
-	// server string format: [hostname],[port],[statusPort]
+	// update server string format: [filelist],[files_url],[auth_user],[auth_pass],[enc_key],[folder]
 	// default pswg
-	public static final String PROFILE_PSWG_K = "ProjectSWG";
-	public static final String PROFILE_PSWG_V = "login1.projectswg.com,44453,44462";
+	public static final String US_PSWG_K = "ProjectSWG";
+	public static final String US_PSWG_V = "launcherS.dl.dat" +
+										   ",http://patch1.projectswg.com/files/" +
+										   ",pswglaunch" +
+										   ",wvQAxc5mGgF0" +
+										   ",eKgeg75J3pTBURgh" +
+										   ",";
+	
+	// login server string format: [hostname],[playPort],[pingPort]
+	// default pswg
+	public static final String LS_PSWG_K = "ProjectSWG";
+	public static final String LS_PSWG_V = "login1.projectswg.com" +
+										   ",44453" +
+										   ",44462";
 	// default localhost
-	public static final String PROFILE_LOCALHOST_K = "localhost";
-	public static final String PROFILE_LOCALHOST_V = "127.0.0.1,44453,44462";
+	public static final String LS_LOCALHOST_K = "localhost";
+	public static final String LS_LOCALHOST_V = "127.0.0.1,44453,44462";
 	
 	public static final String GAME_FEATURES = "34374193";
 	
-	public static final int LOGIN_SERVER_HOSTNAME = 0;
-	public static final int LOGIN_SERVER_PORT = 1;
-	public static final int LOGIN_SERVER_STATUSPORT = 2;
-
+	public static final int UPDATE_SERVER_LIST = 0;
+	public static final int UPDATE_SERVER_FILES = 1;
+	public static final int UPDATE_SERVER_USE_AUTH = 2;
+	public static final int UPDATE_SERVER_USER = 3;
+	public static final int UPDATE_SERVER_PASSWORD = 4;
+	public static final int UPDATE_SERVER_USE_ENC = 5;
+	public static final int UPDATE_SERVER_ENC_KEY = 6;
+	
 	public static final int MAX_BUFFER_SIZE = 2048;
 	public static final int RESOURCE_LIST_HASH = 0;
 	
@@ -96,29 +106,35 @@ public class Manager
 	public static final int STATE_INIT = 0;
 	public static final int STATE_SWG_SETUP_REQUIRED = 1;
 	public static final int STATE_SWG_SCANNING = 2;
-	public static final int STATE_PSWG_SETUP_REQUIRED = 3;
-	public static final int STATE_PSWG_SCAN_REQUIRED = 4;
-	public static final int STATE_PSWG_SCANNING = 5;
-	public static final int STATE_UPDATE_REQUIRED = 6;
-	public static final int STATE_UPDATING = 7;
-	public static final int STATE_WINE_REQUIRED = 8;
-	public static final int STATE_PSWG_READY = 9;
+	public static final int STATE_UPDATE_SERVER_REQUIRED = 3;
+	public static final int STATE_PSWG_SETUP_REQUIRED = 4;
+	public static final int STATE_PSWG_SCAN_REQUIRED = 5;
+	public static final int STATE_PSWG_SCANNING = 6;
+	public static final int STATE_UPDATE_REQUIRED = 7;
+	public static final int STATE_UPDATING = 8;
+	public static final int STATE_WINE_REQUIRED = 9;
+	public static final int STATE_PSWG_READY = 10;
 	
 	private ArrayList<Resource> resources;
-	private SimpleStringProperty mainOut;
-	
-	// install locations
-	private SimpleStringProperty swgFolder;
-	private SimpleStringProperty pswgFolder;
-	
-	// state
+
 	private SimpleIntegerProperty state;
 	
+	private SimpleStringProperty mainOut;
+	
+	private SimpleStringProperty swgFolder;
 	// profile
-	private SimpleStringProperty profile;
+	private SimpleStringProperty loginServer;
 	private SimpleStringProperty loginServerHost;
 	private SimpleStringProperty loginServerPlayPort;
 	private SimpleStringProperty loginServerPingPort;
+	
+	private SimpleStringProperty updateServer;
+	private SimpleStringProperty updateServerFilesList;
+	private SimpleStringProperty updateServerFilesLocation;
+	private SimpleStringProperty updateServerUser;
+	private SimpleStringProperty updateServerPassword;
+	private SimpleStringProperty updateServerEncryptionKey;
+	private SimpleStringProperty pswgFolder;
 	
 	// wine
 	private SimpleStringProperty wineBinary;
@@ -146,14 +162,21 @@ public class Manager
 		resources = null;
 		mainOut = new SimpleStringProperty();
 		
-		profile = new SimpleStringProperty();
+		loginServer = new SimpleStringProperty();
 		loginServerHost = new SimpleStringProperty();
 		loginServerPlayPort = new SimpleStringProperty();
 		loginServerPingPort = new SimpleStringProperty();
 		
-		swgFolder = new SimpleStringProperty();
+		updateServer = new SimpleStringProperty("");
+		updateServerFilesList = new SimpleStringProperty();
+		updateServerFilesLocation = new SimpleStringProperty();
+		updateServerUser = new SimpleStringProperty();
+		updateServerPassword = new SimpleStringProperty();
+		updateServerEncryptionKey = new SimpleStringProperty();
 		pswgFolder = new SimpleStringProperty();
 		
+		swgFolder = new SimpleStringProperty();
+
 		state = new SimpleIntegerProperty(initialState);
 		
 		binary = new SimpleStringProperty(ProjectSWG.PREFS.get("binary", ""));
@@ -236,17 +259,44 @@ public class Manager
 			ProjectSWG.PREFS.put("wine_environment_variables", newValue);
 		});
 		
-		// Login server
+		// update server
+		Preferences updateServersNode = ProjectSWG.PREFS.node("update_servers");
+		// add pswg update server if doesnt exist
+		if (updateServersNode.get(US_PSWG_K, "").equals(""))
+			updateServersNode.put(US_PSWG_K, US_PSWG_V);
+		
+		//if (ProjectSWG.PREFS.get("update_server", "").equals(""))
+		//	ProjectSWG.PREFS.put("update_server", US_PSWG_V);
+		
+		updateServer.addListener((observable, oldValue, newValue) -> {
+			if (newValue.equals(""))
+				return;
+			
+			ProjectSWG.PREFS.put("update_server", newValue);
+			String[] updateServerValues = getUpdateServerValues(newValue);
+			updateServerFilesList.set(updateServerValues[0]);
+			updateServerFilesLocation.set(updateServerValues[1]);
+			updateServerUser.set(updateServerValues[2]);
+			updateServerPassword.set(updateServerValues[3]);
+			updateServerEncryptionKey.set(updateServerValues[4]);
+			pswgFolder.set(updateServerValues[5]);
+		});
+		
+		// login server
 		Preferences loginServersNode = ProjectSWG.PREFS.node("login_servers");
-		// add pswg profile if doesnt exist
-		if (loginServersNode.get(PROFILE_PSWG_K, "").equals(""))
-			loginServersNode.put(PROFILE_PSWG_K, PROFILE_PSWG_V);
-		// add localhost profile if doesnt exist
-		if (loginServersNode.get(PROFILE_LOCALHOST_K, "").equals(""))
-			loginServersNode.put(PROFILE_LOCALHOST_K, PROFILE_LOCALHOST_V);
+		// add pswg login server if doesnt exist
+		if (loginServersNode.get(LS_PSWG_K, "").equals(""))
+			loginServersNode.put(LS_PSWG_K, LS_PSWG_V);
+		// add localhost if doesnt exist
+		if (loginServersNode.get(LS_LOCALHOST_K, "").equals(""))
+			loginServersNode.put(LS_LOCALHOST_K, LS_LOCALHOST_V);
 		
 		if (ProjectSWG.PREFS.get("login_server", "").equals(""))
-			ProjectSWG.PREFS.put("login_server", PROFILE_PSWG_K);
+			ProjectSWG.PREFS.put("login_server", LS_PSWG_K);
+		
+		state.addListener((observable, oldValue, newValue) -> {
+			ProjectSWG.log(String.format("state change: %s -> %s", oldValue, newValue));
+		});
 	}
 
 	public void addSwgScanServiceListeners()
@@ -281,7 +331,10 @@ public class Manager
 			Platform.runLater(() -> {
 				if (swgScanService.getValue())
 					if (pswgFolder.getValue().equals(""))
-						state.set(STATE_PSWG_SETUP_REQUIRED);
+						if (updateServer.getValue().equals(""))
+							state.set(STATE_UPDATE_SERVER_REQUIRED);
+						else
+							state.set(STATE_PSWG_SETUP_REQUIRED);
 					else
 						quickScan();
 				else
@@ -515,14 +568,11 @@ public class Manager
 			InputStream is = Files.newInputStream(Paths.get(file.getPath()));
 			byte[] buffer = new byte[MAX_BUFFER_SIZE];
 			int read;
-			while ((read = is.read(buffer)) > 0) {
+			while ((read = is.read(buffer)) > 0)
 				md.update(buffer, 0, read);
-			}
+
 			is.close();
-		} catch (NoSuchAlgorithmException e) {
-			ProjectSWG.log(e.toString());
-			return null;
-		} catch (IOException e) {
+		} catch (NoSuchAlgorithmException | IOException e) {
 			ProjectSWG.log(e.toString());
 			return null;
 		}
@@ -539,8 +589,8 @@ public class Manager
 	{
 		try {
 			Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-			SecretKeySpec sks = new SecretKeySpec(Manager.AES_SESSION_KEY.getBytes(), "AES");
-			cipher.init(Cipher.ENCRYPT_MODE, sks, new IvParameterSpec(Manager.AES_SESSION_KEY.getBytes()));
+			SecretKeySpec sks = new SecretKeySpec(key.getBytes(), "AES");
+			cipher.init(Cipher.ENCRYPT_MODE, sks, new IvParameterSpec(key.getBytes()));
 			return cipher.doFinal(text.getBytes());
 		} catch (NoSuchAlgorithmException |
 				NoSuchPaddingException |
@@ -572,13 +622,61 @@ public class Manager
 		return null;
 	}
 
-	public String[] getLoginServerValues(String loginServerName)
+	public String[] getUpdateServerValues(String updateServer)
+	{
+		Preferences updateServersNode = Preferences.userNodeForPackage(ProjectSWG.class).node("update_servers");
+		String serverString = updateServersNode.get(updateServer, "");
+		if (serverString.equals("")) {
+			ProjectSWG.log("Update server doesn't exist: " + loginServer);
+			return null;
+		}
+		
+		Pattern pattern;
+		// [filelist],[files_url],[auth_user],[auth_pass],[enc_key],[folder]
+		pattern = Pattern.compile("^(.*),(.*),(.*),(.*),(.*),(.*)$");
+		Matcher matcher;
+
+		matcher = pattern.matcher(serverString);
+		if (!matcher.find()) {
+			ProjectSWG.log("updateServerString did not match pattern: " + serverString);
+			ProjectSWG.log("Update server string corrupt. Creating new...");
+			matcher = pattern.matcher(US_PSWG_V);
+			if (!matcher.find()) {
+				ProjectSWG.log("Update string error: " + US_PSWG_V);
+				return null;
+			}
+		}
+	
+		return new String[] {
+			matcher.group(1),
+			matcher.group(2),
+			matcher.group(3),
+			matcher.group(4),
+			matcher.group(5),
+			matcher.group(6),
+		};
+	}
+	
+	// update server string format: [filelist],[files_url],[auth_user],[auth_pass],[enc_key],[folder]
+	public void setUpdateServerValues(String updateServerName, String[] values)
+	{
+		Preferences updateServersNode = Preferences.userNodeForPackage(ProjectSWG.class).node("update_servers");
+		updateServersNode.put(updateServerName, String.format("%s,%s,%s,%s,%s,%s",
+			values[0],
+			values[1],
+			values[2],
+			values[3],
+			values[4],
+			values[5]
+		));
+	}
+	
+	public String[] getLoginServerValues(String loginServer)
 	{
 		Preferences loginServersNode = Preferences.userNodeForPackage(ProjectSWG.class).node("login_servers");
-		String serverString = loginServersNode.get(loginServerName, "");
-		
+		String serverString = loginServersNode.get(loginServer, "");
 		if (serverString.equals("")) {
-			ProjectSWG.log("Login server doesn't exist: " + loginServerName);
+			ProjectSWG.log("Login server doesn't exist: " + loginServer);
 			return null;
 		}
 		
@@ -591,38 +689,38 @@ public class Manager
 		if (!matcher.find()) {
 			ProjectSWG.log("loginServerString did not match pattern: " + serverString);
 			ProjectSWG.log("Login server string corrupt. Creating new...");
-			matcher = pattern.matcher(PROFILE_PSWG_V);
+			matcher = pattern.matcher(LS_PSWG_V);
 			if (!matcher.find()) {
-				ProjectSWG.log("Critical error: PSWG_LOGIN_SERVER_STRING -> " + PROFILE_PSWG_V);
+				ProjectSWG.log("Critical error: PSWG_LOGIN_SERVER_STRING -> " + LS_PSWG_V);
 				return null;
 			}
 		}
 	
 		return new String[] {
-			matcher.group(LOGIN_SERVER_HOSTNAME + 1),
-			matcher.group(LOGIN_SERVER_PORT + 1),
-			matcher.group(LOGIN_SERVER_STATUSPORT + 1)
+			matcher.group(1),
+			matcher.group(2),
+			matcher.group(3)
 		};
 	}
 	
-	public void setProfile(String loginServerName)
+	public void setLoginServer(String loginServerName)
 	{
 		ProjectSWG.PREFS.put("login_server", loginServerName);
-		profile.set(loginServerName);
+		loginServer.set(loginServerName);
 		
 		String[] loginServerValues = getLoginServerValues(loginServerName);
 		
-		ProjectSWG.log("Setting login server hostname: " + loginServerValues[LOGIN_SERVER_HOSTNAME]);
-		ProjectSWG.log("Setting login server playport: " + loginServerValues[LOGIN_SERVER_PORT]);
-		ProjectSWG.log("Setting login server pingport: " + loginServerValues[LOGIN_SERVER_STATUSPORT]);
+		ProjectSWG.log("Setting login server hostname: " + loginServerValues[0]);
+		ProjectSWG.log("Setting login server playport: " + loginServerValues[1]);
+		ProjectSWG.log("Setting login server pingport: " + loginServerValues[2]);
 		
-		setLoginServerHostname(ProjectSWG.PREFS.get("login_server", ""), loginServerValues[LOGIN_SERVER_HOSTNAME]);
-		setLoginServerPort(ProjectSWG.PREFS.get("login_server", ""), loginServerValues[LOGIN_SERVER_PORT]);
-		setLoginServerStatusPort(ProjectSWG.PREFS.get("login_server", ""), loginServerValues[LOGIN_SERVER_STATUSPORT]);
+		setLoginServerHostname(ProjectSWG.PREFS.get("login_server", ""), loginServerValues[0]);
+		setLoginServerPort(ProjectSWG.PREFS.get("login_server", ""), loginServerValues[1]);
+		setLoginServerStatusPort(ProjectSWG.PREFS.get("login_server", ""), loginServerValues[2]);
 
-		loginServerHost.set(loginServerValues[LOGIN_SERVER_HOSTNAME]);
-		loginServerPlayPort.set(loginServerValues[LOGIN_SERVER_PORT]);
-		loginServerPingPort.set(loginServerValues[LOGIN_SERVER_STATUSPORT]);
+		loginServerHost.set(loginServerValues[0]);
+		loginServerPlayPort.set(loginServerValues[1]);
+		loginServerPingPort.set(loginServerValues[2]);
 	}
 	
 	public void setLoginServerHostname(String loginServerName, String value)
@@ -631,8 +729,8 @@ public class Manager
 		String[] loginServerValues = getLoginServerValues(loginServerName);
 		loginServersNode.put(loginServerName, String.format("%s,%s,%s",
 			value,
-			loginServerValues[LOGIN_SERVER_PORT],
-			loginServerValues[LOGIN_SERVER_STATUSPORT]
+			loginServerValues[1],
+			loginServerValues[2]
 		));
 		loginServerHost.set(value);
 	}
@@ -642,9 +740,9 @@ public class Manager
 		Preferences loginServersNode = Preferences.userNodeForPackage(ProjectSWG.class).node("login_servers");
 		String[] loginServerValues = getLoginServerValues(loginServerName);
 		loginServersNode.put(loginServerName, String.format("%s,%s,%s",
-			loginServerValues[LOGIN_SERVER_HOSTNAME],
+			loginServerValues[0],
 			value,
-			loginServerValues[LOGIN_SERVER_STATUSPORT]
+			loginServerValues[2]
 		));
 		loginServerPlayPort.set(value);
 	}
@@ -654,8 +752,8 @@ public class Manager
 		Preferences loginServersNode = Preferences.userNodeForPackage(ProjectSWG.class).node("login_servers");
 		String[] loginServerValues = getLoginServerValues(loginServerName);
 		loginServersNode.put(loginServerName, String.format("%s,%s,%s",
-			loginServerValues[LOGIN_SERVER_HOSTNAME],
-			loginServerValues[LOGIN_SERVER_PORT],
+			loginServerValues[0],
+			loginServerValues[1],
 			value
 		));
 		loginServerPingPort.set(value);
@@ -738,7 +836,13 @@ public class Manager
 	public SimpleStringProperty getWineEnvironmentVariables() { return wineEnvironmentVariables; }
 	public SimpleStringProperty getBinary() { return binary; }
 	public SimpleStringProperty getGameFeatures() { return gameFeatures; }
-	public SimpleStringProperty getProfile() { return profile; }
+	public SimpleStringProperty getProfile() { return loginServer; }
+	public SimpleStringProperty getUpdateServer() { return updateServer; }
+	public SimpleStringProperty getUpdateServerEncryptionKey() { return updateServerEncryptionKey; }
+	public SimpleStringProperty getUpdateServerPassword() { return updateServerPassword; }
+	public SimpleStringProperty getUpdateServerFilesList() { return updateServerFilesList; }
+	public SimpleStringProperty getUpdateServerFilesLocation() { return updateServerFilesLocation; }
+	public SimpleStringProperty getUpdateServerUser() { return updateServerUser; }
 	
 	public SimpleIntegerProperty getState() { return state; }
 }

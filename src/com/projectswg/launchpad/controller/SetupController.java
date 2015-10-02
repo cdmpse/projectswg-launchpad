@@ -22,59 +22,48 @@ package com.projectswg.launchpad.controller;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
+import com.projectswg.launchpad.ProjectSWG;
 import com.projectswg.launchpad.service.Manager;
 
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
-import javafx.scene.effect.Blend;
-import javafx.scene.effect.BlendMode;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.InnerShadow;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.Pane;
+import javafx.scene.effect.Glow;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 
 public class SetupController implements ModalComponent
 {
 	@FXML
 	private VBox setupRoot;
-	
 	@FXML
-	private Button pswgFolderButton, swgFolderButton;
-	
+	private HBox stepOneHBox, stepTwoHBox, stepThreeHBox;
 	@FXML
-	private TextField swgFolderTextField, pswgFolderTextField;	
-	
+	private Label stepOneLabel, stepTwoLabel, stepThreeLabel;
 	@FXML
-	private Pane setupDisplayPane;
+	private Button pswgFolderButton, swgFolderButton, addUpdateServerButton;
+	@FXML
+	private ComboBox<String> updateServerComboBox;
+	@FXML
+	private TextField swgFolderTextField, pswgFolderTextField, updateServerTextField;	
 	
 	public static final String LABEL = "Setup";
 	
-	private Label swgLabel, pswgLabel;
+	private EventHandler<MouseEvent> comboClicked;
 	private MainController mainController;
-	private NodeDisplay setupDisplay;
-	private ProgressIndicator progressIndicator;
-	
-	
-	public SetupController()
-	{
-		swgLabel = new Label("Select your original SWG installation...");
-		pswgLabel = new Label("Select where ProjectSWG will be installed...");
-	}
 	
 	@Override
-	public void initialize(URL arg0, ResourceBundle arg1)
-	{
-	}
+	public void initialize(URL arg0, ResourceBundle arg1) {}
 	
 	@Override
 	public void init(MainController mainController)
@@ -82,7 +71,12 @@ public class SetupController implements ModalComponent
 		this.mainController = mainController;
 		Manager manager = mainController.getManager();
 		
-		setupDisplay = new NodeDisplay(setupDisplayPane);
+		comboClicked = new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				ProjectSWG.playSound("combo_clicked");
+			}
+		};
 		
 		swgFolderTextField.textProperty().bind(manager.getSwgFolder());
 		pswgFolderTextField.textProperty().bind(manager.getPswgFolder());
@@ -98,6 +92,7 @@ public class SetupController implements ModalComponent
 			manager.getSwgFolder().set(null);
 			manager.getSwgFolder().set(swgPath);
 		});
+		
 		final Tooltip swgFolderButtonTooltip = new Tooltip("Select the original Star Wars Galaxies installation folder.");
 		swgFolderButton.setTooltip(swgFolderButtonTooltip);
 		
@@ -111,43 +106,99 @@ public class SetupController implements ModalComponent
 			String pswgPath = file.getAbsolutePath();
 			manager.getPswgFolder().set(pswgPath);
 		});
+		
 		final Tooltip pswgFolderButtonTooltip = new Tooltip("Select an existing ProjectSWG folder or create a new one.");
 		pswgFolderButton.setTooltip(pswgFolderButtonTooltip);
 		
-		progressIndicator = new ProgressIndicator();
-		progressIndicator.setMaxSize(15, 15);
-		progressIndicator.setPrefSize(15, 15);
-		progressIndicator.setMinSize(15, 15);
+		refreshUpdateServerComboBox();
 		
+		updateServerComboBox.setOnMouseClicked(comboClicked);
+		updateServerComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue == null)
+				return;
+
+			ProjectSWG.log("Setting update server: " + newValue);
+			manager.getUpdateServer().set(newValue);
+			manager.getState().set(Manager.STATE_PSWG_SETUP_REQUIRED);
+		});
+
 		manager.getState().addListener((observable, oldValue, newValue) -> {
 			switch (newValue.intValue()) {
 			case Manager.STATE_INIT:
 			case Manager.STATE_SWG_SETUP_REQUIRED:
-				setupDisplay.queueNode(swgLabel);
 				if (!swgFolderTextField.getStyleClass().contains("fail"))
 					swgFolderTextField.getStyleClass().add("fail");
-				pswgFolderTextField.setVisible(false);
-				pswgFolderButton.setVisible(false);
+				
+				//pswgFolderTextField.setVisible(false);
+				//pswgFolderButton.setVisible(false);
+				stepOneLabel.setOpacity(1);
+				stepTwoHBox.setDisable(true);
+				stepTwoHBox.setOpacity(0.25);
+				stepTwoLabel.setEffect(null);
+				stepThreeHBox.setDisable(true);
+				stepThreeHBox.setOpacity(0.25);
+				stepThreeLabel.setEffect(null);
 				break;
 
 			case Manager.STATE_SWG_SCANNING:
-				setupDisplay.queueNode(progressIndicator);
 				if (!swgFolderTextField.getStyleClass().contains("fail"))
 					swgFolderTextField.getStyleClass().add("fail");
-				pswgFolderTextField.setVisible(false);
-				pswgFolderButton.setVisible(false);
+				
+				//pswgFolderTextField.setVisible(false);
+				//pswgFolderButton.setVisible(false);
+				stepOneLabel.setOpacity(1);
+				stepTwoHBox.setDisable(true);
+				stepTwoHBox.setOpacity(0.25);
+				stepTwoLabel.setEffect(null);
+				stepThreeHBox.setDisable(true);
+				stepThreeHBox.setOpacity(0.25);
+				stepThreeLabel.setEffect(null);
 				break;
 				
-			case Manager.STATE_PSWG_SETUP_REQUIRED:
-				setupDisplay.queueNode(pswgLabel);
+			case Manager.STATE_UPDATE_SERVER_REQUIRED:
 				if (swgFolderTextField.getStyleClass().contains("fail"))
 					swgFolderTextField.getStyleClass().remove("fail");
 				if (!swgFolderTextField.getStyleClass().contains("pass"))
 					swgFolderTextField.getStyleClass().add("pass");
 				if (!pswgFolderTextField.getStyleClass().contains("fail"))
 					pswgFolderTextField.getStyleClass().add("fail");
-				pswgFolderTextField.setVisible(true);
-				pswgFolderButton.setVisible(true);
+				
+				//pswgFolderTextField.setVisible(true);
+				//pswgFolderButton.setVisible(true);
+				
+				stepOneLabel.setOpacity(0.5);
+				
+				stepTwoHBox.setDisable(false);
+				stepTwoHBox.setOpacity(1);
+				stepTwoLabel.setEffect(new Glow(0.7));
+
+				stepThreeHBox.setDisable(true);
+				stepThreeHBox.setOpacity(0.25);
+				stepThreeLabel.setEffect(null);
+				break;
+				
+				
+			case Manager.STATE_PSWG_SETUP_REQUIRED:
+				if (swgFolderTextField.getStyleClass().contains("fail"))
+					swgFolderTextField.getStyleClass().remove("fail");
+				if (!swgFolderTextField.getStyleClass().contains("pass"))
+					swgFolderTextField.getStyleClass().add("pass");
+				if (!pswgFolderTextField.getStyleClass().contains("fail"))
+					pswgFolderTextField.getStyleClass().add("fail");
+				
+				//pswgFolderTextField.setVisible(true);
+				//pswgFolderButton.setVisible(true);
+				
+				stepOneLabel.setOpacity(0.5);
+				
+				stepTwoHBox.setDisable(false);
+				stepTwoHBox.setOpacity(1);
+				stepTwoLabel.setEffect(null);
+
+				stepThreeHBox.setDisable(false);
+				stepThreeHBox.setOpacity(1);
+				stepThreeLabel.setEffect(new Glow(0.7));
+
 				break;
 				
 			default:
@@ -158,15 +209,22 @@ public class SetupController implements ModalComponent
 		});
 	}
 	
-	@Override
-	public String getLabel()
-	{
-		return LABEL;
+	public void refreshUpdateServerComboBox()
+	{		
+		Preferences updateServersNode = ProjectSWG.PREFS.node("update_servers");
+		updateServerComboBox.getItems().clear();
+		try {
+			for (String server : updateServersNode.keys())
+				updateServerComboBox.getItems().add(server);
+		} catch (BackingStoreException e1) {
+			ProjectSWG.log("Refresh Update Servers Error: " + e1.toString());
+		}
+		
+		updateServerComboBox.setValue(ProjectSWG.PREFS.get("update_server", ""));
 	}
 	
 	@Override
-	public Parent getRoot()
-	{
-		return setupRoot;
-	}
+	public String getLabel() { return LABEL; }
+	@Override
+	public Parent getRoot() { return setupRoot; }
 }

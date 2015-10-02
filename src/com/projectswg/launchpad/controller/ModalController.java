@@ -62,25 +62,12 @@ public class ModalController implements FxmlController
 	
 	private ModalComponent modalComponent;
 
-	public ModalController()
-	{
-	}
-	
+	public ModalController() {}
 	@Override
-	public void initialize(URL arg0, ResourceBundle arg1)
-	{
-	}
-	
+	public void initialize(URL arg0, ResourceBundle arg1) {}
 	@Override
-	public Parent getRoot()
-	{
-		return modalRoot;
-	}
-
-	public MainController getMain()
-	{
-		return mainController;
-	}
+	public Parent getRoot() { return modalRoot; }
+	public MainController getMain() { return mainController; }
 	
 	public void init(MainController mainController)
 	{
@@ -219,8 +206,5 @@ public class ModalController implements FxmlController
 		}
 	}
 	
-	public ModalComponent getModalComponent()
-	{
-		return modalComponent;
-	}
+	public ModalComponent getModalComponent() { return modalComponent; }
 }

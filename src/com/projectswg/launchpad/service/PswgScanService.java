@@ -53,7 +53,6 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 {
 	private static final String SWG_CLIENT = "SwgClient_r.exe";
 	private static final String SWG_CLIENT_SETUP = "SwgClientSetup_r.exe";
-	private static final String RESOURCE_LIST = "launcherS.dl.dat";
 	
 	public static final int SCAN_INIT = -1;
 	public static final int SCAN_INTERRUPT = -2;
@@ -71,7 +70,7 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 	
 	public PswgScanService(Manager manager)
 	{
-    	this.manager = manager;
+		this.manager = manager;
 		file = null;
 
 		Security.addProvider(new BouncyCastleProvider());
@@ -175,7 +174,7 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 							if (resourceName.equals(SWG_CLIENT) || resourceName.equals(SWG_CLIENT_SETUP))
 								scanResult = checkResourceHash(file, resource);
 							else
-								scanResult = resource.getSize() == file.length();;
+								scanResult = resource.getSize() == file.length();
 							break;
 			
 						case Manager.CHECK_HASH_PSWG:
@@ -225,7 +224,7 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 					fis.read(avail);
 					fis.close();
 					
-					String fullText = decrypt(avail, Manager.AES_SESSION_KEY);
+					String fullText = decrypt(avail, manager.getUpdateServerEncryptionKey().getValue());
 					
 					for (String l : fullText.split("\r\n"))
 						list.add(l);
@@ -243,10 +242,13 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 				ProjectSWG.log("Fetching resource list from remote...");
 				ArrayList<String> copy = new ArrayList<String>();
 				try {
-					URL url = new URL(Manager.PATCH_SERVER_FILES + RESOURCE_LIST);
+					URL url = new URL(manager.getUpdateServerFilesLocation().getValue() + manager.getUpdateServerFilesList().getValue());
 					URLConnection urlConnection = url.openConnection();
-					String basicAuth = "Basic " + DatatypeConverter.printBase64Binary(Manager.HTTP_AUTH.getBytes());
-					urlConnection.setRequestProperty("Authorization", basicAuth);
+					if (!manager.getUpdateServerUser().getValue().equals("")) {
+						String auth = manager.getUpdateServerUser() + ":" + manager.getUpdateServerPassword();
+						String basicAuth = "Basic " + DatatypeConverter.printBase64Binary(auth.getBytes());
+						urlConnection.setRequestProperty("Authorization", basicAuth);
+					}
 					BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
 					String line;
 					for (int i = 0; (line = in.readLine()) != null; i++) {
@@ -328,8 +330,8 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 			{
 				try {
 					Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding", "BC");
-					SecretKeySpec sks = new SecretKeySpec(Manager.AES_SESSION_KEY.getBytes(), "AES");
-					cipher.init(Cipher.ENCRYPT_MODE, sks, new IvParameterSpec(Manager.AES_SESSION_KEY.getBytes()));
+					SecretKeySpec sks = new SecretKeySpec(manager.getUpdateServerEncryptionKey().getValue().getBytes(), "AES");
+					cipher.init(Cipher.ENCRYPT_MODE, sks, new IvParameterSpec(manager.getUpdateServerEncryptionKey().getValue().getBytes()));
 					return cipher.doFinal(text.getBytes());
 				} catch (NoSuchAlgorithmException | 
 						 NoSuchPaddingException |
@@ -396,7 +398,7 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 				
 				try {
 					FileOutputStream fos = new FileOutputStream(file);
-					fos.write(encrypt(fullText.toString(), Manager.AES_SESSION_KEY));
+					fos.write(encrypt(fullText.toString(), manager.getUpdateServerEncryptionKey().getValue()));
 					fos.close();
 				} catch (IOException e1) {
 					ProjectSWG.log(e1.toString());

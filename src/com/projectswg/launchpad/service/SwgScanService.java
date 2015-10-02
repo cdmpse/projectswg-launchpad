@@ -32,9 +32,6 @@ public class SwgScanService extends Service<Boolean>
 	public static final HashMap<String, String> SWG_FILES;
 	static {
 		SWG_FILES = new HashMap<>();
-		//"SwgClientSetup_r.exe",
-		//SWG_FILES.put("BugTool.exe", "");
-
 		SWG_FILES.put("bottom.tre", "16205884");
 		SWG_FILES.put("data_animation_00.tre", "58966791");
 		SWG_FILES.put("data_music_00.tre", "77322894");
@@ -56,12 +53,6 @@ public class SwgScanService extends Service<Boolean>
 		SWG_FILES.put("data_texture_05.tre", "104820008");
 		SWG_FILES.put("data_texture_06.tre", "104773001");
 		SWG_FILES.put("data_texture_07.tre", "66226334");
-		//"default_patch.tre",
-
-		SWG_FILES.put("dbghelp.dll", "676864");
-		//"dpvs.dll",
-		//"Mss32.dll",
-		SWG_FILES.put("qt-mt305.dll", "3563520");
 	}
 	private final Manager manager;
 	private File file;
@@ -85,8 +76,6 @@ public class SwgScanService extends Service<Boolean>
 
 				int counter = 1;
 				for (Map.Entry<String, String> e : SWG_FILES.entrySet()) {
-					if (isCancelled())
-						return false;
 					String fileName = e.getKey();
 					updateProgress(counter, SWG_FILES.size() * 100);
 					updateMessage("Scanning " + fileName);
@@ -97,7 +86,7 @@ public class SwgScanService extends Service<Boolean>
 						return false;
 					}
 					if (file.length() != Long.parseLong(e.getValue())) {
-						ProjectSWG.log("Failed checksum: " + e.getKey());
+						ProjectSWG.log("File size does not match: " + e.getKey());
 						updateMessage("SWG Not Found");
 						return false;
 					}

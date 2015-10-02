@@ -98,9 +98,7 @@ public class MainController implements FxmlController
 	
 
 	@Override
-	public void initialize(URL arg0, ResourceBundle arg1)
-	{
-	}
+	public void initialize(URL arg0, ResourceBundle arg1) {}
 	
 	public void init(ProjectSWG pswg)
 	{
@@ -172,6 +170,7 @@ public class MainController implements FxmlController
 				extrasButton.setDisable(true);
 				break;
 			
+			case Manager.STATE_UPDATE_SERVER_REQUIRED:
 			case Manager.STATE_PSWG_SETUP_REQUIRED:
 				scanButton.setVisible(false);
 				setupButton.setVisible(true);
@@ -406,19 +405,9 @@ public class MainController implements FxmlController
 		this.stage = stage;
 	}
 	
-	public Stage getStage()
-	{
-		return stage;
-	}
-	
 	public void refreshLoginServerStatus()
 	{
 		manager.pingLoginServer();
-	}
-	
-	public ModalController getModalController()
-	{
-		return modalController;
 	}
 	
 	public void stopDownloadAnimation()
@@ -452,56 +441,6 @@ public class MainController implements FxmlController
 		}
 	}
 	
-	public void hideProgressBar()
-	{
-		switch (ProjectSWG.PREFS.getInt("animation", ProjectSWG.ANIMATION_NONE)) {
-		default:
-		case ProjectSWG.ANIMATION_NONE:
-			progressBar.setVisible(false);
-			break;
-		case ProjectSWG.ANIMATION_LOW:
-			stopDownloadAnimation();
-			hideDownloadLow.play();
-			break;
-		case ProjectSWG.ANIMATION_HIGH:
-		case ProjectSWG.ANIMATION_WARS:
-			stopDownloadAnimation();
-			hideDownloadHigh.play();
-			break;
-		}
-	}
-	
-	@Override
-	public Parent getRoot()
-	{
-		return root;
-	}
-	
-	public ProjectSWG getPswg()
-	{
-		return pswg;
-	}
-	
-	public Manager getManager()
-	{
-		return manager;
-	}
-	
-	public ObservableList<GameController> getGames()
-	{
-		return games;
-	}
-	
-	public Pane getGameProcessPane()
-	{
-		return gameProcessPane;
-	}
-	
-	public void removeInstanceListener()
-	{
-		pswg.getInstances().removeListener(instanceListener);
-	}
-	
 	private class InstanceListener implements ListChangeListener<Instance>
 	{
 		@Override
@@ -523,13 +462,34 @@ public class MainController implements FxmlController
 			}
 	}
 	
-	public Tooltip getPlayButtonTooltip()
+	public void hideProgressBar()
 	{
-		return playButtonTooltip;
+		switch (ProjectSWG.PREFS.getInt("animation", ProjectSWG.ANIMATION_NONE)) {
+		default:
+		case ProjectSWG.ANIMATION_NONE:
+			progressBar.setVisible(false);
+			break;
+		case ProjectSWG.ANIMATION_LOW:
+			stopDownloadAnimation();
+			hideDownloadLow.play();
+			break;
+		case ProjectSWG.ANIMATION_HIGH:
+		case ProjectSWG.ANIMATION_WARS:
+			stopDownloadAnimation();
+			hideDownloadHigh.play();
+			break;
+		}
 	}
 	
-	public EventHandler<MouseEvent> getButtonHover()
-	{
-		return buttonHover;
-	}
+	public Stage getStage() { return stage; }
+	public ProjectSWG getPswg() { return pswg; }
+	public Manager getManager() { return manager; }
+	public ObservableList<GameController> getGames() { return games; }
+	public Pane getGameProcessPane() { return gameProcessPane; }
+	public void removeInstanceListener() { pswg.getInstances().removeListener(instanceListener); }
+	public ModalController getModalController() { return modalController; }
+	@Override
+	public Parent getRoot() { return root; }
+	public Tooltip getPlayButtonTooltip() { return playButtonTooltip; }
+	public EventHandler<MouseEvent> getButtonHover() { return buttonHover; }
 }

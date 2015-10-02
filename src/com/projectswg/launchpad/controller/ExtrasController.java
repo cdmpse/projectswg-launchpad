@@ -43,9 +43,7 @@ public class ExtrasController implements ModalComponent
 	private EventHandler<MouseEvent> buttonHover;
 	private EventHandler<MouseEvent> buttonPress;
 	
-	public ExtrasController()
-	{
-	}
+	public ExtrasController() {}
 	
 	public void addExtra(ExtraModule module)
 	{
@@ -59,15 +57,10 @@ public class ExtrasController implements ModalComponent
 	}
 	
 	@Override
-	public void initialize(URL arg0, ResourceBundle arg1)
-	{
-	}
+	public void initialize(URL arg0, ResourceBundle arg1) {}
 
 	@Override
-	public Parent getRoot()
-	{
-		return extrasRoot;
-	}
+	public Parent getRoot() { return extrasRoot; }
 
 	@Override
 	public void init(MainController mainController)
@@ -92,8 +85,5 @@ public class ExtrasController implements ModalComponent
 	}
 	
 	@Override
-	public String getLabel()
-	{
-		return LABEL;
-	}
+	public String getLabel() { return LABEL; }
 }

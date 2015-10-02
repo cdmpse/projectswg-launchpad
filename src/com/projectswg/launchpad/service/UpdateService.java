@@ -103,12 +103,13 @@ public class UpdateService extends Service<Boolean>
 					file.delete();
 				
 				long downloaded = file.length();
-				String basicAuth = "Basic " + DatatypeConverter.printBase64Binary(Manager.HTTP_AUTH.getBytes());
+				String auth = manager.getUpdateServerUser() + ":" + manager.getUpdateServerPassword();
+				String basicAuth = "Basic " + DatatypeConverter.printBase64Binary(auth.getBytes());
 				
 				try {
 					long total = resource.getSize();
 					
-					URL url = new URL(Manager.PATCH_SERVER_FILES + name);
+					URL url = new URL(manager.getUpdateServerFilesLocation() + name);
 					URLConnection urlConnection = url.openConnection();
 					urlConnection.setRequestProperty("Authorization", basicAuth);
 					

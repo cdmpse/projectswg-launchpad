@@ -58,10 +58,7 @@ public class NodeDisplay
 		queue = new ArrayList<>();
 	}
 	
-	public Pane getRoot()
-	{
-		return root;
-	}
+	public Pane getRoot() { return root; }
 	
 	public void queueString(String s)
 	{
