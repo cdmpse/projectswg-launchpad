@@ -57,25 +57,18 @@ public class MainController implements FxmlController
 {
 	@FXML
 	private Button settingsButton, extrasButton, optionsButton;
-	
 	@FXML
 	private Button updateButton, setupButton, cancelButton, playButton, scanButton;
-	
 	@FXML
 	private ProgressIndicator progressIndicator;
-	
 	@FXML
 	private ProgressBar progressBar;
-	
 	@FXML
 	private StackPane root;
-	
 	@FXML
 	private VBox mainRoot;
-	
 	@FXML
-	private Label profileLabel;
-	
+	private Label loginServerLabel;
 	@FXML
 	private Pane mainDisplayPane, gameProcessPane;
 	
@@ -96,7 +89,6 @@ public class MainController implements FxmlController
 	private Tooltip playButtonTooltip;
 	private EventHandler<MouseEvent> buttonHover;
 	
-
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {}
 	
@@ -134,9 +126,9 @@ public class MainController implements FxmlController
 		
 		addButtonListeners();
 
-		profileLabel.setText(manager.getProfile().getValue());
-		manager.getProfile().addListener((observable, oldValue, newValue) -> {
-			profileLabel.setText(newValue);
+		loginServerLabel.setText(manager.getLoginServer().getValue());
+		manager.getLoginServer().addListener((observable, oldValue, newValue) -> {
+			loginServerLabel.setText(newValue);
 		});
 		
 		modalController.getRoot().opacityProperty().addListener((observable, oldValue, newValue) -> {
@@ -150,17 +142,21 @@ public class MainController implements FxmlController
 		manager.getState().addListener((observable, oldValue, newValue) -> {
 			switch (newValue.intValue()) {
 			case Manager.STATE_SWG_SETUP_REQUIRED:
-				scanButton.setVisible(false);
+				playButton.setVisible(false);
+				scanButton.setVisible(true);
 				setupButton.setVisible(true);
 				cancelButton.setVisible(false);
 				progressIndicator.setVisible(false);
+				scanButton.setDisable(true);
 				playButton.setDisable(true);
-				settingsButton.setDisable(false);
+				settingsButton.setDisable(true);
 				optionsButton.setDisable(true);
 				extrasButton.setDisable(true);
 				break;
 			
 			case Manager.STATE_SWG_SCANNING:
+				playButton.setVisible(false);
+				scanButton.setVisible(true);
 				setupButton.setVisible(false);
 				cancelButton.setVisible(true);
 				cancelButton.setDefaultButton(true);
@@ -172,17 +168,20 @@ public class MainController implements FxmlController
 			
 			case Manager.STATE_UPDATE_SERVER_REQUIRED:
 			case Manager.STATE_PSWG_SETUP_REQUIRED:
-				scanButton.setVisible(false);
+				playButton.setVisible(false);
+				scanButton.setVisible(true);
 				setupButton.setVisible(true);
 				cancelButton.setVisible(false);
 				progressIndicator.setVisible(false);
 				playButton.setDisable(true);
-				settingsButton.setDisable(false);
+				settingsButton.setDisable(true);
+				scanButton.setDisable(true);
 				optionsButton.setDisable(true);
 				extrasButton.setDisable(true);
 				break;
 				
 			case Manager.STATE_PSWG_SCAN_REQUIRED:
+				playButton.setVisible(true);
 				scanButton.setVisible(true);
 				scanButton.setDefaultButton(true);
 				setupButton.setVisible(false);
@@ -195,6 +194,7 @@ public class MainController implements FxmlController
 				break;
 				
 			case Manager.STATE_PSWG_SCANNING:
+				playButton.setVisible(true);
 				scanButton.setVisible(false);
 				setupButton.setVisible(false);
 				cancelButton.setVisible(true);
@@ -206,6 +206,7 @@ public class MainController implements FxmlController
 				break;
 			
 			case Manager.STATE_UPDATE_REQUIRED:
+				playButton.setVisible(true);
 				updateButton.setDefaultButton(true);
 				cancelButton.setVisible(false);
 				updateButton.setVisible(true);
@@ -217,6 +218,7 @@ public class MainController implements FxmlController
 				break;
 				
 			case Manager.STATE_UPDATING:
+				playButton.setVisible(true);
 				setupButton.setVisible(false);
 				updateButton.setVisible(false);
 				cancelButton.setVisible(true);
@@ -255,7 +257,7 @@ public class MainController implements FxmlController
 				break;
 				
 			default:
-				
+				ProjectSWG.log("unkown state: " + newValue.intValue());
 			}
 		});
 		

@@ -109,7 +109,7 @@ public class UpdateService extends Service<Boolean>
 				try {
 					long total = resource.getSize();
 					
-					URL url = new URL(manager.getUpdateServerFilesLocation() + name);
+					URL url = new URL(manager.getUpdateServerUrl() + name);
 					URLConnection urlConnection = url.openConnection();
 					urlConnection.setRequestProperty("Authorization", basicAuth);
 					

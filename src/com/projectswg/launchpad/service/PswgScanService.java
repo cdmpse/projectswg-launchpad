@@ -242,7 +242,7 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 				ProjectSWG.log("Fetching resource list from remote...");
 				ArrayList<String> copy = new ArrayList<String>();
 				try {
-					URL url = new URL(manager.getUpdateServerFilesLocation().getValue() + manager.getUpdateServerFilesList().getValue());
+					URL url = new URL(manager.getUpdateServerUrl().getValue() + manager.getUpdateServerFileList().getValue());
 					URLConnection urlConnection = url.openConnection();
 					if (!manager.getUpdateServerUser().getValue().equals("")) {
 						String auth = manager.getUpdateServerUser() + ":" + manager.getUpdateServerPassword();

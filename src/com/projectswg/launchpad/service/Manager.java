@@ -60,13 +60,13 @@ public class Manager
 {
 
 	
-	// update server string format: [filelist],[files_url],[auth_user],[auth_pass],[enc_key],[folder]
+	// update server string format: [files_url],[auth_user],[auth_pass],[filelist],[enc_key],[folder]
 	// default pswg
 	public static final String US_PSWG_K = "ProjectSWG";
-	public static final String US_PSWG_V = "launcherS.dl.dat" +
-										   ",http://patch1.projectswg.com/files/" +
+	public static final String US_PSWG_V = ",http://patch1.projectswg.com/files/" +
 										   ",pswglaunch" +
 										   ",wvQAxc5mGgF0" +
+										   "launcherS.dl.dat" +
 										   ",eKgeg75J3pTBURgh" +
 										   ",";
 	
@@ -81,14 +81,6 @@ public class Manager
 	public static final String LS_LOCALHOST_V = "127.0.0.1,44453,44462";
 	
 	public static final String GAME_FEATURES = "34374193";
-	
-	public static final int UPDATE_SERVER_LIST = 0;
-	public static final int UPDATE_SERVER_FILES = 1;
-	public static final int UPDATE_SERVER_USE_AUTH = 2;
-	public static final int UPDATE_SERVER_USER = 3;
-	public static final int UPDATE_SERVER_PASSWORD = 4;
-	public static final int UPDATE_SERVER_USE_ENC = 5;
-	public static final int UPDATE_SERVER_ENC_KEY = 6;
 	
 	public static final int MAX_BUFFER_SIZE = 2048;
 	public static final int RESOURCE_LIST_HASH = 0;
@@ -129,8 +121,8 @@ public class Manager
 	private SimpleStringProperty loginServerPingPort;
 	
 	private SimpleStringProperty updateServer;
-	private SimpleStringProperty updateServerFilesList;
-	private SimpleStringProperty updateServerFilesLocation;
+	private SimpleStringProperty updateServerFileList;
+	private SimpleStringProperty updateServerUrl;
 	private SimpleStringProperty updateServerUser;
 	private SimpleStringProperty updateServerPassword;
 	private SimpleStringProperty updateServerEncryptionKey;
@@ -162,36 +154,7 @@ public class Manager
 		resources = null;
 		mainOut = new SimpleStringProperty();
 		
-		loginServer = new SimpleStringProperty();
-		loginServerHost = new SimpleStringProperty();
-		loginServerPlayPort = new SimpleStringProperty();
-		loginServerPingPort = new SimpleStringProperty();
-		
-		updateServer = new SimpleStringProperty("");
-		updateServerFilesList = new SimpleStringProperty();
-		updateServerFilesLocation = new SimpleStringProperty();
-		updateServerUser = new SimpleStringProperty();
-		updateServerPassword = new SimpleStringProperty();
-		updateServerEncryptionKey = new SimpleStringProperty();
-		pswgFolder = new SimpleStringProperty();
-		
 		swgFolder = new SimpleStringProperty();
-
-		state = new SimpleIntegerProperty(initialState);
-		
-		binary = new SimpleStringProperty(ProjectSWG.PREFS.get("binary", ""));
-		gameFeatures = new SimpleStringProperty(ProjectSWG.PREFS.get("game_features", ""));
-		
-		wineBinary = new SimpleStringProperty("");
-		wineArguments = new SimpleStringProperty("");
-		wineEnvironmentVariables = new SimpleStringProperty("");
-		
-		swgScanService = new SwgScanService(this);
-		pswgScanService = new PswgScanService(this);
-		updateService = new UpdateService(this);
-		pingService = new PingService(this);
-		
-		addSwgScanServiceListeners();
 		swgFolder.addListener((observable, oldValue, newValue) -> {
 			if (newValue == null)
 				return;
@@ -213,10 +176,51 @@ public class Manager
 					ProjectSWG.log("swg scan already running");
 		});
 		
-		// pswg
-		addPswgScanServiceListeners();
+		loginServer = new SimpleStringProperty();
+		loginServerHost = new SimpleStringProperty();
+		loginServerPlayPort = new SimpleStringProperty();
+		loginServerPingPort = new SimpleStringProperty();
+		
+		updateServer = new SimpleStringProperty("");
+
+		updateServerUrl = new SimpleStringProperty();
+		updateServerUrl.addListener((observable, oldValue, newValue) -> {
+			String[] values = getUpdateServerValues(updateServer.getValue());
+			values[0] = newValue;
+			setUpdateServerValues(updateServer.getValue(), values);
+		});
+		
+		updateServerUser = new SimpleStringProperty();
+		updateServerUser.addListener((observable, oldValue, newValue) -> {
+			String[] values = getUpdateServerValues(updateServer.getValue());
+			values[1] = newValue;
+			setUpdateServerValues(updateServer.getValue(), values);
+		});
+		
+		updateServerPassword = new SimpleStringProperty();
+		updateServerPassword.addListener((observable, oldValue, newValue) -> {
+			String[] values = getUpdateServerValues(updateServer.getValue());
+			values[2] = newValue;
+			setUpdateServerValues(updateServer.getValue(), values);
+		});
+		
+		updateServerFileList = new SimpleStringProperty();
+		updateServerFileList.addListener((observable, oldValue, newValue) -> {
+			String[] values = getUpdateServerValues(updateServer.getValue());
+			values[3] = newValue;
+			setUpdateServerValues(updateServer.getValue(), values);
+		});
+		
+		updateServerEncryptionKey = new SimpleStringProperty();
+		updateServerEncryptionKey.addListener((observable, oldValue, newValue) -> {
+			String[] values = getUpdateServerValues(updateServer.getValue());
+			values[4] = newValue;
+			setUpdateServerValues(updateServer.getValue(), values);
+		});
+		
+		pswgFolder = new SimpleStringProperty();
 		pswgFolder.addListener((observable, oldValue, newValue) -> {
-			if (swgFolder.getValue().equals(""))
+			if (swgFolder.getValue() == null || swgFolder.getValue().equals(""))
 				return;
 			ProjectSWG.log(String.format("pswgFolder changed: %s -> %s", oldValue, newValue));
 			ProjectSWG.PREFS.put("pswg_folder", newValue);
@@ -227,6 +231,24 @@ public class Manager
 			else
 				quickScan();
 		});
+		
+		state = new SimpleIntegerProperty(initialState);
+		
+		binary = new SimpleStringProperty(ProjectSWG.PREFS.get("binary", ""));
+		gameFeatures = new SimpleStringProperty(ProjectSWG.PREFS.get("game_features", ""));
+		
+		wineBinary = new SimpleStringProperty("");
+		wineArguments = new SimpleStringProperty("");
+		wineEnvironmentVariables = new SimpleStringProperty("");
+		
+		swgScanService = new SwgScanService(this);
+		pswgScanService = new PswgScanService(this);
+		updateService = new UpdateService(this);
+		pingService = new PingService(this);
+		
+		// scan service
+		addSwgScanServiceListeners();
+		addPswgScanServiceListeners();
 		
 		// update service
 		addUpdateServiceListeners();
@@ -274,8 +296,8 @@ public class Manager
 			
 			ProjectSWG.PREFS.put("update_server", newValue);
 			String[] updateServerValues = getUpdateServerValues(newValue);
-			updateServerFilesList.set(updateServerValues[0]);
-			updateServerFilesLocation.set(updateServerValues[1]);
+			updateServerFileList.set(updateServerValues[0]);
+			updateServerUrl.set(updateServerValues[1]);
 			updateServerUser.set(updateServerValues[2]);
 			updateServerPassword.set(updateServerValues[3]);
 			updateServerEncryptionKey.set(updateServerValues[4]);
@@ -632,7 +654,6 @@ public class Manager
 		}
 		
 		Pattern pattern;
-		// [filelist],[files_url],[auth_user],[auth_pass],[enc_key],[folder]
 		pattern = Pattern.compile("^(.*),(.*),(.*),(.*),(.*),(.*)$");
 		Matcher matcher;
 
@@ -657,8 +678,7 @@ public class Manager
 		};
 	}
 	
-	// update server string format: [filelist],[files_url],[auth_user],[auth_pass],[enc_key],[folder]
-	public void setUpdateServerValues(String updateServerName, String[] values)
+	private void setUpdateServerValues(String updateServerName, String[] values)
 	{
 		Preferences updateServersNode = Preferences.userNodeForPackage(ProjectSWG.class).node("update_servers");
 		updateServersNode.put(updateServerName, String.format("%s,%s,%s,%s,%s,%s",
@@ -669,6 +689,15 @@ public class Manager
 			values[4],
 			values[5]
 		));
+		
+		// set them in manager too
+	}
+	
+	public void setUpdateServerUrl(String url)
+	{
+		String[] values = getUpdateServerValues(updateServer.getValue());
+		values[1] = url;
+		setUpdateServerValues(updateServer.getValue(), values);
 	}
 	
 	public String[] getLoginServerValues(String loginServer)
@@ -836,12 +865,12 @@ public class Manager
 	public SimpleStringProperty getWineEnvironmentVariables() { return wineEnvironmentVariables; }
 	public SimpleStringProperty getBinary() { return binary; }
 	public SimpleStringProperty getGameFeatures() { return gameFeatures; }
-	public SimpleStringProperty getProfile() { return loginServer; }
+	public SimpleStringProperty getLoginServer() { return loginServer; }
 	public SimpleStringProperty getUpdateServer() { return updateServer; }
 	public SimpleStringProperty getUpdateServerEncryptionKey() { return updateServerEncryptionKey; }
 	public SimpleStringProperty getUpdateServerPassword() { return updateServerPassword; }
-	public SimpleStringProperty getUpdateServerFilesList() { return updateServerFilesList; }
-	public SimpleStringProperty getUpdateServerFilesLocation() { return updateServerFilesLocation; }
+	public SimpleStringProperty getUpdateServerFileList() { return updateServerFileList; }
+	public SimpleStringProperty getUpdateServerUrl() { return updateServerUrl; }
 	public SimpleStringProperty getUpdateServerUser() { return updateServerUser; }
 	
 	public SimpleIntegerProperty getState() { return state; }

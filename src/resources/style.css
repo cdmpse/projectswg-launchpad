@@ -252,7 +252,6 @@
 	-fx-graphic: url("setup-button.png");
 	-fx-content-display: graphic-only;
 	-fx-background-color: transparent;
-	-fx-padding: 0 0 0 20px;
 }
 
 #setupButton:hover {

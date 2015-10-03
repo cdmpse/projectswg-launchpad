@@ -76,7 +76,7 @@ public class SettingsController implements ModalComponent
 	@FXML
 	private Slider animationSlider;
 	@FXML
-	private Button settingsSwgFolderButton, settingsPswgFolderButton, pingButton, deleteGameProfilesButton;
+	private Button settingsPswgFolderButton, pingButton, deleteGameProfilesButton;
 	@FXML
 	private Button refreshThemesButton, removeLoginServerButton, addLoginServerButton, wineBinaryButton;
 	@FXML
@@ -84,15 +84,19 @@ public class SettingsController implements ModalComponent
 	@FXML
 	private TextField wineArgumentsTextField, wineEnvironmentVariablesTextField;
 	@FXML
+	private TextField hostnameTextField, playPortTextField, statusPortTextField;
+	@FXML
+	private TextField updateServerURLTextField, updateServerUsernameTextField, updateServerPasswordTextField;
+	@FXML
+	private TextField updateServerFileListTextField, updateServerEncryptionKeyTextField;
+	@FXML
 	private CheckBox closeAfterLaunchCheckBox, captureCheckBox, debugCheckBox;
 	@FXML
 	private CheckBox loginServerLockedCheckBox, openOnLaunchCheckBox, soundCheckBox, translateCheckBox;
 	@FXML
-	private ComboBox<String> loginServerComboBox, themeComboBox;
+	private ComboBox<String> loginServerComboBox, themeComboBox, updateServerComboBox;
 	@FXML
-	private Pane pingDisplayPane, swgFolderDisplayPane, pswgFolderDisplayPane;
-	@FXML
-	private TextField hostnameTextField, playPortTextField, statusPortTextField;
+	private Pane pingDisplayPane, pswgFolderDisplayPane;
 	@FXML
 	private Hyperlink pswgHyperlink, showHyperlink, resetBinaryHyperlink, resetGameFeaturesHyperlink;
 	@FXML
@@ -104,7 +108,7 @@ public class SettingsController implements ModalComponent
 	private MainController mainController;
 	private ModalController modalController;
 	private NodeDisplay pingDisplay;
-	private NodeDisplay swgFolderDisplay, pswgFolderDisplay;
+	private NodeDisplay pswgFolderDisplay;
 	private Manager manager;
 	private ProgressIndicator progressIndicator;
 	private EventHandler<MouseEvent> buttonHover;
@@ -165,19 +169,79 @@ public class SettingsController implements ModalComponent
 		};
 		
 		pingDisplay = new NodeDisplay(pingDisplayPane);
-		swgFolderDisplay = new NodeDisplay(swgFolderDisplayPane);
 		pswgFolderDisplay = new NodeDisplay(pswgFolderDisplayPane);
 		
-		initGeneralPane();
-		initSetupPane();
-		initDeveloperPane();
+		initLaunchpadPane();
+		initUpdateServerPane();
+		initLoginServerPane();
+		initClientPane();
 		if (ProjectSWG.isWindows())
 			settingsRoot.getPanes().remove(WINE_PANE_INDEX);
 		else
 			initWinePane();
 		initAboutPane();
 		
-		animationSlider.setValue(ProjectSWG.PREFS.getInt("animation", ProjectSWG.ANIMATION_WARS));
+
+	
+		manager.getState().addListener((observable, oldValue, newValue) -> {
+			switch (newValue.intValue()) {
+			case Manager.STATE_SWG_SETUP_REQUIRED:
+			case Manager.STATE_SWG_SCANNING:
+			case Manager.STATE_UPDATE_SERVER_REQUIRED:
+			case Manager.STATE_PSWG_SETUP_REQUIRED:
+			case Manager.STATE_PSWG_SCAN_REQUIRED:
+			case Manager.STATE_PSWG_SCANNING:
+			case Manager.STATE_UPDATE_REQUIRED:
+			case Manager.STATE_UPDATING:
+				binaryButton.setDisable(true);
+				resetBinaryHyperlink.setDisable(true);
+				gameFeaturesButton.setDisable(true);
+				resetGameFeaturesHyperlink.setDisable(true);
+				break;
+			
+			case Manager.STATE_WINE_REQUIRED:
+			case Manager.STATE_PSWG_READY:
+				binaryButton.setDisable(false);
+				resetBinaryHyperlink.setDisable(false);
+				gameFeaturesButton.setDisable(false);
+				resetGameFeaturesHyperlink.setDisable(false);
+				break;
+				
+			default:
+			}
+		});
+		
+		manager.getState().addListener((observable, oldValue, newValue) -> {
+			switch (newValue.intValue()) {
+			case Manager.STATE_INIT:
+				pswgFolderDisplay.queueString(ProjectSWG.XMARK);
+				settingsPswgFolderButton.setDisable(true);
+				break;
+			
+			case Manager.STATE_SWG_SETUP_REQUIRED:
+			case Manager.STATE_SWG_SCANNING:
+				if (manager.getPswgFolder().getValue().equals(""))
+					pswgFolderDisplay.queueString(ProjectSWG.XMARK);
+				else
+					pswgFolderDisplay.queueString(ProjectSWG.CHECKMARK);
+				settingsPswgFolderButton.setDisable(true);
+				break;
+			
+			case Manager.STATE_UPDATE_SERVER_REQUIRED:
+			case Manager.STATE_PSWG_SCAN_REQUIRED:
+				pswgFolderDisplay.queueString(ProjectSWG.XMARK);
+				settingsPswgFolderButton.setDisable(false);
+				break;
+				
+			case Manager.STATE_PSWG_SCANNING:
+				pswgFolderDisplay.queueNode(progressIndicator);
+				break;
+			
+			default:
+				pswgFolderDisplay.queueString(ProjectSWG.CHECKMARK);
+				settingsPswgFolderButton.setDisable(false);
+			}
+		});
 	}
 	
 	@Override
@@ -186,7 +250,7 @@ public class SettingsController implements ModalComponent
 		return LABEL;
 	}
 	
-	public void initGeneralPane()
+	public void initLaunchpadPane()
 	{
 		// sound
 		soundCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
@@ -198,6 +262,19 @@ public class SettingsController implements ModalComponent
 		closeAfterLaunchCheckBox.setSelected(ProjectSWG.PREFS.getBoolean("close_after_launch", false));
 		closeAfterLaunchCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
 			ProjectSWG.PREFS.putBoolean("close_after_launch", newValue);
+		});
+		
+		// debug launchpad
+		debugCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+			ProjectSWG.PREFS.putBoolean("debug", newValue);
+			showHyperlink.setDisable(!newValue);
+			((LogController)mainController.getPswg().getControllers().get("log")).removeDebugListener();
+			if (newValue)
+				((LogController)mainController.getPswg().getControllers().get("log")).addDebugListener();
+		});
+		// show launchpad debug
+		showHyperlink.setOnAction((e) -> {
+			((LogController)mainController.getPswg().getControllers().get("log")).show();
 		});
 		
 		// theme
@@ -228,31 +305,102 @@ public class SettingsController implements ModalComponent
 				ProjectSWG.playSound("slider_select");
 				ProjectSWG.PREFS.putInt("animation", newValue.intValue());
 		});
+		animationSlider.setValue(ProjectSWG.PREFS.getInt("animation", ProjectSWG.ANIMATION_WARS));
 	}
 	
-	public void initSetupPane()
+	public void initUpdateServerPane()
 	{
-		initSetupLoginServerSettings();
-		initSetupFolderSettings();
+		// fix
+		String urlPattern = "[0-9a-zA-Z\\.-]*";
+		String authPattern = "[0-9a-zA-Z]*";
+		String fileListPattern = "[0-9a-zA-Z]*";
+		
+		ChangeListener<String> urlChangeListener = new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				if (Pattern.matches(urlPattern, newValue))
+					manager.setLoginServerHostname(loginServerComboBox.getValue(), newValue);
+				else
+					hostnameTextField.setText(oldValue);
+			}
+		};
+		
+		ChangeListener<String> usernameChangeListener = new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				if (Pattern.matches(authPattern, newValue))
+					manager.getUpdateServerUser().set(newValue);
+				else
+					updateServerUsernameTextField.setText(oldValue);
+			}
+		};
+		
+		ChangeListener<String> passwordChangeListener = new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				if (Pattern.matches(authPattern, newValue))
+					manager.getUpdateServerPassword().set(newValue);
+				else
+					updateServerPasswordTextField.setText(oldValue);
+			}
+		};
+		
+		ChangeListener<String> filelistChangeListener = new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				if (Pattern.matches(fileListPattern, newValue))
+					manager.getUpdateServerFileList().set(newValue);
+				else
+					updateServerFileListTextField.setText(oldValue);
+			}
+		};
+		
+		ChangeListener<String> encryptionKeyChangeListener = new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				if (Pattern.matches(authPattern, newValue))
+					manager.getUpdateServerEncryptionKey().set(newValue);
+				else
+					updateServerEncryptionKeyTextField.setText(oldValue);
+			}
+		};
+		
+		// update server
+		updateServerComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue == null)
+				return;
+
+			ProjectSWG.log("Setting update server: " + newValue);
+			manager.getUpdateServer().set(newValue);
+			manager.getState().set(Manager.STATE_PSWG_SETUP_REQUIRED);
+		});
+		refreshUpdateServerComboBox();
+		
+		// add update server
+		
+		// remove update server
+		
+		// installation folder
+		final Tooltip settingsPswgFolderTooltip = new Tooltip();
+		settingsPswgFolderButton.textProperty().bind(manager.getPswgFolder());
+		settingsPswgFolderTooltip.textProperty().bind(manager.getPswgFolder());
+		settingsPswgFolderButton.setTooltip(settingsPswgFolderTooltip);
+		settingsPswgFolderButton.setOnMouseEntered(buttonHover);
+		
+		settingsPswgFolderButton.setOnAction((e) -> {
+			ProjectSWG.playSound("button_press");
+			DirectoryChooser directoryChooser = new DirectoryChooser();
+			directoryChooser.setTitle("Select the Installation folder");
+			File file = directoryChooser.showDialog(mainController.getStage());
+			if (file == null || !file.isDirectory())
+				return;
+
+			String pswgPath = file.getAbsolutePath();
+			manager.getPswgFolder().set(pswgPath);
+		});
 	}
 	
-	public void refreshLoginServerComboBox()
-	{
-		loginServerLockedCheckBox.setSelected(true);
-		
-		Preferences loginServersNode = ProjectSWG.PREFS.node("login_servers");
-		loginServerComboBox.getItems().clear();
-		try {
-			for (String server : loginServersNode.keys())
-				loginServerComboBox.getItems().add(server);
-		} catch (BackingStoreException e1) {
-			ProjectSWG.log("Refresh Login Servers Error: " + e1.toString());
-		}
-		
-		loginServerComboBox.setValue(ProjectSWG.PREFS.get("login_server", Manager.LS_PSWG_K));
-	}
-	
-	public void initSetupLoginServerSettings()
+	public void initLoginServerPane()
 	{
 		// fix
 		String hostnamePattern = "[0-9a-zA-Z\\.-]*";
@@ -288,6 +436,65 @@ public class SettingsController implements ModalComponent
 			}
 		};
 		
+		// login server
+		loginServerComboBox.setOnMouseClicked(comboClicked);
+		loginServerComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue == null)
+				return;
+
+			ProjectSWG.log("Setting profile: " + newValue);
+			mainController.getPlayButtonTooltip().setText("Profile: " + newValue);
+			loginServerLockedCheckBox.setSelected(true);
+			
+			switch (newValue) {
+			case Manager.LS_PSWG_K:
+			case Manager.LS_LOCALHOST_K:
+				loginServerLockedCheckBox.setDisable(true);
+				removeLoginServerButton.setDisable(true);
+				break;
+			default:
+				loginServerLockedCheckBox.setDisable(false);
+				removeLoginServerButton.setDisable(false);
+			}
+
+			manager.setLoginServer(newValue);
+		});
+		refreshLoginServerComboBox();
+		
+		// add login server
+		addLoginServerButton.setOnMouseEntered(buttonHover);
+		addLoginServerButton.setOnAction((e) -> {
+			ProjectSWG.playSound("button_press");
+			TextInputDialog dialog = new TextInputDialog();
+			dialog.setTitle("Add Server");
+			dialog.setHeaderText("Please enter a name for the server.");
+			dialog.setContentText("Server name: ");
+			Optional<String> result = dialog.showAndWait();
+			result.ifPresent(name -> {
+				manager.addLoginServer(name);
+				refreshLoginServerComboBox();
+				loginServerComboBox.setValue(name);
+				loginServerLockedCheckBox.setSelected(false);
+			});
+		});
+		
+		// remove login server
+		removeLoginServerButton.setOnMouseEntered(buttonHover);
+		removeLoginServerButton.setOnAction((e) -> {
+			ProjectSWG.playSound("button_press");
+			Alert alert = new Alert(AlertType.CONFIRMATION);
+			alert.setTitle("Remove Server");
+			alert.setHeaderText("Are you sure you want to remove this profile?");
+			Optional<ButtonType> result = alert.showAndWait();
+			if (result.get() == ButtonType.OK) {
+				String val = loginServerComboBox.getValue();
+				loginServerComboBox.getSelectionModel().select(0);
+				ProjectSWG.PREFS.node("login_servers").remove(val);;
+				refreshLoginServerComboBox();
+			}
+		});
+		
+		// checkbox to disable fields
 		loginServerLockedCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue) {
 				hostnameTextField.setDisable(true);
@@ -316,198 +523,44 @@ public class SettingsController implements ModalComponent
 			}
 		});
 		
-		loginServerComboBox.setOnMouseClicked(comboClicked);
-		loginServerComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue == null)
-				return;
-
-			ProjectSWG.log("Setting profile: " + newValue);
-			mainController.getPlayButtonTooltip().setText("Profile: " + newValue);
-			loginServerLockedCheckBox.setSelected(true);
-			
-			switch (newValue) {
-			case Manager.LS_PSWG_K:
-			case Manager.LS_LOCALHOST_K:
-				loginServerLockedCheckBox.setDisable(true);
-				removeLoginServerButton.setDisable(true);
-				break;
-			default:
-				loginServerLockedCheckBox.setDisable(false);
-				removeLoginServerButton.setDisable(false);
-			}
-
-			manager.setLoginServer(newValue);
-		});
-		refreshLoginServerComboBox();
-		
+		// ping login server
 		pingButton.setOnMouseEntered(buttonHover);
 		pingButton.setOnMouseClicked(buttonPress);
 		pingButton.setOnAction((e) -> {
 			ProjectSWG.playSound("button_pressed");
 			manager.pingLoginServer();
 		});
-		
 		manager.getPingService().setOnSucceeded((e) -> {
 			String result = (String) e.getSource().getValue();
 			ProjectSWG.log("pingerOut: " + result);
 			pingDisplay.queueString("" + result);
 		});
-
 		manager.getPingService().setOnRunning((e) -> {
 			pingDisplay.queueNode(progressIndicator);
 		});
-		
-		addLoginServerButton.setOnMouseEntered(buttonHover);
-		addLoginServerButton.setOnAction((e) -> {
-			ProjectSWG.playSound("button_press");
-			TextInputDialog dialog = new TextInputDialog();
-			dialog.setTitle("Add Server");
-			dialog.setHeaderText("Please enter a name for the server.");
-			dialog.setContentText("Server name: ");
-			Optional<String> result = dialog.showAndWait();
-			result.ifPresent(name -> {
-				manager.addLoginServer(name);
-				refreshLoginServerComboBox();
-				loginServerComboBox.setValue(name);
-				loginServerLockedCheckBox.setSelected(false);
-			});
-		});
-		
-		removeLoginServerButton.setOnMouseEntered(buttonHover);
-		removeLoginServerButton.setOnAction((e) -> {
-			ProjectSWG.playSound("button_press");
-			Alert alert = new Alert(AlertType.CONFIRMATION);
-			alert.setTitle("Remove Server");
-			alert.setHeaderText("Are you sure you want to remove this profile?");
-			Optional<ButtonType> result = alert.showAndWait();
-			if (result.get() == ButtonType.OK) {
-				String val = loginServerComboBox.getValue();
-				loginServerComboBox.getSelectionModel().select(0);
-				ProjectSWG.PREFS.node("login_servers").remove(val);;
-				refreshLoginServerComboBox();
-			}
-		});
 	}
 	
-	public void initSetupFolderSettings()
+	public void initClientPane()
 	{
-		final Tooltip settingsSwgFolderTooltip = new Tooltip();
-		final Tooltip settingsPswgFolderTooltip = new Tooltip();
-		
-		settingsSwgFolderButton.textProperty().bind(manager.getSwgFolder());
-		settingsSwgFolderButton.setOnMouseEntered(buttonHover);
-
-		settingsSwgFolderTooltip.textProperty().bind(manager.getSwgFolder());
-		settingsSwgFolderButton.setTooltip(settingsSwgFolderTooltip);
-		settingsPswgFolderButton.textProperty().bind(manager.getPswgFolder());
-
-		settingsPswgFolderTooltip.textProperty().bind(manager.getPswgFolder());
-		settingsPswgFolderButton.setTooltip(settingsPswgFolderTooltip);
-		settingsPswgFolderButton.setOnMouseEntered(buttonHover);
-		
-		manager.getState().addListener((observable, oldValue, newValue) -> {
-			switch (newValue.intValue()) {
-			case Manager.STATE_INIT:
-				swgFolderDisplay.queueString(ProjectSWG.XMARK);
-				pswgFolderDisplay.queueString(ProjectSWG.XMARK);
-				settingsPswgFolderButton.setDisable(true);
-				break;
-			
-			case Manager.STATE_SWG_SETUP_REQUIRED:
-				swgFolderDisplay.queueString(ProjectSWG.XMARK);
-				if (manager.getPswgFolder().getValue().equals(""))
-					pswgFolderDisplay.queueString(ProjectSWG.XMARK);
-				else
-					pswgFolderDisplay.queueString(ProjectSWG.CHECKMARK);
-				settingsPswgFolderButton.setDisable(true);
-				break;
-				
-			case Manager.STATE_SWG_SCANNING:
-				swgFolderDisplay.queueNode(progressIndicator);
-				break;
-			
-			case Manager.STATE_UPDATE_SERVER_REQUIRED:
-			case Manager.STATE_PSWG_SCAN_REQUIRED:
-				swgFolderDisplay.queueString(ProjectSWG.CHECKMARK);
-				pswgFolderDisplay.queueString(ProjectSWG.XMARK);
-				settingsPswgFolderButton.setDisable(false);
-				break;
-				
-			case Manager.STATE_PSWG_SCANNING:
-				pswgFolderDisplay.queueNode(progressIndicator);
-				break;
-			
-			default:
-				swgFolderDisplay.queueString(ProjectSWG.CHECKMARK);
-				pswgFolderDisplay.queueString(ProjectSWG.CHECKMARK);
-				settingsPswgFolderButton.setDisable(false);
-			}
-		});
-		
-		settingsSwgFolderButton.setOnAction((e) -> {
-			ProjectSWG.playSound("button_press");
-			DirectoryChooser directoryChooser = new DirectoryChooser();
-			directoryChooser.setTitle("Select SWG folder");
-			File file = directoryChooser.showDialog(mainController.getStage());
-			if (file == null || !file.isDirectory())
-				return;
-			
-			String swgPath =  file.getAbsolutePath();
-			manager.getSwgFolder().set(swgPath);
-		});
-		
-		settingsPswgFolderButton.setOnAction((e) -> {
-			ProjectSWG.playSound("button_press");
-			DirectoryChooser directoryChooser = new DirectoryChooser();
-			directoryChooser.setTitle("Select ProjectSWG folder");
-			File file = directoryChooser.showDialog(mainController.getStage());
-			if (file == null || !file.isDirectory())
-				return;
-
-			String pswgPath = file.getAbsolutePath();
-			manager.getPswgFolder().set(pswgPath);
-		});
-	}
-	
-	public void initDeveloperPane()
-	{
+		// debug game
 		captureCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
 			ProjectSWG.PREFS.putBoolean("capture", newValue);
 			openOnLaunchCheckBox.setDisable(!newValue);
 		});
 		captureCheckBox.setSelected(ProjectSWG.PREFS.getBoolean("capture", false));
 		
+		// show game debug
 		openOnLaunchCheckBox.setSelected(ProjectSWG.PREFS.getBoolean("open_on_launch", false));
 		openOnLaunchCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
 			ProjectSWG.PREFS.putBoolean("open_on_launch", newValue);
 		});
-		
-		manager.getPswgFolder().addListener((observable, oldValue, newValue) -> {
-			if (newValue == null)
-				return;
-			if (newValue.equals(""))
-				deleteGameProfilesButton.setDisable(true);
-			else
-				deleteGameProfilesButton.setDisable(false);
-		});
-		
+		// disable if debug isnt set
 		if (ProjectSWG.PREFS.getBoolean("debug", false))
 			debugCheckBox.setSelected(true);
 		else
 			showHyperlink.setDisable(true);
 		
-		debugCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
-			ProjectSWG.PREFS.putBoolean("debug", newValue);
-			showHyperlink.setDisable(!newValue);
-			((LogController)mainController.getPswg().getControllers().get("log")).removeDebugListener();
-			if (newValue)
-				((LogController)mainController.getPswg().getControllers().get("log")).addDebugListener();
-		});
-		
-		showHyperlink.setOnAction((e) -> {
-			((LogController)mainController.getPswg().getControllers().get("log")).show();
-		});
-		
+		// game executable
 		final Tooltip binaryTooltip = new Tooltip();
 		binaryTooltip.textProperty().bind(manager.getBinary());
 		binaryButton.textProperty().bind(manager.getBinary());
@@ -524,11 +577,22 @@ public class SettingsController implements ModalComponent
 			String bin =  file.getAbsolutePath();
 			manager.getBinary().set(bin);
 		});
-		
+		// reset game executable
 		resetBinaryHyperlink.setOnAction((e) -> {
 			manager.getBinary().set(manager.getPswgFolder().getValue() + "/SwgClient_r.exe");
 		});
 		
+		// delete game profiles
+		manager.getPswgFolder().addListener((observable, oldValue, newValue) -> {
+			if (newValue == null)
+				return;
+			if (newValue.equals(""))
+				deleteGameProfilesButton.setDisable(true);
+			else
+				deleteGameProfilesButton.setDisable(false);
+		});
+		
+		// game features
 		final Tooltip gameFeaturesTooltip = new Tooltip();
 		gameFeaturesTooltip.textProperty().bind(manager.getGameFeatures());
 		gameFeaturesButton.textProperty().bind(manager.getGameFeatures());
@@ -545,36 +609,9 @@ public class SettingsController implements ModalComponent
 				manager.getGameFeatures().set(gf);
 			});
 		});
-		
+		// reset game features
 		resetGameFeaturesHyperlink.setOnAction((e) -> {
 			manager.getGameFeatures().set(Manager.GAME_FEATURES);
-		});
-		
-		manager.getState().addListener((observable, oldValue, newValue) -> {
-			switch (newValue.intValue()) {
-			case Manager.STATE_SWG_SETUP_REQUIRED:
-			case Manager.STATE_SWG_SCANNING:
-			case Manager.STATE_PSWG_SETUP_REQUIRED:
-			case Manager.STATE_PSWG_SCAN_REQUIRED:
-			case Manager.STATE_PSWG_SCANNING:
-			case Manager.STATE_UPDATE_REQUIRED:
-			case Manager.STATE_UPDATING:
-				binaryButton.setDisable(true);
-				resetBinaryHyperlink.setDisable(true);
-				gameFeaturesButton.setDisable(true);
-				resetGameFeaturesHyperlink.setDisable(true);
-				break;
-			
-			case Manager.STATE_WINE_REQUIRED:
-			case Manager.STATE_PSWG_READY:
-				binaryButton.setDisable(false);
-				resetBinaryHyperlink.setDisable(false);
-				gameFeaturesButton.setDisable(false);
-				resetGameFeaturesHyperlink.setDisable(false);
-				break;
-				
-			default:
-			}
 		});
 		
 		deleteGameProfilesButton.setOnMouseEntered(buttonHover);
@@ -688,6 +725,36 @@ public class SettingsController implements ModalComponent
 			else
 				mainController.getPswg().getStage().getScene().getStylesheets().remove(ProjectSWG.CSS_BASIC);
 		});
+	}
+	
+	public void refreshUpdateServerComboBox()
+	{		
+		Preferences updateServersNode = ProjectSWG.PREFS.node("update_servers");
+		updateServerComboBox.getItems().clear();
+		try {
+			for (String server : updateServersNode.keys())
+				updateServerComboBox.getItems().add(server);
+		} catch (BackingStoreException e1) {
+			ProjectSWG.log("Refresh Update Servers Error: " + e1.toString());
+		}
+		
+		updateServerComboBox.setValue(ProjectSWG.PREFS.get("update_server", ""));
+	}
+	
+	public void refreshLoginServerComboBox()
+	{
+		loginServerLockedCheckBox.setSelected(true);
+		
+		Preferences loginServersNode = ProjectSWG.PREFS.node("login_servers");
+		loginServerComboBox.getItems().clear();
+		try {
+			for (String server : loginServersNode.keys())
+				loginServerComboBox.getItems().add(server);
+		} catch (BackingStoreException e1) {
+			ProjectSWG.log("Refresh Login Servers Error: " + e1.toString());
+		}
+		
+		loginServerComboBox.setValue(ProjectSWG.PREFS.get("login_server", Manager.LS_PSWG_K));
 	}
 	
 	public void refreshThemeList()

@@ -51,7 +51,7 @@
             <Label fx:id="stepThreeLabel" style="-fx-font-size: 46;" text="3" HBox.hgrow="ALWAYS" />
             <VBox alignment="CENTER" spacing="15.0" HBox.hgrow="ALWAYS">
                <children>
-                  <Button fx:id="pswgFolderButton" maxHeight="Infinity" maxWidth="Infinity" mnemonicParsing="false" text="Select the Installation Folder" />
+                  <Button fx:id="pswgFolderButton" maxHeight="Infinity" maxWidth="Infinity" mnemonicParsing="false" text="Select an Installation Folder" />
                   <TextField fx:id="pswgFolderTextField" disable="true" editable="false" />
                </children>
             </VBox>

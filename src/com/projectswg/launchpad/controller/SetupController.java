@@ -30,14 +30,19 @@ import com.projectswg.launchpad.service.Manager;
 
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.effect.Glow;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
@@ -59,7 +64,6 @@ public class SetupController implements ModalComponent
 	
 	public static final String LABEL = "Setup";
 	
-	private EventHandler<MouseEvent> comboClicked;
 	private MainController mainController;
 	
 	@Override
@@ -70,13 +74,6 @@ public class SetupController implements ModalComponent
 	{
 		this.mainController = mainController;
 		Manager manager = mainController.getManager();
-		
-		comboClicked = new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent event) {
-				ProjectSWG.playSound("combo_clicked");
-			}
-		};
 		
 		swgFolderTextField.textProperty().bind(manager.getSwgFolder());
 		pswgFolderTextField.textProperty().bind(manager.getPswgFolder());
@@ -96,6 +93,27 @@ public class SetupController implements ModalComponent
 		final Tooltip swgFolderButtonTooltip = new Tooltip("Select the original Star Wars Galaxies installation folder.");
 		swgFolderButton.setTooltip(swgFolderButtonTooltip);
 		
+		
+		final TextField url = new TextField();
+		GridPane addUs = new GridPane();
+		addUs.setPadding(new Insets(1, 1, 1, 1));
+		
+		addUs.getChildren().add(url);
+		
+		addUpdateServerButton.setOnAction((e) -> {
+			Dialog dialog = new Dialog();
+			dialog.setTitle("Add Update Server");
+			//dialog.setHeaderText("Add Required Fields");
+			
+			
+			
+			ButtonType createButtonType = new ButtonType("Create", ButtonData.OK_DONE);
+			dialog.getDialogPane().getButtonTypes().addAll(createButtonType, ButtonType.CANCEL);
+			
+			dialog.showAndWait();
+		});
+		
+		
 		pswgFolderButton.setOnAction((e) -> {
 			DirectoryChooser directoryChooser = new DirectoryChooser();
 			directoryChooser.setTitle("Select ProjectSWG folder");
@@ -112,7 +130,6 @@ public class SetupController implements ModalComponent
 		
 		refreshUpdateServerComboBox();
 		
-		updateServerComboBox.setOnMouseClicked(comboClicked);
 		updateServerComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue == null)
 				return;

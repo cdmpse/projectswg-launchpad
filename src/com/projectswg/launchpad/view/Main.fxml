@@ -18,24 +18,35 @@
                   <StackPane alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
                      <children>
                         <HBox opacity="0.25" prefHeight="100.0" prefWidth="200.0" style="-fx-background-color: green;" />
-                        <HBox alignment="CENTER_LEFT" spacing="10.0" StackPane.alignment="CENTER_LEFT">
+                        <GridPane hgap="10.0" vgap="10.0" StackPane.alignment="CENTER_LEFT">
+                          <columnConstraints>
+                              <ColumnConstraints hgrow="SOMETIMES" />
+                              <ColumnConstraints hgrow="SOMETIMES" />
+                              <ColumnConstraints hgrow="SOMETIMES" />
+                              <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
                            <children>
-                              <Region maxWidth="40.0" minWidth="40.0" prefWidth="40.0" />
-                              <Label style="-fx-font-weight: bold;" styleClass="ticker" text="LOGIN SERVER:">
+                              <Label style="-fx-font-weight: bold;" styleClass="ticker" text="LOGIN SERVER:" GridPane.halignment="RIGHT">
                                  <effect>
                                     <Glow />
                                  </effect>
                               </Label>
-                              <Label fx:id="profileLabel" styleClass="ticker" text="localhost">
+                              <Label fx:id="loginServerLabel" styleClass="ticker" text="localhost" GridPane.columnIndex="1">
                                  <effect>
                                     <Glow />
                                  </effect>
                               </Label>
                            </children>
-                           <effect>
-                              <Glow />
-                           </effect>
-                        </HBox>
+                           <padding>
+                              <Insets top="10.0" />
+                           </padding>
+                           <StackPane.margin>
+                              <Insets left="40.0" right="40.0" />
+                           </StackPane.margin>
+                        </GridPane>
                      </children>
                   </StackPane>
                </children>
@@ -76,11 +87,11 @@
                               <Button fx:id="extrasButton" maxWidth="100.0" minWidth="100.0" mnemonicParsing="false" prefWidth="100.0" text="Extras" />
                               <Button fx:id="settingsButton" maxWidth="100.0" minWidth="100.0" mnemonicParsing="false" prefWidth="100.0" text="Settings" GridPane.rowIndex="1" />
                               <Button fx:id="optionsButton" maxWidth="100.0" minWidth="100.0" mnemonicParsing="false" prefWidth="100.0" text="Options" GridPane.rowIndex="4" />
-                              <Button fx:id="scanButton" maxWidth="100.0" minWidth="100.0" mnemonicParsing="false" prefWidth="100.0" text="Scan" visible="false" GridPane.rowIndex="3" />
+                              <Button fx:id="scanButton" maxWidth="100.0" minWidth="100.0" mnemonicParsing="false" prefWidth="100.0" text="Scan" GridPane.rowIndex="3" />
                               <Button fx:id="playButton" defaultButton="true" maxWidth="100.0" minWidth="100.0" mnemonicParsing="false" prefWidth="100.0" text="Play" visible="true" GridPane.rowIndex="2" />
                               <Button fx:id="updateButton" defaultButton="true" maxWidth="100.0" minWidth="100.0" mnemonicParsing="false" prefWidth="100.0" text="Update" visible="false" GridPane.rowIndex="3" />
                               <Button fx:id="cancelButton" defaultButton="true" maxWidth="100.0" minWidth="100.0" mnemonicParsing="false" prefWidth="100.0" text="Cancel" visible="false" GridPane.rowIndex="3" />
-                              <Button fx:id="setupButton" defaultButton="true" maxWidth="100.0" minWidth="100.0" mnemonicParsing="false" prefWidth="100.0" text="Setup" GridPane.rowIndex="3" />
+                              <Button fx:id="setupButton" defaultButton="true" maxWidth="100.0" minWidth="100.0" mnemonicParsing="false" prefWidth="100.0" text="Setup" GridPane.rowIndex="2" />
                            </children>
                         </GridPane>
                         <Region maxHeight="40.0" minHeight="40.0" prefHeight="40.0" VBox.vgrow="ALWAYS" />
