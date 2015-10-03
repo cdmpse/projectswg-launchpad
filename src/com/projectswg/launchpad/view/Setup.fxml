@@ -30,25 +30,6 @@
       <HBox fx:id="stepTwoHBox" alignment="CENTER" spacing="50.0" VBox.vgrow="ALWAYS">
          <children>
             <Label fx:id="stepTwoLabel" style="-fx-font-size: 46;" text="2" HBox.hgrow="ALWAYS" />
-            <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" spacing="15.0" HBox.hgrow="ALWAYS">
-               <children>
-                  <Label text="Select an Update Server" />
-                  <HBox spacing="20.0">
-                     <children>
-                        <ComboBox fx:id="updateServerComboBox" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
-                        <Button fx:id="addUpdateServerButton" maxWidth="80.0" minWidth="80.0" mnemonicParsing="false" prefWidth="80.0" text="Add" HBox.hgrow="ALWAYS" />
-                     </children>
-                  </HBox>
-               </children>
-            </VBox>
-         </children>
-         <padding>
-            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-         </padding>
-      </HBox>
-      <HBox fx:id="stepThreeHBox" alignment="CENTER" spacing="50.0" VBox.vgrow="ALWAYS">
-         <children>
-            <Label fx:id="stepThreeLabel" style="-fx-font-size: 46;" text="3" HBox.hgrow="ALWAYS" />
             <VBox alignment="CENTER" spacing="15.0" HBox.hgrow="ALWAYS">
                <children>
                   <Button fx:id="pswgFolderButton" maxHeight="Infinity" maxWidth="Infinity" mnemonicParsing="false" text="Select an Installation Folder" />

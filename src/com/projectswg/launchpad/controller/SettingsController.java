@@ -42,6 +42,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Alert;
@@ -49,6 +50,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Slider;
@@ -60,6 +62,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -80,6 +83,8 @@ public class SettingsController implements ModalComponent
 	@FXML
 	private Button refreshThemesButton, removeLoginServerButton, addLoginServerButton, wineBinaryButton;
 	@FXML
+	private Button addUpdateServerButton, removeUpdateServerButton;
+	@FXML
 	private Button binaryButton, gameFeaturesButton, deleteLaunchpadPreferencesButton;
 	@FXML
 	private TextField wineArgumentsTextField, wineEnvironmentVariablesTextField;
@@ -90,7 +95,7 @@ public class SettingsController implements ModalComponent
 	@FXML
 	private TextField updateServerFileListTextField, updateServerEncryptionKeyTextField;
 	@FXML
-	private CheckBox closeAfterLaunchCheckBox, captureCheckBox, debugCheckBox;
+	private CheckBox closeAfterLaunchCheckBox, captureCheckBox, debugCheckBox, updateServerLockedCheckBox;
 	@FXML
 	private CheckBox loginServerLockedCheckBox, openOnLaunchCheckBox, soundCheckBox, translateCheckBox;
 	@FXML
@@ -187,7 +192,6 @@ public class SettingsController implements ModalComponent
 			switch (newValue.intValue()) {
 			case Manager.STATE_SWG_SETUP_REQUIRED:
 			case Manager.STATE_SWG_SCANNING:
-			case Manager.STATE_UPDATE_SERVER_REQUIRED:
 			case Manager.STATE_PSWG_SETUP_REQUIRED:
 			case Manager.STATE_PSWG_SCAN_REQUIRED:
 			case Manager.STATE_PSWG_SCANNING:
@@ -227,7 +231,6 @@ public class SettingsController implements ModalComponent
 				settingsPswgFolderButton.setDisable(true);
 				break;
 			
-			case Manager.STATE_UPDATE_SERVER_REQUIRED:
 			case Manager.STATE_PSWG_SCAN_REQUIRED:
 				pswgFolderDisplay.queueString(ProjectSWG.XMARK);
 				settingsPswgFolderButton.setDisable(false);
@@ -377,6 +380,21 @@ public class SettingsController implements ModalComponent
 		refreshUpdateServerComboBox();
 		
 		// add update server
+		addUpdateServerButton.setOnMouseEntered(buttonHover);
+		addUpdateServerButton.setOnAction((e) -> {
+			ProjectSWG.playSound("button_press");
+			TextInputDialog dialog = new TextInputDialog();
+			dialog.setTitle("Add Update Server");
+			dialog.setHeaderText("Please enter a name for the update server.");
+			dialog.setContentText("Update Server name: ");
+			Optional<String> result = dialog.showAndWait();
+			result.ifPresent(name -> {
+				manager.addUpdateServer(name);
+				refreshUpdateServerComboBox();
+				updateServerComboBox.setValue(name);
+				updateServerLockedCheckBox.setSelected(false);
+			});
+		});
 		
 		// remove update server
 		

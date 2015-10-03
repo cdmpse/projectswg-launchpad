@@ -166,7 +166,6 @@ public class MainController implements FxmlController
 				extrasButton.setDisable(true);
 				break;
 			
-			case Manager.STATE_UPDATE_SERVER_REQUIRED:
 			case Manager.STATE_PSWG_SETUP_REQUIRED:
 				playButton.setVisible(false);
 				scanButton.setVisible(true);

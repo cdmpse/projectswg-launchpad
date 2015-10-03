@@ -98,14 +98,13 @@ public class Manager
 	public static final int STATE_INIT = 0;
 	public static final int STATE_SWG_SETUP_REQUIRED = 1;
 	public static final int STATE_SWG_SCANNING = 2;
-	public static final int STATE_UPDATE_SERVER_REQUIRED = 3;
-	public static final int STATE_PSWG_SETUP_REQUIRED = 4;
-	public static final int STATE_PSWG_SCAN_REQUIRED = 5;
-	public static final int STATE_PSWG_SCANNING = 6;
-	public static final int STATE_UPDATE_REQUIRED = 7;
-	public static final int STATE_UPDATING = 8;
-	public static final int STATE_WINE_REQUIRED = 9;
-	public static final int STATE_PSWG_READY = 10;
+	public static final int STATE_PSWG_SETUP_REQUIRED = 3;
+	public static final int STATE_PSWG_SCAN_REQUIRED = 4;
+	public static final int STATE_PSWG_SCANNING = 5;
+	public static final int STATE_UPDATE_REQUIRED = 6;
+	public static final int STATE_UPDATING = 7;
+	public static final int STATE_WINE_REQUIRED = 8;
+	public static final int STATE_PSWG_READY = 9;
 	
 	private ArrayList<Resource> resources;
 
@@ -353,10 +352,7 @@ public class Manager
 			Platform.runLater(() -> {
 				if (swgScanService.getValue())
 					if (pswgFolder.getValue().equals(""))
-						if (updateServer.getValue().equals(""))
-							state.set(STATE_UPDATE_SERVER_REQUIRED);
-						else
-							state.set(STATE_PSWG_SETUP_REQUIRED);
+						state.set(STATE_PSWG_SETUP_REQUIRED);
 					else
 						quickScan();
 				else
@@ -680,6 +676,8 @@ public class Manager
 	
 	private void setUpdateServerValues(String updateServerName, String[] values)
 	{
+		// set base node too?
+		
 		Preferences updateServersNode = Preferences.userNodeForPackage(ProjectSWG.class).node("update_servers");
 		updateServersNode.put(updateServerName, String.format("%s,%s,%s,%s,%s,%s",
 			values[0],
@@ -689,15 +687,17 @@ public class Manager
 			values[4],
 			values[5]
 		));
-		
-		// set them in manager too
 	}
 	
-	public void setUpdateServerUrl(String url)
+	public void addUpdateServer(String name)
 	{
-		String[] values = getUpdateServerValues(updateServer.getValue());
-		values[1] = url;
-		setUpdateServerValues(updateServer.getValue(), values);
+		Preferences updateServersNode = Preferences.userNodeForPackage(ProjectSWG.class).node("update_servers");
+		
+		if (!updateServersNode.get(name, "").equals("")) {
+			ProjectSWG.log("update server already exists");
+			return;
+		}
+		updateServersNode.put(name, ",,,,,");
 	}
 	
 	public String[] getLoginServerValues(String loginServer)
