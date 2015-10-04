@@ -23,10 +23,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Files;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -103,7 +105,7 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 				ArrayList<String> resourceList = null;
 				ArrayList<Resource> resources = null;
 				
-				String resourceListPath = manager.getPswgFolder().getValue() + "/launcherS.dl.dat";
+				String resourceListPath = manager.getPswgFolder().getValue() + "/" + manager.getUpdateServerFileList().getValue();
 				ProjectSWG.log("Reading encrypted resource list from local: " + resourceListPath);
 				resourceList = readEncryptedResourceListFromLocal(resourceListPath);
 				
@@ -112,6 +114,10 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 					updateMessage("Fetching Resource List");
 					
 					resourceList = getResourceListFromRemote();
+					if (resourceList == null) {
+						ProjectSWG.log("Error fetching resource list");
+						return null;
+					}
 					if (!writeEncryptedResourceList(resourceList)) {
 						ProjectSWG.log("Error writing resource");
 						return null;
@@ -189,8 +195,6 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 				return total;
 			}
 			
-			/*
-			 * update server files first
 			private ArrayList<String> readPlainTextResourceListFromLocal(String filePath)
 			{
 				ArrayList<String> list = new ArrayList<String>();
@@ -207,7 +211,6 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 				}
 				return list;
 			}
-			*/
 			
 			private ArrayList<String> readEncryptedResourceListFromLocal(String filePath)
 			{
@@ -244,8 +247,8 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 				try {
 					URL url = new URL(manager.getUpdateServerUrl().getValue() + manager.getUpdateServerFileList().getValue());
 					URLConnection urlConnection = url.openConnection();
-					if (!manager.getUpdateServerUser().getValue().equals("")) {
-						String auth = manager.getUpdateServerUser() + ":" + manager.getUpdateServerPassword();
+					if (!manager.getUpdateServerUsername().getValue().equals("")) {
+						String auth = manager.getUpdateServerUsername().getValue() + ":" + manager.getUpdateServerPassword().getValue();
 						String basicAuth = "Basic " + DatatypeConverter.printBase64Binary(auth.getBytes());
 						urlConnection.setRequestProperty("Authorization", basicAuth);
 					}
@@ -364,13 +367,11 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 				}
 			}
 			
-			/*
-			 * update server files first
 			private boolean writePlainTextResourceList(ArrayList<String> resourceList)
 			{
-				PSWG.log("Writting resource list as plain text");
+				ProjectSWG.log("Writting resource list as plain text");
 				
-				file = new File(manager.getPswgFolder().getValue() + "/launcherS.dl.dat");
+				file = new File(manager.getPswgFolder().getValue() + "/" + manager.getUpdateServerFileList().getValue());
 				file.getParentFile().mkdirs();
 
 				try {
@@ -380,17 +381,16 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 					}
 					writer.close();
 				} catch (IOException e) {
-					PSWG.log(e.toString());
+					ProjectSWG.log(e.toString());
 					return false;
 				}
 				return true;
 			}
-			*/
 			
 			private boolean writeEncryptedResourceList(ArrayList<String> resourceList)
 			{
 				ProjectSWG.log("Writing encoded resource list");
-				file = new File(manager.getPswgFolder().getValue() + "/launcherS.dl.dat");
+				file = new File(manager.getPswgFolder().getValue() + "/" + manager.getUpdateServerFileList().getValue());
 				file.getParentFile().mkdirs();
 				StringBuilder fullText = new StringBuilder();
 				for (String l : resourceList)

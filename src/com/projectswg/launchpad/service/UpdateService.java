@@ -103,16 +103,17 @@ public class UpdateService extends Service<Boolean>
 					file.delete();
 				
 				long downloaded = file.length();
-				String auth = manager.getUpdateServerUser() + ":" + manager.getUpdateServerPassword();
-				String basicAuth = "Basic " + DatatypeConverter.printBase64Binary(auth.getBytes());
 				
 				try {
 					long total = resource.getSize();
 					
 					URL url = new URL(manager.getUpdateServerUrl() + name);
 					URLConnection urlConnection = url.openConnection();
-					urlConnection.setRequestProperty("Authorization", basicAuth);
-					
+					if (!manager.getUpdateServerUsername().equals("")) {
+						String auth = manager.getUpdateServerUsername() + ":" + manager.getUpdateServerPassword();
+						String basicAuth = "Basic " + DatatypeConverter.printBase64Binary(auth.getBytes());
+						urlConnection.setRequestProperty("Authorization", basicAuth);
+					}
 					String resumeDownlaoad = ProjectSWG.PREFS.get("resume_download", "");
 					String[] resumeDownlaoadArray = resumeDownlaoad.split("::");
 

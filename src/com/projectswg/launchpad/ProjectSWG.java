@@ -144,7 +144,9 @@ public class ProjectSWG extends Application
 			
 			// folders
 			manager.getSwgFolder().set(ProjectSWG.PREFS.get("swg_folder", ""));
-			manager.getPswgFolder().set(ProjectSWG.PREFS.get("pswg_folder", ""));
+			//String pswgFolder = manager.getUpdateServerValues(manager.getUpdateServer().getValue())[5];
+			//System.out.println("here: " + pswgFolder);
+			//manager.getPswgFolder().set(pswgFolder);
 		});
 	}
 	

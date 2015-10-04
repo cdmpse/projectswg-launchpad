@@ -63,10 +63,10 @@ public class Manager
 	// update server string format: [files_url],[auth_user],[auth_pass],[filelist],[enc_key],[folder]
 	// default pswg
 	public static final String US_PSWG_K = "ProjectSWG";
-	public static final String US_PSWG_V = ",http://patch1.projectswg.com/files/" +
+	public static final String US_PSWG_V = "http://patch1.projectswg.com/files/" +
 										   ",pswglaunch" +
 										   ",wvQAxc5mGgF0" +
-										   "launcherS.dl.dat" +
+										   ",launcherS.dl.dat" +
 										   ",eKgeg75J3pTBURgh" +
 										   ",";
 	
@@ -122,7 +122,7 @@ public class Manager
 	private SimpleStringProperty updateServer;
 	private SimpleStringProperty updateServerFileList;
 	private SimpleStringProperty updateServerUrl;
-	private SimpleStringProperty updateServerUser;
+	private SimpleStringProperty updateServerUsername;
 	private SimpleStringProperty updateServerPassword;
 	private SimpleStringProperty updateServerEncryptionKey;
 	private SimpleStringProperty pswgFolder;
@@ -181,48 +181,18 @@ public class Manager
 		loginServerPingPort = new SimpleStringProperty();
 		
 		updateServer = new SimpleStringProperty("");
-
 		updateServerUrl = new SimpleStringProperty();
-		updateServerUrl.addListener((observable, oldValue, newValue) -> {
-			String[] values = getUpdateServerValues(updateServer.getValue());
-			values[0] = newValue;
-			setUpdateServerValues(updateServer.getValue(), values);
-		});
-		
-		updateServerUser = new SimpleStringProperty();
-		updateServerUser.addListener((observable, oldValue, newValue) -> {
-			String[] values = getUpdateServerValues(updateServer.getValue());
-			values[1] = newValue;
-			setUpdateServerValues(updateServer.getValue(), values);
-		});
-		
+		updateServerUsername = new SimpleStringProperty();
 		updateServerPassword = new SimpleStringProperty();
-		updateServerPassword.addListener((observable, oldValue, newValue) -> {
-			String[] values = getUpdateServerValues(updateServer.getValue());
-			values[2] = newValue;
-			setUpdateServerValues(updateServer.getValue(), values);
-		});
-		
 		updateServerFileList = new SimpleStringProperty();
-		updateServerFileList.addListener((observable, oldValue, newValue) -> {
-			String[] values = getUpdateServerValues(updateServer.getValue());
-			values[3] = newValue;
-			setUpdateServerValues(updateServer.getValue(), values);
-		});
-		
 		updateServerEncryptionKey = new SimpleStringProperty();
-		updateServerEncryptionKey.addListener((observable, oldValue, newValue) -> {
-			String[] values = getUpdateServerValues(updateServer.getValue());
-			values[4] = newValue;
-			setUpdateServerValues(updateServer.getValue(), values);
-		});
 		
 		pswgFolder = new SimpleStringProperty();
 		pswgFolder.addListener((observable, oldValue, newValue) -> {
 			if (swgFolder.getValue() == null || swgFolder.getValue().equals(""))
 				return;
 			ProjectSWG.log(String.format("pswgFolder changed: %s -> %s", oldValue, newValue));
-			ProjectSWG.PREFS.put("pswg_folder", newValue);
+			
 			if (newValue.equals(""))
 				Platform.runLater(() -> {
 					state.set(STATE_PSWG_SETUP_REQUIRED);
@@ -286,22 +256,23 @@ public class Manager
 		if (updateServersNode.get(US_PSWG_K, "").equals(""))
 			updateServersNode.put(US_PSWG_K, US_PSWG_V);
 		
-		//if (ProjectSWG.PREFS.get("update_server", "").equals(""))
-		//	ProjectSWG.PREFS.put("update_server", US_PSWG_V);
-		
 		updateServer.addListener((observable, oldValue, newValue) -> {
 			if (newValue.equals(""))
 				return;
 			
-			ProjectSWG.PREFS.put("update_server", newValue);
 			String[] updateServerValues = getUpdateServerValues(newValue);
-			updateServerFileList.set(updateServerValues[0]);
-			updateServerUrl.set(updateServerValues[1]);
-			updateServerUser.set(updateServerValues[2]);
-			updateServerPassword.set(updateServerValues[3]);
+			updateServerUrl.set(updateServerValues[0]);
+			updateServerUsername.set(updateServerValues[1]);
+			updateServerPassword.set(updateServerValues[2]);
+			updateServerFileList.set(updateServerValues[3]);
 			updateServerEncryptionKey.set(updateServerValues[4]);
 			pswgFolder.set(updateServerValues[5]);
+			
+			ProjectSWG.PREFS.put("update_server", newValue);
 		});
+		
+		if (ProjectSWG.PREFS.get("update_server", "").equals(""))
+			ProjectSWG.PREFS.put("update_server", US_PSWG_K);
 		
 		// login server
 		Preferences loginServersNode = ProjectSWG.PREFS.node("login_servers");
@@ -314,6 +285,24 @@ public class Manager
 		
 		if (ProjectSWG.PREFS.get("login_server", "").equals(""))
 			ProjectSWG.PREFS.put("login_server", LS_PSWG_K);
+		
+		loginServer.addListener((observable, oldValue, newValue) -> {
+			ProjectSWG.PREFS.put("login_server", newValue);
+			
+			String[] loginServerValues = getLoginServerValues(newValue);
+			
+			ProjectSWG.log("Setting login server hostname: " + loginServerValues[0]);
+			ProjectSWG.log("Setting login server playport: " + loginServerValues[1]);
+			ProjectSWG.log("Setting login server pingport: " + loginServerValues[2]);
+			
+			//setLoginServerHostname(ProjectSWG.PREFS.get("login_server", ""), loginServerValues[0]);
+			//setLoginServerPort(ProjectSWG.PREFS.get("login_server", ""), loginServerValues[1]);
+			//setLoginServerPingPort(ProjectSWG.PREFS.get("login_server", ""), loginServerValues[2]);
+
+			loginServerHost.set(loginServerValues[0]);
+			loginServerPlayPort.set(loginServerValues[1]);
+			loginServerPingPort.set(loginServerValues[2]);
+		});
 		
 		state.addListener((observable, oldValue, newValue) -> {
 			ProjectSWG.log(String.format("state change: %s -> %s", oldValue, newValue));
@@ -645,7 +634,7 @@ public class Manager
 		Preferences updateServersNode = Preferences.userNodeForPackage(ProjectSWG.class).node("update_servers");
 		String serverString = updateServersNode.get(updateServer, "");
 		if (serverString.equals("")) {
-			ProjectSWG.log("Update server doesn't exist: " + loginServer);
+			ProjectSWG.log("Update server doesn't exist: " + updateServer);
 			return null;
 		}
 		
@@ -664,6 +653,13 @@ public class Manager
 			}
 		}
 	
+		System.out.println("url=" + matcher.group(1));
+		System.out.println("username=" + matcher.group(2));
+		System.out.println("password=" + matcher.group(3));
+		System.out.println("filelist=" + matcher.group(4));
+		System.out.println("key=" + matcher.group(5));
+		System.out.println("pswg=" + matcher.group(6));
+		
 		return new String[] {
 			matcher.group(1),
 			matcher.group(2),
@@ -675,9 +671,7 @@ public class Manager
 	}
 	
 	private void setUpdateServerValues(String updateServerName, String[] values)
-	{
-		// set base node too?
-		
+	{	
 		Preferences updateServersNode = Preferences.userNodeForPackage(ProjectSWG.class).node("update_servers");
 		updateServersNode.put(updateServerName, String.format("%s,%s,%s,%s,%s,%s",
 			values[0],
@@ -687,6 +681,13 @@ public class Manager
 			values[4],
 			values[5]
 		));
+		
+		System.out.println("url=" + values[0]);
+		System.out.println("username=" + values[1]);
+		System.out.println("password=" + values[2]);
+		System.out.println("filelist=" + values[3]);
+		System.out.println("key=" + values[4]);
+		System.out.println("pswg=" + values[5]);
 	}
 	
 	public void addUpdateServer(String name)
@@ -698,6 +699,57 @@ public class Manager
 			return;
 		}
 		updateServersNode.put(name, ",,,,,");
+	}
+	
+	public void setUpdateServerUrl(String url)
+	{
+		String[] values = getUpdateServerValues(updateServer.getValue());
+		values[0] = url;
+		setUpdateServerValues(updateServer.getValue(), values);
+		updateServerUrl.set(url);
+		ProjectSWG.log("Setting update server url -> " + url);
+	}
+	
+	public void setUpdateServerUsername(String username)
+	{
+		String[] values = getUpdateServerValues(updateServer.getValue());
+		values[1] = username;
+		setUpdateServerValues(updateServer.getValue(), values);
+		updateServerUsername.set(username);
+		ProjectSWG.log("Setting update server username -> " + username);
+	}
+	
+	public void setUpdateServerPassword(String password)
+	{
+		String[] values = getUpdateServerValues(updateServer.getValue());
+		values[2] = password;
+		setUpdateServerValues(updateServer.getValue(), values);
+		updateServerPassword.set(password);
+		ProjectSWG.log("Setting update server password -> " + password);
+	}
+	
+	public void setUpdateServerFileList(String fileList)
+	{
+		String[] values = getUpdateServerValues(updateServer.getValue());
+		values[3] = fileList;
+		setUpdateServerValues(updateServer.getValue(), values);
+		updateServerFileList.set(fileList);
+	}
+	
+	public void setUpdateServerEncryptionKey(String encryptionKey)
+	{
+		String[] values = getUpdateServerValues(updateServer.getValue());
+		values[4] = encryptionKey;
+		setUpdateServerValues(updateServer.getValue(), values);
+		updateServerEncryptionKey.set(encryptionKey);
+	}
+	
+	public void setUpdateServerInstallationFolder(String folder)
+	{
+		String[] values = getUpdateServerValues(updateServer.getValue());
+		values[5] = folder;
+		setUpdateServerValues(updateServer.getValue(), values);
+		pswgFolder.set(folder);
 	}
 	
 	public String[] getLoginServerValues(String loginServer)
@@ -732,6 +784,7 @@ public class Manager
 		};
 	}
 	
+	/*
 	public void setLoginServer(String loginServerName)
 	{
 		ProjectSWG.PREFS.put("login_server", loginServerName);
@@ -743,14 +796,14 @@ public class Manager
 		ProjectSWG.log("Setting login server playport: " + loginServerValues[1]);
 		ProjectSWG.log("Setting login server pingport: " + loginServerValues[2]);
 		
-		setLoginServerHostname(ProjectSWG.PREFS.get("login_server", ""), loginServerValues[0]);
-		setLoginServerPort(ProjectSWG.PREFS.get("login_server", ""), loginServerValues[1]);
-		setLoginServerStatusPort(ProjectSWG.PREFS.get("login_server", ""), loginServerValues[2]);
+		//setLoginServerHostname(ProjectSWG.PREFS.get("login_server", ""), loginServerValues[0]);
+		//setLoginServerPort(ProjectSWG.PREFS.get("login_server", ""), loginServerValues[1]);
+		//setLoginServerPingPort(ProjectSWG.PREFS.get("login_server", ""), loginServerValues[2]);
 
 		loginServerHost.set(loginServerValues[0]);
 		loginServerPlayPort.set(loginServerValues[1]);
 		loginServerPingPort.set(loginServerValues[2]);
-	}
+	}*/
 	
 	public void setLoginServerHostname(String loginServerName, String value)
 	{
@@ -761,7 +814,6 @@ public class Manager
 			loginServerValues[1],
 			loginServerValues[2]
 		));
-		loginServerHost.set(value);
 	}
 	
 	public void setLoginServerPort(String loginServerName, String value)
@@ -773,10 +825,9 @@ public class Manager
 			value,
 			loginServerValues[2]
 		));
-		loginServerPlayPort.set(value);
 	}
 	
-	public void setLoginServerStatusPort(String loginServerName, String value)
+	public void setLoginServerPingPort(String loginServerName, String value)
 	{
 		Preferences loginServersNode = Preferences.userNodeForPackage(ProjectSWG.class).node("login_servers");
 		String[] loginServerValues = getLoginServerValues(loginServerName);
@@ -785,7 +836,6 @@ public class Manager
 			loginServerValues[1],
 			value
 		));
-		loginServerPingPort.set(value);
 	}
 	
 	public void addLoginServer(String name)
@@ -871,7 +921,7 @@ public class Manager
 	public SimpleStringProperty getUpdateServerPassword() { return updateServerPassword; }
 	public SimpleStringProperty getUpdateServerFileList() { return updateServerFileList; }
 	public SimpleStringProperty getUpdateServerUrl() { return updateServerUrl; }
-	public SimpleStringProperty getUpdateServerUser() { return updateServerUser; }
+	public SimpleStringProperty getUpdateServerUsername() { return updateServerUsername; }
 	
 	public SimpleIntegerProperty getState() { return state; }
 }

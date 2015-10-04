@@ -89,9 +89,9 @@ public class SettingsController implements ModalComponent
 	@FXML
 	private TextField wineArgumentsTextField, wineEnvironmentVariablesTextField;
 	@FXML
-	private TextField hostnameTextField, playPortTextField, statusPortTextField;
+	private TextField hostnameTextField, playPortTextField, pingPortTextField;
 	@FXML
-	private TextField updateServerURLTextField, updateServerUsernameTextField, updateServerPasswordTextField;
+	private TextField updateServerUrlTextField, updateServerUsernameTextField, updateServerPasswordTextField;
 	@FXML
 	private TextField updateServerFileListTextField, updateServerEncryptionKeyTextField;
 	@FXML
@@ -185,8 +185,8 @@ public class SettingsController implements ModalComponent
 		else
 			initWinePane();
 		initAboutPane();
-		
 
+		//
 	
 		manager.getState().addListener((observable, oldValue, newValue) -> {
 			switch (newValue.intValue()) {
@@ -231,6 +231,7 @@ public class SettingsController implements ModalComponent
 				settingsPswgFolderButton.setDisable(true);
 				break;
 			
+			case Manager.STATE_PSWG_SETUP_REQUIRED:
 			case Manager.STATE_PSWG_SCAN_REQUIRED:
 				pswgFolderDisplay.queueString(ProjectSWG.XMARK);
 				settingsPswgFolderButton.setDisable(false);
@@ -245,6 +246,9 @@ public class SettingsController implements ModalComponent
 				settingsPswgFolderButton.setDisable(false);
 			}
 		});
+		
+		refreshUpdateServerComboBox();
+		refreshLoginServerComboBox();
 	}
 	
 	@Override
@@ -322,9 +326,9 @@ public class SettingsController implements ModalComponent
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 				if (Pattern.matches(urlPattern, newValue))
-					manager.setLoginServerHostname(loginServerComboBox.getValue(), newValue);
+					manager.setUpdateServerUrl(newValue);
 				else
-					hostnameTextField.setText(oldValue);
+					updateServerUrlTextField.setText(oldValue);
 			}
 		};
 		
@@ -332,7 +336,7 @@ public class SettingsController implements ModalComponent
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 				if (Pattern.matches(authPattern, newValue))
-					manager.getUpdateServerUser().set(newValue);
+					manager.setUpdateServerUsername(newValue);
 				else
 					updateServerUsernameTextField.setText(oldValue);
 			}
@@ -342,17 +346,17 @@ public class SettingsController implements ModalComponent
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 				if (Pattern.matches(authPattern, newValue))
-					manager.getUpdateServerPassword().set(newValue);
+					manager.setUpdateServerPassword(newValue);
 				else
 					updateServerPasswordTextField.setText(oldValue);
 			}
 		};
 		
-		ChangeListener<String> filelistChangeListener = new ChangeListener<String>() {
+		ChangeListener<String> fileListChangeListener = new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 				if (Pattern.matches(fileListPattern, newValue))
-					manager.getUpdateServerFileList().set(newValue);
+					manager.setUpdateServerFileList(newValue);
 				else
 					updateServerFileListTextField.setText(oldValue);
 			}
@@ -376,8 +380,64 @@ public class SettingsController implements ModalComponent
 			ProjectSWG.log("Setting update server: " + newValue);
 			manager.getUpdateServer().set(newValue);
 			manager.getState().set(Manager.STATE_PSWG_SETUP_REQUIRED);
+			
+			updateServerLockedCheckBox.setSelected(true);
+			
+			switch (newValue) {
+			case Manager.US_PSWG_K:
+				updateServerLockedCheckBox.setDisable(true);
+				removeUpdateServerButton.setDisable(true);
+				break;
+			default:
+				updateServerLockedCheckBox.setDisable(false);
+				removeUpdateServerButton.setDisable(false);
+			}
 		});
-		refreshUpdateServerComboBox();
+		
+		// checkbox to disable fields
+		updateServerLockedCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue) {
+				updateServerUrlTextField.setDisable(true);
+				updateServerUrlTextField.textProperty().removeListener(urlChangeListener);
+				updateServerUrlTextField.textProperty().bind(manager.getUpdateServerUrl());
+				
+				updateServerUsernameTextField.setDisable(true);
+				updateServerUsernameTextField.textProperty().removeListener(usernameChangeListener);
+				updateServerUsernameTextField.textProperty().bind(manager.getUpdateServerUsername());
+				
+				updateServerPasswordTextField.setDisable(true);;
+				updateServerPasswordTextField.textProperty().removeListener(passwordChangeListener);
+				updateServerPasswordTextField.textProperty().bind(manager.getUpdateServerPassword());
+				
+				updateServerFileListTextField.setDisable(true);
+				updateServerFileListTextField.textProperty().removeListener(fileListChangeListener);
+				updateServerFileListTextField.textProperty().bind(manager.getUpdateServerFileList());
+				
+				updateServerEncryptionKeyTextField.setDisable(true);
+				updateServerEncryptionKeyTextField.textProperty().removeListener(encryptionKeyChangeListener);
+				updateServerEncryptionKeyTextField.textProperty().bind(manager.getUpdateServerEncryptionKey());
+			} else {
+				updateServerUrlTextField.setDisable(false);
+				updateServerUrlTextField.textProperty().unbind();
+				updateServerUrlTextField.textProperty().addListener(urlChangeListener);
+
+				updateServerUsernameTextField.setDisable(false);
+				updateServerUsernameTextField.textProperty().unbind();
+				updateServerUsernameTextField.textProperty().addListener(usernameChangeListener);
+
+				updateServerPasswordTextField.setDisable(false);
+				updateServerPasswordTextField.textProperty().unbind();
+				updateServerPasswordTextField.textProperty().addListener(passwordChangeListener);
+				
+				updateServerFileListTextField.setDisable(false);
+				updateServerFileListTextField.textProperty().unbind();
+				updateServerFileListTextField.textProperty().addListener(fileListChangeListener);
+
+				updateServerEncryptionKeyTextField.setDisable(false);
+				updateServerEncryptionKeyTextField.textProperty().unbind();
+				updateServerEncryptionKeyTextField.textProperty().addListener(encryptionKeyChangeListener);
+			}
+		});
 		
 		// add update server
 		addUpdateServerButton.setOnMouseEntered(buttonHover);
@@ -414,7 +474,7 @@ public class SettingsController implements ModalComponent
 				return;
 
 			String pswgPath = file.getAbsolutePath();
-			manager.getPswgFolder().set(pswgPath);
+			manager.setUpdateServerInstallationFolder(pswgPath);
 		});
 	}
 	
@@ -444,13 +504,13 @@ public class SettingsController implements ModalComponent
 			}
 		};
 		
-		ChangeListener<String> statusPortTextChangeListener = new ChangeListener<String>() {
+		ChangeListener<String> pingPortTextChangeListener = new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 				if (Pattern.matches(portPattern, newValue))
-					manager.setLoginServerStatusPort(loginServerComboBox.getValue(), newValue);
+					manager.setLoginServerPingPort(loginServerComboBox.getValue(), newValue);
 				else
-					statusPortTextField.setText(oldValue);
+					pingPortTextField.setText(oldValue);
 			}
 		};
 		
@@ -460,8 +520,8 @@ public class SettingsController implements ModalComponent
 			if (newValue == null)
 				return;
 
-			ProjectSWG.log("Setting profile: " + newValue);
-			mainController.getPlayButtonTooltip().setText("Profile: " + newValue);
+			ProjectSWG.log("Setting login server: " + newValue);
+			mainController.getPlayButtonTooltip().setText("Login Server: " + newValue);
 			loginServerLockedCheckBox.setSelected(true);
 			
 			switch (newValue) {
@@ -475,9 +535,8 @@ public class SettingsController implements ModalComponent
 				removeLoginServerButton.setDisable(false);
 			}
 
-			manager.setLoginServer(newValue);
+			manager.getLoginServer().set(newValue);
 		});
-		refreshLoginServerComboBox();
 		
 		// add login server
 		addLoginServerButton.setOnMouseEntered(buttonHover);
@@ -523,9 +582,9 @@ public class SettingsController implements ModalComponent
 				playPortTextField.textProperty().removeListener(portTextChangeListener);
 				playPortTextField.textProperty().bind(manager.getLoginServerPlayPort());
 
-				statusPortTextField.setDisable(true);
-				statusPortTextField.textProperty().removeListener(statusPortTextChangeListener);
-				statusPortTextField.textProperty().bind(manager.getLoginServerPingPort());
+				pingPortTextField.setDisable(true);
+				pingPortTextField.textProperty().removeListener(pingPortTextChangeListener);
+				pingPortTextField.textProperty().bind(manager.getLoginServerPingPort());
 			} else {
 				hostnameTextField.setDisable(false);
 				hostnameTextField.textProperty().unbind();
@@ -535,9 +594,9 @@ public class SettingsController implements ModalComponent
 				playPortTextField.textProperty().unbind();
 				playPortTextField.textProperty().addListener(portTextChangeListener);
 
-				statusPortTextField.setDisable(false);
-				statusPortTextField.textProperty().unbind();
-				statusPortTextField.textProperty().addListener(statusPortTextChangeListener);
+				pingPortTextField.setDisable(false);
+				pingPortTextField.textProperty().unbind();
+				pingPortTextField.textProperty().addListener(pingPortTextChangeListener);
 			}
 		});
 		

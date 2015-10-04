@@ -142,8 +142,8 @@ public class MainController implements FxmlController
 		manager.getState().addListener((observable, oldValue, newValue) -> {
 			switch (newValue.intValue()) {
 			case Manager.STATE_SWG_SETUP_REQUIRED:
-				playButton.setVisible(false);
 				scanButton.setVisible(true);
+				playButton.setVisible(false);
 				setupButton.setVisible(true);
 				cancelButton.setVisible(false);
 				progressIndicator.setVisible(false);
@@ -155,8 +155,8 @@ public class MainController implements FxmlController
 				break;
 			
 			case Manager.STATE_SWG_SCANNING:
-				playButton.setVisible(false);
 				scanButton.setVisible(true);
+				playButton.setVisible(false);
 				setupButton.setVisible(false);
 				cancelButton.setVisible(true);
 				cancelButton.setDefaultButton(true);
@@ -167,8 +167,8 @@ public class MainController implements FxmlController
 				break;
 			
 			case Manager.STATE_PSWG_SETUP_REQUIRED:
-				playButton.setVisible(false);
 				scanButton.setVisible(true);
+				playButton.setVisible(false);
 				setupButton.setVisible(true);
 				cancelButton.setVisible(false);
 				progressIndicator.setVisible(false);
@@ -180,8 +180,9 @@ public class MainController implements FxmlController
 				break;
 				
 			case Manager.STATE_PSWG_SCAN_REQUIRED:
-				playButton.setVisible(true);
 				scanButton.setVisible(true);
+				playButton.setVisible(true);
+				scanButton.setDisable(false);
 				scanButton.setDefaultButton(true);
 				setupButton.setVisible(false);
 				cancelButton.setVisible(false);
@@ -205,6 +206,7 @@ public class MainController implements FxmlController
 				break;
 			
 			case Manager.STATE_UPDATE_REQUIRED:
+				scanButton.setVisible(true);
 				playButton.setVisible(true);
 				updateButton.setDefaultButton(true);
 				cancelButton.setVisible(false);
@@ -246,6 +248,7 @@ public class MainController implements FxmlController
 				setupButton.setVisible(false);
 				playButton.setVisible(true);
 				scanButton.setVisible(true);
+				scanButton.setDisable(false);
 				cancelButton.setVisible(false);
 				progressIndicator.setVisible(false);
 				settingsButton.setDisable(false);

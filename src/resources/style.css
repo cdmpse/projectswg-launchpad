@@ -129,15 +129,15 @@
 
 }
 
-#setupRoot .text-field {
+#setupRoot .button {
 	-fx-border-color: snow;
 }
 
-#setupRoot .text-field.pass {
+#setupRoot .button.pass {
 	-fx-border-color: blue;
 }
 
-#setupRoot .text-field.fail {
+#setupRoot .button.fail {
 	-fx-border-color: red;
 }
 
@@ -230,7 +230,7 @@
 	-fx-graphic: url("extras-button.png");
 	-fx-content-display: graphic-only;
 	-fx-background-color: transparent;
-	-fx-padding: 0 0 0 40px;
+	-fx-padding: 0 0 0 45px;
 }
 
 #extrasButton:hover {
@@ -309,7 +309,7 @@
     -fx-graphic: url("options-button.png");
     -fx-content-display: graphic-only;
     -fx-background-color: transparent;
-    -fx-padding: 0 0 0 40px;
+    -fx-padding: 0 0 0 45px;
 }
 
 #optionsButton:hover {

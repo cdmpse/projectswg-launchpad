@@ -38,6 +38,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.effect.Glow;
@@ -58,10 +59,11 @@ public class SetupController implements ModalComponent
 	@FXML
 	private Button pswgFolderButton, swgFolderButton;
 	@FXML
-	private TextField swgFolderTextField, pswgFolderTextField;	
+	private ProgressIndicator swgFolderProgressIndicator;
 	
 	public static final String LABEL = "Setup";
 	
+	private ProgressIndicator progressIndicator;
 	private MainController mainController;
 	
 	@Override
@@ -73,8 +75,8 @@ public class SetupController implements ModalComponent
 		this.mainController = mainController;
 		Manager manager = mainController.getManager();
 		
-		swgFolderTextField.textProperty().bind(manager.getSwgFolder());
-		pswgFolderTextField.textProperty().bind(manager.getPswgFolder());
+		swgFolderButton.textProperty().bind(manager.getSwgFolder());
+		pswgFolderButton.textProperty().bind(manager.getPswgFolder());
 		
 		swgFolderButton.setOnAction((e) -> {
 			DirectoryChooser directoryChooser = new DirectoryChooser();
@@ -99,7 +101,7 @@ public class SetupController implements ModalComponent
 				return;
 
 			String pswgPath = file.getAbsolutePath();
-			manager.getPswgFolder().set(pswgPath);
+			manager.setUpdateServerInstallationFolder(pswgPath);
 		});
 		
 		final Tooltip pswgFolderButtonTooltip = new Tooltip("Select an existing ProjectSWG folder or create a new one.");
@@ -109,37 +111,48 @@ public class SetupController implements ModalComponent
 			switch (newValue.intValue()) {
 			case Manager.STATE_INIT:
 			case Manager.STATE_SWG_SETUP_REQUIRED:
-				if (!swgFolderTextField.getStyleClass().contains("fail"))
-					swgFolderTextField.getStyleClass().add("fail");
+				if (!swgFolderButton.getStyleClass().contains("fail"))
+					swgFolderButton.getStyleClass().add("fail");
 
+				swgFolderButton.setVisible(true);
+				swgFolderProgressIndicator.setVisible(false);
+				
 				stepOneLabel.setOpacity(1);
+				stepOneLabel.setEffect(new Glow(0.7));
 				stepTwoHBox.setDisable(true);
-				stepTwoHBox.setOpacity(0.25);
+				stepTwoHBox.setOpacity(0.40);
 				stepTwoLabel.setEffect(null);
 				break;
 
 			case Manager.STATE_SWG_SCANNING:
-				if (!swgFolderTextField.getStyleClass().contains("fail"))
-					swgFolderTextField.getStyleClass().add("fail");
+				if (!swgFolderButton.getStyleClass().contains("fail"))
+					swgFolderButton.getStyleClass().add("fail");
+				
+				swgFolderButton.setVisible(false);
+				swgFolderProgressIndicator.setVisible(true);
 				
 				stepOneLabel.setOpacity(1);
 				stepTwoHBox.setDisable(true);
-				stepTwoHBox.setOpacity(0.25);
+				stepTwoHBox.setOpacity(0.40);
 				stepTwoLabel.setEffect(null);
 				break;
 				
 			case Manager.STATE_PSWG_SETUP_REQUIRED:
-				if (swgFolderTextField.getStyleClass().contains("fail"))
-					swgFolderTextField.getStyleClass().remove("fail");
-				if (!swgFolderTextField.getStyleClass().contains("pass"))
-					swgFolderTextField.getStyleClass().add("pass");
-				if (!pswgFolderTextField.getStyleClass().contains("fail"))
-					pswgFolderTextField.getStyleClass().add("fail");
+				if (swgFolderButton.getStyleClass().contains("fail"))
+					swgFolderButton.getStyleClass().remove("fail");
+				if (!swgFolderButton.getStyleClass().contains("pass"))
+					swgFolderButton.getStyleClass().add("pass");
+				if (!pswgFolderButton.getStyleClass().contains("fail"))
+					pswgFolderButton.getStyleClass().add("fail");
 				
-				stepOneLabel.setOpacity(0.5);
+				swgFolderButton.setVisible(true);
+				swgFolderProgressIndicator.setVisible(false);
+				
+				stepOneLabel.setOpacity(0.6);
+				stepOneLabel.setEffect(null);
 				stepTwoHBox.setDisable(false);
 				stepTwoHBox.setOpacity(1);
-				stepTwoLabel.setEffect(null);
+				stepTwoLabel.setEffect(new Glow(0.7));
 				break;
 				
 			default:

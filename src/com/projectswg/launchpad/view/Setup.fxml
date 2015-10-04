@@ -15,11 +15,19 @@
    <children>
       <HBox fx:id="stepOneHBox" alignment="CENTER" spacing="50.0" VBox.vgrow="ALWAYS">
          <children>
-            <Label fx:id="stepOneLabel" style="-fx-font-size: 46;" text="1" HBox.hgrow="ALWAYS" />
+            <Label fx:id="stepOneLabel" alignment="CENTER" maxWidth="40.0" minWidth="40.0" prefWidth="40.0" text="1" HBox.hgrow="ALWAYS">
+               <font>
+                  <Font name="Galactic Basic" size="42.0" />
+               </font></Label>
             <VBox alignment="CENTER" spacing="15.0" HBox.hgrow="ALWAYS">
                <children>
-                  <Button fx:id="swgFolderButton" maxHeight="Infinity" maxWidth="Infinity" mnemonicParsing="false" text="Select an Original SWG Installation" />
-                  <TextField fx:id="swgFolderTextField" disable="true" editable="false" />
+                  <Label text="Select an Original SWG Installation" />
+                  <StackPane>
+                     <children>
+                        <Button fx:id="swgFolderButton" maxHeight="Infinity" maxWidth="Infinity" mnemonicParsing="false" />
+                        <ProgressIndicator fx:id="swgFolderProgressIndicator" maxHeight="20.0" maxWidth="20.0" minHeight="20.0" minWidth="20.0" prefHeight="20.0" prefWidth="20.0" visible="false" />
+                     </children>
+                  </StackPane>
                </children>
             </VBox>
          </children>
@@ -29,11 +37,14 @@
       </HBox>
       <HBox fx:id="stepTwoHBox" alignment="CENTER" spacing="50.0" VBox.vgrow="ALWAYS">
          <children>
-            <Label fx:id="stepTwoLabel" style="-fx-font-size: 46;" text="2" HBox.hgrow="ALWAYS" />
+            <Label fx:id="stepTwoLabel" alignment="CENTER" contentDisplay="CENTER" maxWidth="40.0" minWidth="40.0" prefWidth="40.0" text="2" textAlignment="CENTER" HBox.hgrow="ALWAYS">
+               <font>
+                  <Font name="Galactic Basic" size="42.0" />
+               </font></Label>
             <VBox alignment="CENTER" spacing="15.0" HBox.hgrow="ALWAYS">
                <children>
-                  <Button fx:id="pswgFolderButton" maxHeight="Infinity" maxWidth="Infinity" mnemonicParsing="false" text="Select an Installation Folder" />
-                  <TextField fx:id="pswgFolderTextField" disable="true" editable="false" />
+                  <Label text="Select an Installation Folder" />
+                  <Button fx:id="pswgFolderButton" maxHeight="Infinity" maxWidth="Infinity" mnemonicParsing="false" />
                </children>
             </VBox>
          </children>
