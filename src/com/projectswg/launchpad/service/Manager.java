@@ -80,6 +80,7 @@ public class Manager
 	public static final String LS_LOCALHOST_V = "127.0.0.1,44453,44462";
 	
 	public static final String GAME_FEATURES = "34374193";
+	public static final String BINARY_DEFAULT = "SwgClient_r.exe";
 	
 	public static final int MAX_BUFFER_SIZE = 2048;
 	public static final int RESOURCE_LIST_HASH = 0;
@@ -203,7 +204,7 @@ public class Manager
 		
 		state = new SimpleIntegerProperty(initialState);
 		
-		binary = new SimpleStringProperty(ProjectSWG.PREFS.get("binary", ""));
+		binary = new SimpleStringProperty(ProjectSWG.PREFS.get("binary", BINARY_DEFAULT));
 		gameFeatures = new SimpleStringProperty(ProjectSWG.PREFS.get("game_features", ""));
 		
 		wineBinary = new SimpleStringProperty("");
@@ -226,6 +227,9 @@ public class Manager
 		binary.addListener((observable, oldValue, newValue) -> {
 			ProjectSWG.PREFS.put("binary", newValue);
 		});
+		// temp
+		if (binary.getValue().contains("/") || binary.getValue().contains("\\"))
+			binary.set(BINARY_DEFAULT);
 		
 		gameFeatures.addListener((observable, oldValue, newValue) -> {
 			ProjectSWG.PREFS.put("game_features", newValue);
@@ -403,7 +407,7 @@ public class Manager
 							return;
 						}
 					if (binary.getValue().equals(""))
-						binary.set("SwgClient_r.exe");
+						binary.set(BINARY_DEFAULT);
 					if (gameFeatures.getValue().equals(""))
 						gameFeatures.set(Manager.GAME_FEATURES);
 					state.set(STATE_PSWG_READY);
@@ -506,12 +510,12 @@ public class Manager
 		ObservableList<Instance> instances = pswg.getInstances();
 		if (instances.size() > MAX_INSTANCES)
 			return;
-		String pswgFolder = ProjectSWG.PREFS.get("pswg_folder", "");
-		if (pswgFolder.equals(""))
+
+		if (pswgFolder.getValue().equals(""))
 			return;
 		
 		ProjectSWG.log(String.format("Launching game... Folder: %s, Host: %s, Port: %s",
-				pswgFolder,
+				pswgFolder.getValue(),
 				loginServerHost.getValue(),
 				loginServerPlayPort.getValue()));
 		
@@ -524,22 +528,21 @@ public class Manager
 	
 	public void launchGameSettings()
 	{
-		String pswgFolder = ProjectSWG.PREFS.get("pswg_folder", "");
-		if (pswgFolder.equals(""))
+		if (pswgFolder.getValue().equals(""))
 			return;
-		File dir = new File(pswgFolder);
+		File dir = new File(pswgFolder.getValue());
 		if (!dir.exists())
 			return;
 		
 		String[] processString = null;
 		if (ProjectSWG.isWindows())
-			processString = new String[] { pswgFolder + "/SwgClientSetup_r.exe" };
+			processString = new String[] { pswgFolder.getValue() + "/SwgClientSetup_r.exe" };
 		else {
 			if (wineBinary.getValue().equals(""))
 				return;
 			processString = new String[] {
 					wineBinary.getValue(),
-					pswgFolder + "/SwgClientSetup_r.exe"
+					pswgFolder.getValue() + "/SwgClientSetup_r.exe"
 			};
 		}
 		

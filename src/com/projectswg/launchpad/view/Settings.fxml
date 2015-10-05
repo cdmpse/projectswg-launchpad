@@ -35,6 +35,7 @@
                         <Hyperlink fx:id="showHyperlink" text="Show" />
                      </children>
                   </HBox>
+                  <Button fx:id="deleteLaunchpadPreferencesButton" maxWidth="300.0" mnemonicParsing="false" text="Delete Launchpad Preferences" GridPane.columnIndex="1" GridPane.rowIndex="6" />
                   
                </children>
                <columnConstraints>
@@ -47,6 +48,7 @@
                   <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" />
                   <RowConstraints maxHeight="60.0" minHeight="60.0" prefHeight="60.0" />
                   <RowConstraints maxHeight="60.0" minHeight="60.0" prefHeight="60.0" />
+                  <RowConstraints maxHeight="Infinity" vgrow="ALWAYS" />
                   <RowConstraints maxHeight="Infinity" vgrow="ALWAYS" />
                </rowConstraints>
                <padding>
@@ -226,7 +228,6 @@
                                  </children>
                               </HBox>
                               <Button fx:id="deleteGameProfilesButton" maxWidth="300.0" mnemonicParsing="false" text="Delete Game Profiles" GridPane.rowIndex="6" />
-                              <Button fx:id="deleteLaunchpadPreferencesButton" maxWidth="300.0" mnemonicParsing="false" text="Delete Launchpad Preferences" GridPane.rowIndex="7" />
                            </children>
                            <columnConstraints>
                               <ColumnConstraints hgrow="ALWAYS" />
@@ -287,21 +288,28 @@
             <Insets />
          </opaqueInsets>
          <content>
-            <VBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-background-color: #111;">
-               <children>
-                  <Label style="-fx-font-weight: bold;" text="Website" wrapText="true" />
-                  <Hyperlink fx:id="pswgHyperlink" text="http://www.projectswg.com" />
-                  <Region maxHeight="10.0" minHeight="10.0" prefHeight="10.0" />
-                  <TextFlow maxWidth="500.0" minWidth="500.0" prefWidth="500.0" VBox.vgrow="ALWAYS">
+            <ScrollPane fitToHeight="true" fitToWidth="true" style="-fx-background-color: #111;">
+               <content>
+                  <VBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-background-color: #111;">
                      <children>
-                        <Label style="-fx-font-weight: bold;" text="License" wrapText="true" />
-                        <Text fx:id="licenseText" text="insert license text" wrappingWidth="10.0" />
+                        <Label style="-fx-font-weight: bold;" text="Website" wrapText="true" />
+                        <Hyperlink fx:id="pswgHyperlink" text="http://www.projectswg.com" />
+                        <Region maxHeight="10.0" minHeight="10.0" prefHeight="10.0" />
+                        <TextFlow maxWidth="500.0" minWidth="500.0" prefWidth="500.0" VBox.vgrow="ALWAYS">
+                           <children>
+                              <Label style="-fx-font-weight: bold;" text="License" wrapText="true" />
+                              <Text fx:id="licenseText" text="insert license text" wrappingWidth="10.0" />
+                           </children>
+                        </TextFlow>
+                        <Region maxHeight="10.0" minHeight="10.0" prefHeight="10.0" />
+                        <CheckBox fx:id="translateCheckBox" mnemonicParsing="false" text="Translate" />
                      </children>
-                  </TextFlow>
-                  <Region maxHeight="10.0" minHeight="10.0" prefHeight="10.0" />
-                  <CheckBox fx:id="translateCheckBox" mnemonicParsing="false" text="Translate" />
-               </children>
-            </VBox>
+                  </VBox>
+               </content>
+               <padding>
+                  <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+               </padding>
+            </ScrollPane>
          </content>
       </TitledPane>
    </panes>

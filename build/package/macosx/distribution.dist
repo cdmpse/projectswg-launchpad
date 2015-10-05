@@ -14,5 +14,5 @@
 <choice id="fxApplication" visible="false">
     <pkg-ref id="fxApplication"/>
 </choice>
-<pkg-ref id="fxApplication" version="0.6" onConclusion="none">ProjectSWG.pkg</pkg-ref>
+<pkg-ref id="fxApplication" version="0.9" onConclusion="none">ProjectSWG.pkg</pkg-ref>
 </installer-gui-script>
