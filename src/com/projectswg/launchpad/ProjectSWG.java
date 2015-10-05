@@ -27,7 +27,6 @@ import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import com.projectswg.launchpad.controller.FxmlController;
@@ -144,9 +143,8 @@ public class ProjectSWG extends Application
 			
 			// folders
 			manager.getSwgFolder().set(ProjectSWG.PREFS.get("swg_folder", ""));
-			//String pswgFolder = manager.getUpdateServerValues(manager.getUpdateServer().getValue())[5];
-			//System.out.println("here: " + pswgFolder);
-			//manager.getPswgFolder().set(pswgFolder);
+			String pswgFolder = manager.getUpdateServerValues(manager.getUpdateServer().getValue())[5];
+			manager.getPswgFolder().set(pswgFolder);
 		});
 	}
 	
@@ -269,6 +267,7 @@ public class ProjectSWG extends Application
 				media = new Media(f.toURI().toString());
 				if (media.getError() == null)
 					media.setOnError(new Runnable() {
+						@Override
 						public void run()
 						{
 							log("Media error");
@@ -283,6 +282,7 @@ public class ProjectSWG extends Application
 		final MediaPlayer mediaPlayer = new MediaPlayer(media);
 		if (mediaPlayer.getError() == null) {
 			mediaPlayer.setOnError(new Runnable() {
+				@Override
 				public void run()
 				{
 					log("MediaPlayer error");

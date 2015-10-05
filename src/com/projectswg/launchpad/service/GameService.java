@@ -65,7 +65,7 @@ public class GameService extends Service<Void>
 				}
 				
 				String[] processString = new String[] {
-						manager.getBinary().getValue(),
+						manager.getPswgFolder().getValue() + "/" + manager.getBinary().getValue(),
 						"--",
 						"-s",
 						"Station",

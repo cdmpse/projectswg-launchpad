@@ -21,9 +21,7 @@ package com.projectswg.launchpad.controller;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -39,10 +37,8 @@ import com.projectswg.launchpad.service.Manager;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Alert;
@@ -50,7 +46,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Slider;
@@ -59,14 +54,9 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Tooltip;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
@@ -85,7 +75,7 @@ public class SettingsController implements ModalComponent
 	@FXML
 	private Button addUpdateServerButton, removeUpdateServerButton;
 	@FXML
-	private Button binaryButton, gameFeaturesButton, deleteLaunchpadPreferencesButton;
+	private Button gameFeaturesButton, deleteLaunchpadPreferencesButton, binaryButton;
 	@FXML
 	private TextField wineArgumentsTextField, wineEnvironmentVariablesTextField;
 	@FXML
@@ -279,6 +269,12 @@ public class SettingsController implements ModalComponent
 			if (newValue)
 				((LogController)mainController.getPswg().getControllers().get("log")).addDebugListener();
 		});
+		// disable if debug isnt set
+		if (ProjectSWG.PREFS.getBoolean("debug", false))
+			debugCheckBox.setSelected(true);
+		else
+			showHyperlink.setDisable(true);
+		
 		// show launchpad debug
 		showHyperlink.setOnAction((e) -> {
 			((LogController)mainController.getPswg().getControllers().get("log")).show();
@@ -318,9 +314,9 @@ public class SettingsController implements ModalComponent
 	public void initUpdateServerPane()
 	{
 		// fix
-		String urlPattern = "[0-9a-zA-Z\\.-]*";
+		String urlPattern = "[0-9a-zA-Z\\.\\-]*";
 		String authPattern = "[0-9a-zA-Z]*";
-		String fileListPattern = "[0-9a-zA-Z]*";
+		String fileListPattern = "[0-9a-zA-Z\\-\\.]*";
 		
 		ChangeListener<String> urlChangeListener = new ChangeListener<String>() {
 			@Override
@@ -366,7 +362,7 @@ public class SettingsController implements ModalComponent
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 				if (Pattern.matches(authPattern, newValue))
-					manager.getUpdateServerEncryptionKey().set(newValue);
+					manager.setUpdateServerEncryptionKey(newValue);
 				else
 					updateServerEncryptionKeyTextField.setText(oldValue);
 			}
@@ -379,8 +375,9 @@ public class SettingsController implements ModalComponent
 
 			ProjectSWG.log("Setting update server: " + newValue);
 			manager.getUpdateServer().set(newValue);
-			manager.getState().set(Manager.STATE_PSWG_SETUP_REQUIRED);
 			
+			//manager.getState().set(Manager.STATE_PSWG_SETUP_REQUIRED);
+
 			updateServerLockedCheckBox.setSelected(true);
 			
 			switch (newValue) {
@@ -457,6 +454,20 @@ public class SettingsController implements ModalComponent
 		});
 		
 		// remove update server
+		removeUpdateServerButton.setOnMouseEntered(buttonHover);
+		removeUpdateServerButton.setOnAction((e) -> {
+			ProjectSWG.playSound("button_press");
+			Alert alert = new Alert(AlertType.CONFIRMATION);
+			alert.setTitle("Remove Update Server");
+			alert.setHeaderText("Are you sure you want to remove this update server?");
+			Optional<ButtonType> result = alert.showAndWait();
+			if (result.get() == ButtonType.OK) {
+				String val = updateServerComboBox.getValue();
+				updateServerComboBox.getSelectionModel().select(0);
+				ProjectSWG.PREFS.node("update_servers").remove(val);;
+				refreshUpdateServerComboBox();
+			}
+		});
 		
 		// installation folder
 		final Tooltip settingsPswgFolderTooltip = new Tooltip();
@@ -543,8 +554,8 @@ public class SettingsController implements ModalComponent
 		addLoginServerButton.setOnAction((e) -> {
 			ProjectSWG.playSound("button_press");
 			TextInputDialog dialog = new TextInputDialog();
-			dialog.setTitle("Add Server");
-			dialog.setHeaderText("Please enter a name for the server.");
+			dialog.setTitle("Add Login Server");
+			dialog.setHeaderText("Please enter a name for the login server.");
 			dialog.setContentText("Server name: ");
 			Optional<String> result = dialog.showAndWait();
 			result.ifPresent(name -> {
@@ -560,8 +571,8 @@ public class SettingsController implements ModalComponent
 		removeLoginServerButton.setOnAction((e) -> {
 			ProjectSWG.playSound("button_press");
 			Alert alert = new Alert(AlertType.CONFIRMATION);
-			alert.setTitle("Remove Server");
-			alert.setHeaderText("Are you sure you want to remove this profile?");
+			alert.setTitle("Remove Login Server");
+			alert.setHeaderText("Are you sure you want to remove this login server?");
 			Optional<ButtonType> result = alert.showAndWait();
 			if (result.get() == ButtonType.OK) {
 				String val = loginServerComboBox.getValue();
@@ -631,11 +642,6 @@ public class SettingsController implements ModalComponent
 		openOnLaunchCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
 			ProjectSWG.PREFS.putBoolean("open_on_launch", newValue);
 		});
-		// disable if debug isnt set
-		if (ProjectSWG.PREFS.getBoolean("debug", false))
-			debugCheckBox.setSelected(true);
-		else
-			showHyperlink.setDisable(true);
 		
 		// game executable
 		final Tooltip binaryTooltip = new Tooltip();
@@ -645,18 +651,18 @@ public class SettingsController implements ModalComponent
 		binaryButton.setOnMouseEntered(buttonHover);
 		binaryButton.setOnAction((e) -> {
 			ProjectSWG.playSound("button_press");
-			FileChooser fileChooser = new FileChooser();
-			fileChooser.setTitle("Set Binary Location");
-			File file = fileChooser.showOpenDialog(mainController.getStage());
-			if (file == null || !file.isFile())
-				return;
-			
-			String bin =  file.getAbsolutePath();
-			manager.getBinary().set(bin);
+			TextInputDialog dialog = new TextInputDialog();
+			dialog.setTitle("Game Executable");
+			dialog.setHeaderText("Change");
+			dialog.setContentText("Binary: ");
+			Optional<String> result = dialog.showAndWait();
+			result.ifPresent(b -> {
+				manager.getBinary().set(b);
+			});
 		});
 		// reset game executable
 		resetBinaryHyperlink.setOnAction((e) -> {
-			manager.getBinary().set(manager.getPswgFolder().getValue() + "/SwgClient_r.exe");
+			manager.getBinary().set("SwgClient_r.exe");
 		});
 		
 		// delete game profiles

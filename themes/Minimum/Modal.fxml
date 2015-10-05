@@ -11,7 +11,7 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.layout.ColumnConstraints?>
 
-<VBox fx:id="modalRoot" spacing="10.0" style="-fx-border-width: 0;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.projectswg.launchpad.controller.ModalController">
+<VBox fx:id="modalRoot" maxWidth="320.0" minWidth="320.0" prefWidth="320.0" spacing="10.0" style="-fx-border-width: 0;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.projectswg.launchpad.controller.ModalController">
    <children>
       <HBox>
          <children>
@@ -23,7 +23,7 @@
             <Button fx:id="closeButton" focusTraversable="false" mnemonicParsing="false" text="✕" />
          </children>
       </HBox>
-      <StackPane fx:id="modalStackPane" VBox.vgrow="ALWAYS" />
+      <StackPane fx:id="modalStackPane" maxWidth="320.0" minWidth="320.0" prefWidth="320.0" VBox.vgrow="ALWAYS" />
    </children>
    <padding>
       <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />

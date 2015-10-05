@@ -80,7 +80,7 @@ public class LogController implements FxmlController
 		
 		saveAsButton.setOnAction((e) -> {
 			FileChooser fileChooser = new FileChooser();
-			fileChooser.setTitle("Save debug...");
+			fileChooser.setTitle("Save debug");
 			fileChooser.setInitialFileName("debug.txt");
 			File file = fileChooser.showSaveDialog(stage);
 			if (file == null)
@@ -105,8 +105,8 @@ public class LogController implements FxmlController
 			findFunc(findTextField.getText());
 		});
 		
-		if (ProjectSWG.PREFS.getBoolean("debug", false))
-			addDebugListener();
+		//if (ProjectSWG.PREFS.getBoolean("debug", false))
+		//	addDebugListener();
 	}
 	
 	public void removeDebugListener()
@@ -144,7 +144,8 @@ public class LogController implements FxmlController
 	private class DebugListener implements ChangeListener<String>
 	{
 		@Override
-		public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+		public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue)
+		{
 			outputTextArea.appendText(newValue + "\n");
 		}
 	}

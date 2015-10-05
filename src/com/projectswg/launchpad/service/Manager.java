@@ -50,7 +50,6 @@ import com.projectswg.launchpad.model.Resource;
 import com.projectswg.launchpad.model.Instance;
 
 import javafx.application.Platform;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
@@ -196,6 +195,7 @@ public class Manager
 			if (newValue.equals(""))
 				Platform.runLater(() -> {
 					state.set(STATE_PSWG_SETUP_REQUIRED);
+					mainOut.set("PSWG Setup Required");
 				});
 			else
 				quickScan();
@@ -403,7 +403,7 @@ public class Manager
 							return;
 						}
 					if (binary.getValue().equals(""))
-						binary.set(pswgFolder.getValue() + "/SwgClient_r.exe");
+						binary.set("SwgClient_r.exe");
 					if (gameFeatures.getValue().equals(""))
 						gameFeatures.set(Manager.GAME_FEATURES);
 					state.set(STATE_PSWG_READY);

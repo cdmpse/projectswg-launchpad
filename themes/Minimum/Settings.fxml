@@ -11,30 +11,37 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.layout.ColumnConstraints?>
 
-<Accordion fx:id="settingsRoot" maxHeight="Infinity" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.projectswg.launchpad.controller.SettingsController">
+<Accordion fx:id="settingsRoot" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.projectswg.launchpad.controller.SettingsController">
    <panes>
-      <TitledPane text="General">
+      <TitledPane text="Launchpad">
          <content>
             <GridPane hgap="10.0" vgap="5.0">
                <children>
                   <CheckBox fx:id="soundCheckBox" mnemonicParsing="false" text="Sound" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-                  <Label text="Theme" GridPane.rowIndex="2" />
+                  <Label text="Theme" GridPane.rowIndex="3" />
                   <CheckBox fx:id="closeAfterLaunchCheckBox" mnemonicParsing="false" text="Close After Launch" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                  <Label text="Animation" GridPane.rowIndex="3" />
-                  <Slider fx:id="animationSlider" blockIncrement="1.0" majorTickUnit="1.0" max="3.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                  <HBox alignment="CENTER" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+                  <Label text="Animation" GridPane.rowIndex="4" />
+                  <Slider fx:id="animationSlider" blockIncrement="1.0" majorTickUnit="1.0" max="3.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                  <HBox alignment="CENTER" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.valignment="CENTER">
                      <children>
                         <ComboBox fx:id="themeComboBox" maxWidth="Infinity" HBox.hgrow="ALWAYS" />
                         <Button fx:id="refreshThemesButton" maxWidth="30.0" minWidth="30.0" mnemonicParsing="false" prefWidth="30.0" text="↻" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                     <children>
+                        <CheckBox fx:id="debugCheckBox" mnemonicParsing="false" text="Debug" />
+                        <Hyperlink fx:id="showHyperlink" text="Show" />
                      </children>
                   </HBox>
                   
                </children>
                <columnConstraints>
                   <ColumnConstraints halignment="RIGHT" maxWidth="80.0" minWidth="80.0" prefWidth="80.0" />
-                  <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" maxWidth="1.7976931348623157E308" />
+                  <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" />
                </columnConstraints>
                <rowConstraints>
+                  <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" />
                   <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" />
                   <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" />
                   <RowConstraints maxHeight="60.0" minHeight="60.0" prefHeight="60.0" />
@@ -47,7 +54,76 @@
             </GridPane>
          </content>
       </TitledPane>
-      <TitledPane text="Setup">
+      <TitledPane text="Update Server">
+         <content>
+            <ScrollPane fitToHeight="true" fitToWidth="true">
+               <content>
+                  <VBox spacing="10.0">
+                     <children>
+                        <HBox alignment="CENTER" spacing="10.0">
+                           <children>
+                              <ComboBox fx:id="updateServerComboBox" maxWidth="Infinity" HBox.hgrow="ALWAYS" />
+                              <Region maxWidth="40.0" minWidth="40.0" prefWidth="40.0" HBox.hgrow="ALWAYS" />
+                              <Button fx:id="addUpdateServerButton" maxWidth="30.0" minWidth="30.0" mnemonicParsing="false" prefWidth="30.0" text="+" />
+                              <Button fx:id="removeUpdateServerButton" maxWidth="30.0" minWidth="30.0" mnemonicParsing="false" prefWidth="30.0" text="-" />
+                           </children>
+                        </HBox>
+                        <Region maxHeight="5.0" minHeight="5.0" prefHeight="5.0" />
+                        <HBox spacing="20.0">
+                           <children>
+                              <Label maxWidth="120.0" minWidth="120.0" prefWidth="120.0" text="Installation Folder" />
+                              <Button fx:id="settingsPswgFolderButton" maxWidth="Infinity" mnemonicParsing="false" HBox.hgrow="ALWAYS">
+                                 <tooltip>
+                                    <Tooltip fx:id="settingsPswgFolderTooltip" />
+                                 </tooltip>
+                              </Button>
+                              <Pane fx:id="pswgFolderDisplayPane1" maxHeight="20.0" maxWidth="50.0" minHeight="20.0" minWidth="50.0" prefHeight="20.0" prefWidth="50.0" />
+                           </children>
+                        </HBox>
+                        <Region maxHeight="5.0" minHeight="5.0" prefHeight="5.0" />
+                        <CheckBox fx:id="updateServerLockedCheckBox" mnemonicParsing="false" text="Lock" />
+                        <Region maxHeight="5.0" minHeight="5.0" prefHeight="5.0" />
+                        <HBox spacing="20.0">
+                           <children>
+                              <Label maxWidth="120.0" minWidth="120.0" prefWidth="120.0" text="URL" />
+                              <TextField fx:id="updateServerUrlTextField" HBox.hgrow="ALWAYS" />
+                           </children>
+                        </HBox>
+                        <HBox spacing="20.0">
+                           <children>
+                              <Label maxWidth="120.0" minWidth="120.0" prefWidth="120.0" text="Username" />
+                              <TextField fx:id="updateServerUsernameTextField" promptText="Optional" HBox.hgrow="ALWAYS" />
+                           </children>
+                        </HBox>
+                        <HBox spacing="20.0">
+                           <children>
+                              <Label maxWidth="120.0" minWidth="120.0" prefWidth="120.0" text="Password" />
+                              <TextField fx:id="updateServerPasswordTextField" promptText="Optional" HBox.hgrow="ALWAYS" />
+                           </children>
+                        </HBox>
+                        <Region maxHeight="5.0" minHeight="5.0" prefHeight="5.0" />
+                        <HBox spacing="20.0">
+                           <children>
+                              <Label maxWidth="120.0" minWidth="120.0" prefWidth="120.0" text="File List" />
+                              <TextField fx:id="updateServerFileListTextField" HBox.hgrow="ALWAYS" />
+                           </children>
+                        </HBox>
+                        <HBox spacing="20.0">
+                           <children>
+                              <Label maxWidth="120.0" minWidth="120.0" prefWidth="120.0" text="Encyryption Key" />
+                              <TextField fx:id="updateServerEncryptionKeyTextField" promptText="Optional" HBox.hgrow="ALWAYS" />
+                           </children>
+                        </HBox>
+                     </children>
+                     <padding>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                     </padding>
+                  </VBox>
+               </content>
+            </ScrollPane>
+         </content>
+      </TitledPane>
+      <TitledPane text="Login Server">
          <content>
             <GridPane hgap="5.0" vgap="5.0">
               <columnConstraints>
@@ -62,47 +138,29 @@
                   <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" />
                   <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" />
                   <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" />
-                  <RowConstraints maxHeight="10.0" minHeight="10.0" prefHeight="10.0" />
-                <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" />
-                  <RowConstraints maxHeight="10.0" minHeight="10.0" prefHeight="10.0" />
-                <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" />
                   <RowConstraints />
-                  <RowConstraints maxHeight="1.7976931348623157E308" />
+                  <RowConstraints maxHeight="Infinity" />
               </rowConstraints>
                <children>
-                  <Label text="SWG" GridPane.rowIndex="7" />
-                  <Label text="ProjectSWG" GridPane.rowIndex="9" />
-                  <Button fx:id="settingsSwgFolderButton" maxWidth="Infinity" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-                  <Button fx:id="settingsPswgFolderButton" maxWidth="Infinity" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="9" />
-                  <VBox alignment="CENTER" GridPane.columnIndex="2" GridPane.rowIndex="7">
-                     <children>
-                        <Pane fx:id="swgFolderDisplayPane" VBox.vgrow="ALWAYS" />
-                     </children>
-                  </VBox>
-                  <VBox alignment="CENTER" GridPane.columnIndex="2" GridPane.rowIndex="9">
-                     <children>
-                        <Pane fx:id="pswgFolderDisplayPane" VBox.vgrow="ALWAYS" />
-                     </children>
-                  </VBox>
                   <ComboBox fx:id="loginServerComboBox" maxWidth="Infinity" GridPane.columnIndex="1" />
                   <CheckBox fx:id="loginServerLockedCheckBox" mnemonicParsing="false" text="Lock" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                   <Label text="Server" />
-                  <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                  <HBox alignment="CENTER" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
                      <children>
                         <Label maxWidth="70.0" minWidth="70.0" prefWidth="70.0" text="Host" />
                         <TextField fx:id="hostnameTextField" promptText="Enter a hostname" HBox.hgrow="ALWAYS" />
                      </children>
                   </HBox>
-                  <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                  <HBox alignment="CENTER" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
                      <children>
                         <Label maxWidth="70.0" minWidth="70.0" prefWidth="70.0" text="Port" />
-                        <TextField fx:id="portTextField" maxWidth="Infinity" promptText="Enter a port" HBox.hgrow="ALWAYS" />
+                        <TextField fx:id="playPortTextField" maxWidth="Infinity" promptText="Enter a port" HBox.hgrow="ALWAYS" />
                      </children>
                   </HBox>
-                  <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                  <HBox alignment="CENTER" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
                      <children>
-                        <Label maxWidth="70.0" minWidth="70.0" prefWidth="70.0" text="Status Port" />
-                        <TextField fx:id="statusPortTextField" maxWidth="Infinity" promptText="Optional" HBox.hgrow="ALWAYS" />
+                        <Label maxWidth="70.0" minWidth="70.0" prefWidth="70.0" text="Ping Port" />
+                        <TextField fx:id="pingPortTextField" maxWidth="Infinity" promptText="Optional" HBox.hgrow="ALWAYS" />
                      </children>
                   </HBox>
                   <HBox alignment="CENTER" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
@@ -125,7 +183,7 @@
             </GridPane>
          </content>
       </TitledPane>
-      <TitledPane text="Developer">
+      <TitledPane text="Client">
          <content>
             <GridPane hgap="10.0" vgap="5.0">
                <children>
@@ -134,14 +192,8 @@
                         <Insets left="20.0" />
                      </GridPane.margin>
                   </CheckBox>
-                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.rowIndex="2">
-                     <children>
-                        <CheckBox fx:id="debugCheckBox" mnemonicParsing="false" text="Debug" />
-                        <Hyperlink fx:id="showHyperlink" text="Show" />
-                     </children>
-                  </HBox>
                   <CheckBox fx:id="captureCheckBox" mnemonicParsing="false" text="Capture" />
-                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.rowIndex="3">
+                  <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.rowIndex="2">
                      <children>
                         <Label maxWidth="100.0" minWidth="100.0" prefWidth="100.0" text="Binary">
                            <HBox.margin>
@@ -151,8 +203,8 @@
                         <Hyperlink fx:id="resetBinaryHyperlink" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" text="Reset" />
                      </children>
                   </HBox>
-                  <Button fx:id="deleteGameProfilesButton" maxWidth="Infinity" mnemonicParsing="false" text="Delete Game Profiles" GridPane.rowIndex="5" />
-                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.rowIndex="4">
+                  <Button fx:id="deleteGameProfilesButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Delete Game Profiles" GridPane.rowIndex="4" />
+                  <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.rowIndex="3">
                      <children>
                         <Label maxWidth="100.0" minWidth="100.0" prefWidth="100.0" text="Game Features">
                            <HBox.margin>
@@ -163,13 +215,12 @@
                         <Hyperlink fx:id="resetGameFeaturesHyperlink" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" text="Reset" />
                      </children>
                   </HBox>
-                  <Button fx:id="deleteLaunchpadPreferencesButton" maxWidth="Infinity" mnemonicParsing="false" text="Delete Launchpad Preferences" GridPane.rowIndex="6" />
+                  <Button fx:id="deleteLaunchpadPreferencesButton" maxWidth="Infinity" mnemonicParsing="false" text="Delete Launchpad Preferences" GridPane.rowIndex="5" />
                </children>
                <columnConstraints>
                   <ColumnConstraints hgrow="ALWAYS" />
                </columnConstraints>
                <rowConstraints>
-                  <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" />
                   <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" />
                   <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" />
                   <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" />
@@ -240,12 +291,6 @@
                </children>
             </VBox>
          </content>
-         <opaqueInsets>
-            <Insets />
-         </opaqueInsets>
       </TitledPane>
    </panes>
-   <opaqueInsets>
-      <Insets />
-   </opaqueInsets>
 </Accordion>

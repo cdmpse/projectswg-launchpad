@@ -104,10 +104,14 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 
 				ArrayList<String> resourceList = null;
 				ArrayList<Resource> resources = null;
-				
+				boolean useEncryption = !manager.getUpdateServerEncryptionKey().equals("");
 				String resourceListPath = manager.getPswgFolder().getValue() + "/" + manager.getUpdateServerFileList().getValue();
 				ProjectSWG.log("Reading encrypted resource list from local: " + resourceListPath);
-				resourceList = readEncryptedResourceListFromLocal(resourceListPath);
+				
+				if (useEncryption)
+					resourceList = readEncryptedResourceListFromLocal(resourceListPath, manager.getUpdateServerEncryptionKey().getValue());
+				else
+					resourceList = readPlainTextResourceListFromLocal(resourceListPath);
 				
 				if (resourceList == null) {
 					ProjectSWG.log("Failed to read resource list from local");
@@ -118,10 +122,19 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 						ProjectSWG.log("Error fetching resource list");
 						return null;
 					}
-					if (!writeEncryptedResourceList(resourceList)) {
-						ProjectSWG.log("Error writing resource");
-						return null;
+
+					if (useEncryption) {
+						if (!writeEncryptedResourceList(resourceList)) {
+							ProjectSWG.log("Error writing encypted resource list");
+							return null;
+						}
+					} else {
+						if (!writePlainTextResourceList(resourceList)) {
+							ProjectSWG.log("Error writing plain text resource list");
+							return null;
+						}
 					}
+							
 				}
 				
 				resources = parseResourceList(resourceList);
@@ -200,6 +213,8 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 				ArrayList<String> list = new ArrayList<String>();
 				
 				file = new File(filePath);
+				if (!file.isFile())
+					return null;
 				if (file.length() == 0)
 					return null;
 				try (BufferedReader reader = Files.newBufferedReader(file.toPath())) {
@@ -212,10 +227,9 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 				return list;
 			}
 			
-			private ArrayList<String> readEncryptedResourceListFromLocal(String filePath)
+			private ArrayList<String> readEncryptedResourceListFromLocal(String filePath, String key)
 			{
 				ArrayList<String> list = new ArrayList<String>();
-				
 				file = new File(filePath);
 				if (!file.isFile())
 					return null;
@@ -226,18 +240,14 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 					byte[] avail = new byte[fis.available()];
 					fis.read(avail);
 					fis.close();
-					
-					String fullText = decrypt(avail, manager.getUpdateServerEncryptionKey().getValue());
-					
+					String fullText = decrypt(avail, key);
 					for (String l : fullText.split("\r\n"))
 						list.add(l);
-
-					return list;
-					
 				} catch (IOException e1) {
 					ProjectSWG.log(e1.toString());
 					return null;
 				}
+				return list;
 			}
 			
 			private ArrayList<String> getResourceListFromRemote()
@@ -259,11 +269,11 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 						copy.add(line);
 					}
 					in.close();
-					return copy;
 				} catch (IOException e1) {
 					ProjectSWG.log(e1.toString());
 					return null;
 				}
+				return copy;
 			}
 
 			private ArrayList<Resource> parseResourceList(ArrayList<String> resourceList)

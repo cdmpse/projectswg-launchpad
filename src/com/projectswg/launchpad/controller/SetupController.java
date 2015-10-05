@@ -22,28 +22,15 @@ package com.projectswg.launchpad.controller;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
-
-import com.projectswg.launchpad.ProjectSWG;
 import com.projectswg.launchpad.service.Manager;
 
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar.ButtonData;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.effect.Glow;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
