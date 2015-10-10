@@ -34,6 +34,7 @@
                         <Hyperlink fx:id="showHyperlink" text="Show" />
                      </children>
                   </HBox>
+                  <Button fx:id="deleteLaunchpadPreferencesButton" maxWidth="Infinity" mnemonicParsing="false" text="Delete Launchpad Preferences" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                   
                </children>
                <columnConstraints>
@@ -46,6 +47,7 @@
                   <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" />
                   <RowConstraints maxHeight="60.0" minHeight="60.0" prefHeight="60.0" />
                   <RowConstraints maxHeight="60.0" minHeight="60.0" prefHeight="60.0" />
+                  <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" />
                   <RowConstraints maxHeight="1.7976931348623157E308" vgrow="ALWAYS" />
                </rowConstraints>
                <padding>
@@ -215,13 +217,11 @@
                         <Hyperlink fx:id="resetGameFeaturesHyperlink" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" text="Reset" />
                      </children>
                   </HBox>
-                  <Button fx:id="deleteLaunchpadPreferencesButton" maxWidth="Infinity" mnemonicParsing="false" text="Delete Launchpad Preferences" GridPane.rowIndex="5" />
                </children>
                <columnConstraints>
                   <ColumnConstraints hgrow="ALWAYS" />
                </columnConstraints>
                <rowConstraints>
-                  <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" />
                   <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" />
                   <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" />
                   <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" />
