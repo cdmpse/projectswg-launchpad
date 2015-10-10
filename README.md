@@ -4,14 +4,7 @@
 
 ### Launchpad ###
 
-* Version 0.8
-
-
-### Known Issues ###
-		
-Debian GNU/Linux
-
-* Game process doesn't quit from launchpad
+* Version 0.9
 
 
 ### License ###
