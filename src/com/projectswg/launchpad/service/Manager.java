@@ -205,7 +205,7 @@ public class Manager
 		state = new SimpleIntegerProperty(initialState);
 		
 		binary = new SimpleStringProperty(ProjectSWG.PREFS.get("binary", BINARY_DEFAULT));
-		gameFeatures = new SimpleStringProperty(ProjectSWG.PREFS.get("game_features", ""));
+		gameFeatures = new SimpleStringProperty(ProjectSWG.PREFS.get("game_features", GAME_FEATURES));
 		
 		wineBinary = new SimpleStringProperty("");
 		wineArguments = new SimpleStringProperty("");
@@ -409,7 +409,7 @@ public class Manager
 					if (binary.getValue().equals(""))
 						binary.set(BINARY_DEFAULT);
 					if (gameFeatures.getValue().equals(""))
-						gameFeatures.set(Manager.GAME_FEATURES);
+						gameFeatures.set(GAME_FEATURES);
 					state.set(STATE_PSWG_READY);
 					mainOut.set("Ready");
 				}

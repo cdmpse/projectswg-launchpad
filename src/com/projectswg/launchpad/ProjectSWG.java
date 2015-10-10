@@ -72,7 +72,7 @@ public class ProjectSWG extends Application
 	public static final String CSS_BASIC = "/resources/basic.css";
 	public static final String ICON = "/resources/pswg_icon.png";
 	public static final String THEMES_FOLDER = "themes";
-	public static final String THEME_DEFAULT = "Default";
+	public static final String THEME_DEFAULT = "ProjectSWG";
 	public static final String CHECKMARK = "\u2713";
 	public static final String XMARK = "\u2717";
 	
@@ -186,14 +186,12 @@ public class ProjectSWG extends Application
 			try {
 				String codeSource = new File(ProjectSWG.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
 				final File file = new File(codeSource + "/" + THEMES_FOLDER + "/" + theme + "/style.css");
-				if (!file.isFile()) {
-					log("Theme css file not found: " + theme);
-					return;
-				}
-				cssPath = file.toURI().toURL().toExternalForm();
+				if (!file.isFile())
+					log("Theme CSS file not found: " + theme);
+				else
+					cssPath = file.toURI().toURL().toExternalForm();
 			} catch (MalformedURLException | URISyntaxException e) {
 				log("Error setting theme: " + e.toString());
-				return;
 			}
 		}
 		
