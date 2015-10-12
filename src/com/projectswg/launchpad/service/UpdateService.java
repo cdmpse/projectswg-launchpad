@@ -107,10 +107,10 @@ public class UpdateService extends Service<Boolean>
 				try {
 					long total = resource.getSize();
 					
-					URL url = new URL(manager.getUpdateServerUrl() + name);
+					URL url = new URL(manager.getUpdateServerUrl().getValue() + name);
 					URLConnection urlConnection = url.openConnection();
-					if (!manager.getUpdateServerUsername().equals("")) {
-						String auth = manager.getUpdateServerUsername() + ":" + manager.getUpdateServerPassword();
+					if (!manager.getUpdateServerUsername().getValue().equals("")) {
+						String auth = manager.getUpdateServerUsername().getValue() + ":" + manager.getUpdateServerPassword().getValue();
 						String basicAuth = "Basic " + DatatypeConverter.printBase64Binary(auth.getBytes());
 						urlConnection.setRequestProperty("Authorization", basicAuth);
 					}

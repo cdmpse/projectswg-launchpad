@@ -1,6 +1,6 @@
 Summary: ProjectSWG
 Name: projectswg
-Version: 0.9
+Version: 0.9.1
 Release: 1
 License: Unknown
 Vendor: projectswg.com

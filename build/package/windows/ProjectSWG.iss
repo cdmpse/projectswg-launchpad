@@ -3,8 +3,8 @@
 [Setup]
 AppId={{fxApplication}}
 AppName=ProjectSWG
-AppVersion=0.9
-AppVerName=ProjectSWG 0.9
+AppVersion=0.9.1
+AppVerName=ProjectSWG 0.9.1
 AppPublisher=projectswg.com
 AppComments=ProjectSWG
 AppCopyright=Copyright (C) 2015

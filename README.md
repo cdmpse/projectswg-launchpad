@@ -4,7 +4,7 @@
 
 ### Launchpad ###
 
-* Version 0.9
+* Version 0.9.1
 
 
 ### License ###

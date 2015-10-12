@@ -104,7 +104,7 @@ public class PswgScanService extends Service<Pair<Double, ArrayList<Resource>>>
 
 				ArrayList<String> resourceList = null;
 				ArrayList<Resource> resources = null;
-				boolean useEncryption = !manager.getUpdateServerEncryptionKey().equals("");
+				boolean useEncryption = !manager.getUpdateServerEncryptionKey().getValue().equals("");
 				String resourceListPath = manager.getPswgFolder().getValue() + "/" + manager.getUpdateServerFileList().getValue();
 				ProjectSWG.log("Reading encrypted resource list from local: " + resourceListPath);
 				
